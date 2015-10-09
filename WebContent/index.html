@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Snaker</title>
+<script type="text/javascript" src="common/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="common/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="common/easyui/themes/icon.css">
+<script type="text/javascript" src="common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="common/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$.render = function(render) {
+			$._render = render;
+		}
+		$.doRender = function(el, force) {
+			var $el = $(el);
+			if (!$el.rendered || force) {
+				if (!$el.render && $._render) $el.render = $._render;
+				if ($el.render) $el.render();
+				$el.rendered = true;
+			}
+			delete $._render;
+		}
+
+		$.parser.auto = false;
+
+		var $indexCenter = $('#index-center'), $indexScripts = $('#index-scripts');
+
+		$('#index-west-accordion p').click(function() {
+			var $p = $(this), text = $p.text(), location = $p.data('location'), scripts = $p.data('scripts');
+			if ($indexCenter.tabs('getTab', text)) {
+				$indexCenter.tabs('select', text)
+			} else {
+				if (scripts) {
+					scripts = scripts.split(';')
+					for (var i = 0; i < scripts.length; i++) {
+						$indexScripts.append('<script type="text/javascript" src="' + scripts[i] + '"><\/script>');
+					}
+					$.parser.parse('index-scripts');
+				}
+				
+				var tab = $indexCenter.tabs('add', {
+					closable: true,
+					title: text,
+					href: location,
+					onLoad: function() {
+						$.parser.parse(tab);
+						$.doRender(tab);
+					}
+				});
+			}
+		});
+	});
+</script>
+</head>
+<body class="easyui-layout">
+	<div id="index-scripts" style="display:none"></div>
+	<div id="index-west-accordion" class="easyui-accordion" data-options="region:'west',title:'菜单',split:true" style="width:100px">
+		<div data-options="title:'任务管理'" style="text-align:center">
+			<p data-location="process/list.html" style="cursor:pointer;color:blue">流程定义</p>
+			<p data-location="process/designer.html" data-scripts="common/raphael-min.js;common/snaker.designer.js" style="cursor:pointer;color:blue">流程设计</p>
+			<p data-location="easyui/_basic.html" style="cursor:pointer;color:blue">待办任务</p>
+			<p data-location="http://www.baidu.com" style="cursor:pointer;color:blue">流程实例</p>
+		</div>
+	</div>
+	<div id="index-center" class="easyui-tabs" data-options="region:'center'">
+		<div data-options="title:'主页'">拼命开发中...</div>
+	</div>
+</body>
+</html>

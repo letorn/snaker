@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0">
+
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>webapp.root</param-value>
+  </context-param>
+
+  <filter>
+    <filter-name>jfinal</filter-name>
+    <filter-class>com.jfinal.core.JFinalFilter</filter-class>
+    <init-param>
+      <param-name>configClass</param-name>
+      <param-value>init.AppConfig</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>jfinal</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+</web-app>

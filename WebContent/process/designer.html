@@ -1,0 +1,28 @@
+<div class="easyui-layout" data-options="fit:true">
+	<div id="precess-designer-toolbox" data-options="region:'west',split:true,title:'工具'" style="width:80px;text-align:center">
+		<br /><input id="precess-designer-toolbox-moveable" class="easyui-switchbutton" data-options="onText:'移动',offText:'连线'" style="width:80%;margin:10px;padding:10px;" checked><br /><br />
+		<div class="easyui-accordion" data-options="fit:true,border:false">
+			<div data-options="title:'通用'" style="text-align:center;padding-left:10px;padding-top:10px">
+				<p class="precess-designer-toolbox-citem" data-module="start" style="width:50px;height:20px;line-height:20px;background:#fafafa">开始</p>
+				<p class="precess-designer-toolbox-citem" data-module="stop" style="width:50px;height:20px;line-height:20px;background:#fafafa">结束</p>
+				<p class="precess-designer-toolbox-citem" data-module="task" style="width:50px;height:20px;line-height:20px;background:#fafafa">任务</p>
+			</div>
+		</div>
+	</div>
+	<div class="easyui-tabs" data-options="region:'center'">
+		<div id="process-designer-tabs-canvas" data-options="title:'画板'" style="position:absolute;fit:true"></div>
+		<div data-options="title:'XML'">
+			我是XML
+		</div>
+	</div>
+	<div data-options="region:'east',split:true,title:'履带'" style="width:180px">
+		<table id="process-designer-prop-box" class="easyui-propertygrid" data-options="columns:[[{field:'name',title:'名称'},{field:'value',title:'内容',width:100}]],fix:true"></table>
+	</div>
+
+</div>
+<script type="text/javascript">
+	var processListDesignerPropGridColumns = [[{field:'name',title:'名称'},{field:'value',title:'内容'}]]
+	$.render(function() {
+		Snaker.initDesigner('process-designer-tabs-canvas', 'precess-designer-toolbox-moveable', 'precess-designer-toolbox-citem', 'process-designer-prop-box');
+	});
+</script>
