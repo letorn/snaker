@@ -1,8 +1,9 @@
-<table id="process-list-table" class="easyui-datagrid" data-options="url:'process/list',method:'get',rownumbers:true,toolbar:'#process-list-table-toolbar'">
+<table id="process-list-table" class="easyui-datagrid" data-options="url:'process/list?state=1',method:'get',rownumbers:true,toolbar:'#process-list-table-toolbar'">
 	<thead>
 		<tr>
 			<th data-options="field:'name',width:100">名称</th>
 			<th data-options="field:'displayName',width:100">流程显示名称</th>
+			<!-- <th data-options="field:'state',width:100,formatter:function(v){return v==1?'启用':'禁用'}">状态</th> -->
 			<th data-options="field:'version',width:100">版本号</th>
 			<th data-options="field:'id',width:150,formatter:processListTableActionFormatter">操作</th>
 		</tr>
@@ -13,15 +14,15 @@
 	<a id="process-list-table-add" class="easyui-linkbutton">部署</a>
 	<input id="process-list-table-search" class="easyui-searchbox" data-options="prompt:'流程显示名称'" style="width:200px"></input>
 </div>
-<form id="process-list-editwin" action="process/deploy" method="post" class="easyui-window" data-options="title:'编辑',modal:true,closed:true,iconCls:'icon-save'" style="width: 500px; height: 500px; padding: 10px;">
-	<input type="hidden" name="id" />
+<form id="process-list-editwin" action="process/save" method="post" class="easyui-window" data-options="title:'编辑',modal:true,closed:true,iconCls:'icon-save'" style="width: 500px; height: 500px; padding: 10px;">
+	<input type="hidden" name="process" />
 	<input class="easyui-textbox" data-options="multiline:true" style="width:100%;height:400px" name="content">
 	<a id="process-list-editwin-save" class="easyui-linkbutton" style="width:80px">保存</a>
 	<a id="process-list-editwin-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </form>
 <script type="text/javascript">
-	function processListTableActionFormatter(value) {
-		return '<a class="process-list-table-start" data-process="' + value + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
+	function processListTableActionFormatter(value, row) {
+		return '<a class="process-list-table-start" data-process="' + value + '" data-text="' + row.displayName + '" data-version="' + row.version + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
 				'<a class="process-list-table-edit" data-process="' + value + '" style="cursor:pointer;color:blue">编辑</a>&nbsp;&nbsp;' + 
 				'<a class="process-list-table-delete" data-process="' + value + '" style="cursor:pointer;color:blue">删除</a>';
 	}
@@ -58,7 +59,8 @@
 		$('#process-list-table-search').searchbox({
 			searcher: function(value) {
 				$processListTable.datagrid('load', {
-					displayName: value
+					displayName: value,
+					state: 1
 				});
 			}
 		});
@@ -66,7 +68,8 @@
 		$processListTable.datagrid({
 			onLoadSuccess: function() {
 				$('.process-list-table-start').click(function() {
-					alert('开发未完成...');
+					$this = $(this);
+					window.addCenterTab($this.data('text') + 'v' + $this.data('version'), 'flow/all?process=' + $(this).data('process'));
 				});
 				
 				$('.process-list-table-edit').click(function() {

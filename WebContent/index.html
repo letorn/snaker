@@ -27,6 +27,30 @@
 
 		var $indexCenter = $('#index-center'), $indexScripts = $('#index-scripts');
 
+		window.addCenterTab = function(text, location, scripts) {
+			if ($indexCenter.tabs('getTab', text)) {
+				$indexCenter.tabs('select', text)
+			} else {
+				if (scripts) {
+					scripts = scripts.split(';')
+					for (var i = 0; i < scripts.length; i++) {
+						$indexScripts.append('<script type="text/javascript" src="' + scripts[i] + '"><\/script>');
+					}
+					$.parser.parse('index-scripts');
+				}
+				
+				var tab = $indexCenter.tabs('add', {
+					closable: true,
+					title: text,
+					href: location,
+					onLoad: function() {
+						$.parser.parse(tab);
+						$.doRender(tab);
+					}
+				});
+			}
+		}
+		
 		$('#index-west-accordion p').click(function() {
 			var $p = $(this), text = $p.text(), location = $p.data('location'), scripts = $p.data('scripts');
 			if ($indexCenter.tabs('getTab', text)) {

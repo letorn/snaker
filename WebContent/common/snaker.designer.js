@@ -349,8 +349,19 @@ Snaker.module = {
 	task: {
 		ptype: 'rect',
 		pattr: {
-			width: 100,
-			height: 100,
+			width: 40,
+			height: 60,
+			fill: '#999999'
+		},
+		pdata: {
+			node: true
+		}
+	},
+	tableinput: {
+		ptype: 'rect',
+		pattr: {
+			width: 40,
+			height: 60,
 			fill: '#999999'
 		},
 		pdata: {

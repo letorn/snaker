@@ -2,6 +2,8 @@ package init;
 
 import org.snaker.jfinal.plugin.SnakerPlugin;
 
+import plugin.DBScriptPlugin;
+
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
@@ -13,7 +15,9 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 
+import controller.FlowController;
 import controller.IndexController;
+import controller.ModuleController;
 import controller.ProcessController;
 
 public class AppConfig extends JFinalConfig {
@@ -53,10 +57,15 @@ public class AppConfig extends JFinalConfig {
 	}
 
 	public void configRoute(Routes me) {
+		// 主页相关
 		me.add("/", IndexController.class);
 		
+		// snaker流程相关
 		me.add("/process", ProcessController.class);
+		me.add("/flow", FlowController.class);
 		
+		// module组件相关
+		me.add("/module", ModuleController.class);
 	}
 
 }

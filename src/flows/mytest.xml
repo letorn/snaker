@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process displayName="我的流程测试" instanceUrl="/snaker/flow/all" name="leave">
+	<start displayName="start1" layout="24,124,-1,-1" name="start1">
+		<transition g="" name="transition1" offset="0,0" to="tableinput" />
+	</start>
+	<task assignee="apply.operator" displayName="数据录入" form="module/tableinput" layout="117,122,-1,-1" name="tableinput" performType="ANY">
+		<transition g="" name="transition2" offset="0,0" to="end1" />
+	</task>
+	<end displayName="end1" layout="570,124,-1,-1" name="end1" />
+</process>
