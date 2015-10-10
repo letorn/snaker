@@ -1,0 +1,28 @@
+{
+	name: 'mytest',
+	version: 1,
+	modules: [{
+		type: 'start',
+		clazz: 'engine.module.StartModule',
+		name: 'start1',
+		controller: 'love',
+		service: 'love you',
+		tos: ['tableinput1', 'tableinput2', 1]
+	}, {
+		type: 'tableinput',
+		clazz: 'engine.module.TableInputModule',
+		name: 'tableinput1',
+		controller: 'core',
+		service: 'fuck you',
+		age: 1,
+		logage: 3
+	}, {
+		type: 'tableinput',
+		clazz: 'engine.module.TableInputModule',
+		name: 'tableinput2',
+		controller: 'core',
+		service: 'fuck you',
+		age: 1,
+		logage: 3
+	}]
+}

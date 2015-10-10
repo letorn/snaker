@@ -14,7 +14,7 @@ import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.model.TaskModel;
 
-import service.SnakerService;
+import service.SnakerService2;
 
 import com.jfinal.core.Controller;
 import com.jfinal.kit.JsonKit;
@@ -24,7 +24,7 @@ public class FlowController extends Controller {
 	/*
 	 * snaker工作流程服务类
 	 */
-	private SnakerService snakerService = enhance(SnakerService.class);
+	private SnakerService2 snakerService = enhance(SnakerService2.class);
 
 	/*
 	 * 返回到页面的json数据

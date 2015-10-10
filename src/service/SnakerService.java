@@ -1,30 +1,25 @@
 package service;
 
+import static com.jfinal.aop.Enhancer.enhance;
 import static util.Validator.notBlank;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
-import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Order;
-import org.snaker.engine.entity.Process;
-import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
-import org.snaker.engine.helper.StreamHelper;
-import org.snaker.engine.model.TaskModel.TaskType;
-import org.snaker.jfinal.plugin.SnakerPlugin;
+
+import util.File;
+import engine.SnakerEngine;
+import engine.model.WfProcess;
 
 public class SnakerService {
 	
-	private SnakerEngine engine = SnakerPlugin.getEngine();
+	private SnakerEngine engine = enhance(SnakerEngine.class);;
 	
 	/**
 	 * 工作流程初始化
@@ -32,9 +27,9 @@ public class SnakerService {
 	 */
 	public boolean initFlows() {
 		try {
-			engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/leave.snaker"));
-			engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/borrow.snaker"));
-			engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/mytest.xml"));
+			engine.addWfProcess(File.readFromClasspath("flows/leave.snaker"));
+			engine.addWfProcess(File.readFromClasspath("flows/leave.snaker"));
+			engine.addWfProcess(File.readFromClasspath("flows/mytest.xml"));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -50,17 +45,10 @@ public class SnakerService {
 	 * @param processType 流程类型
 	 * @return
 	 */
-	public List<Process> findProcess(String name, String displayName, Integer state, String processType) {
-		QueryFilter filter = new QueryFilter();
+	public List<WfProcess> findWfProcess(String name) {
 		if (notBlank(name))
-			filter.setName(name);
-		if (notBlank(displayName))
-			filter.setDisplayName(displayName);
-		if (notBlank(state))
-			filter.setState(state);
-		if (notBlank(processType))
-			filter.setProcessType(processType);
-		return engine.process().getProcesss(filter);
+			return engine.findWfProcess(name);
+		return new ArrayList<WfProcess>();
 	}
 	
 	/**
@@ -68,8 +56,8 @@ public class SnakerService {
 	 * @param processId 流程主键
 	 * @return
 	 */
-	public Process getProcessById(String processId) {
-		return engine.process().getProcessById(processId);
+	public WfProcess getWfProcess(Long processId) {
+		return engine.getWfProcess(processId);
 	}
 	
 	/**
@@ -163,89 +151,4 @@ public class SnakerService {
 		return null;
 	}
 	
-	////////////////////////////////////////////////////////////////////////////////
-	
-	public List<String> getAllProcessNames() {
-		List<Process> list = engine.process().getProcesss(new QueryFilter());
-		List<String> names = new ArrayList<String>();
-		for(Process entity : list) {
-			if(names.contains(entity.getName())) {
-				continue;
-			} else {
-				names.add(entity.getName());
-			}
-		}
-		return names;
-	}
-	
-	public Order startInstanceById(String processId, String operator, Map<String, Object> args) {
-		return engine.startInstanceById(processId, operator, args);
-	}
-	
-	public Order startInstanceByName(String name, Integer version, String operator, Map<String, Object> args) {
-		return engine.startInstanceByName(name, version, operator, args);
-	}
-	
-	public Order startAndExecute(String name, Integer version, String operator, Map<String, Object> args) {
-		Order order = engine.startInstanceByName(name, version, operator, args);
-		List<Task> tasks = engine.query().getActiveTasks(new QueryFilter().setOrderId(order.getId()));
-		List<Task> newTasks = new ArrayList<Task>();
-		if(tasks != null && tasks.size() > 0) {
-			Task task = tasks.get(0);
-			newTasks.addAll(engine.executeTask(task.getId(), operator, args));
-		}
-		return order;
-	}
-	
-	public List<Task> executeAndJump(String taskId, String operator, Map<String, Object> args, String nodeName) {
-		return engine.executeAndJumpTask(taskId, operator, args, nodeName);
-	}
-
-    public List<Task> transferMajor(String taskId, String operator, String... actors) {
-        List<Task> tasks = engine.task().createNewTask(taskId, TaskType.Major.ordinal(), actors);
-        engine.task().complete(taskId, operator);
-        return tasks;
-    }
-
-    public List<Task> transferAidant(String taskId, String operator, String... actors) {
-        List<Task> tasks = engine.task().createNewTask(taskId, TaskType.Aidant.ordinal(), actors);
-        engine.task().complete(taskId, operator);
-        return tasks;
-    }
-    
-    public Map<String, Object> flowData(String orderId, String taskName) {
-    	Map<String, Object> data = new HashMap<String, Object>();
-		if (StringUtils.isNotEmpty(orderId) && StringUtils.isNotEmpty(taskName)) {
-			List<HistoryTask> histTasks = engine.query()
-					.getHistoryTasks(
-							new QueryFilter().setOrderId(orderId).setName(
-									taskName));
-			List<Map<String, Object>> vars = new ArrayList<Map<String,Object>>();
-			for(HistoryTask hist : histTasks) {
-				vars.add(hist.getVariableMap());
-			}
-			data.put("vars", vars);
-			data.put("histTasks", histTasks);
-		}
-		return data;
-	}
-	
-	public void addSurrogate(Surrogate entity) {
-		if(entity.getState() == null) {
-			entity.setState(1);
-		}
-		engine.manager().saveOrUpdate(entity);
-	}
-	
-	public void deleteSurrogate(String id) {
-		engine.manager().deleteSurrogate(id);
-	}
-	
-	public Surrogate getSurrogate(String id) {
-		return engine.manager().getSurrogate(id);
-	}
-	
-	public List<Surrogate> searchSurrogate(Page<Surrogate> page, QueryFilter filter) {
-		return engine.manager().getSurrogate(page, filter);
-	}
 }

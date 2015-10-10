@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.snaker.engine.entity.Process;
 
-import service.SnakerService;
+import service.SnakerService2;
 
 import com.jfinal.core.Controller;
 
@@ -18,7 +18,7 @@ public class ProcessController extends Controller{
 	/*
 	 * snaker工作流程服务类
 	 */
-	private SnakerService snakerService = enhance(SnakerService.class);
+	private SnakerService2 snakerService = enhance(SnakerService2.class);
 
 	/*
 	 * 返回到页面的json数据

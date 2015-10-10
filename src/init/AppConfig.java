@@ -19,6 +19,7 @@ import controller.FlowController;
 import controller.IndexController;
 import controller.ModuleController;
 import controller.ProcessController;
+import engine.model.WfProcess;
 
 public class AppConfig extends JFinalConfig {
 
@@ -49,6 +50,7 @@ public class AppConfig extends JFinalConfig {
 		// 配置ActiveRecord插件
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(c3p0Plugin);
 		// arp.addMapping("user", User.class);
+		arp.addMapping("wf_process", WfProcess.class);
 		me.add(arp);
 
 		// 配置Snaker插件

@@ -1,5 +1,8 @@
 package util;
 
+/*
+ * 数据校验工具
+ */
 public class Validator {
 
 	public static boolean empty(Object obj) {
