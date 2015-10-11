@@ -1,11 +1,9 @@
-<table id="process-list-table" class="easyui-datagrid" data-options="url:'process/list?state=1',method:'get',rownumbers:true,toolbar:'#process-list-table-toolbar'">
+<table id="process-list-table" class="easyui-datagrid" data-options="url:'process/list',method:'get',rownumbers:true,toolbar:'#process-list-table-toolbar'">
 	<thead>
 		<tr>
 			<th data-options="field:'name',width:100">名称</th>
-			<th data-options="field:'displayName',width:100">流程显示名称</th>
-			<!-- <th data-options="field:'state',width:100,formatter:function(v){return v==1?'启用':'禁用'}">状态</th> -->
-			<th data-options="field:'version',width:100">版本号</th>
-			<th data-options="field:'id',width:150,formatter:processListTableActionFormatter">操作</th>
+			<th data-options="field:'content',width:200">内容</th>
+			<th data-options="field:'id',width:180,formatter:processListTableActionFormatter">操作</th>
 		</tr>
 	</thead>
 </table>
@@ -22,7 +20,8 @@
 </form>
 <script type="text/javascript">
 	function processListTableActionFormatter(value, row) {
-		return '<a class="process-list-table-start" data-process="' + value + '" data-text="' + row.displayName + '" data-version="' + row.version + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
+		return '<a class="process-list-table-start" data-process="' + value + '" data-text="' + row.name + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
+				'<a class="process-list-table-design" data-process="' + value + '" style="cursor:pointer;color:blue">设计</a>&nbsp;&nbsp;' + 
 				'<a class="process-list-table-edit" data-process="' + value + '" style="cursor:pointer;color:blue">编辑</a>&nbsp;&nbsp;' + 
 				'<a class="process-list-table-delete" data-process="' + value + '" style="cursor:pointer;color:blue">删除</a>';
 	}
@@ -59,8 +58,7 @@
 		$('#process-list-table-search').searchbox({
 			searcher: function(value) {
 				$processListTable.datagrid('load', {
-					displayName: value,
-					state: 1
+					name: value
 				});
 			}
 		});
@@ -69,7 +67,11 @@
 			onLoadSuccess: function() {
 				$('.process-list-table-start').click(function() {
 					$this = $(this);
-					window.addCenterTab($this.data('text') + 'v' + $this.data('version'), 'flow/all?process=' + $(this).data('process'));
+					window.addCenterTab($this.data('text'), 'workflow/all?process=' + $this.data('process'));
+				});
+				
+				$('.process-list-table-design').click(function() {
+					window.addCenterTab('流程设计', 'process/designer/' + $(this).data('process'), 'common/raphael-min.js;common/snaker.designer.js')
 				});
 				
 				$('.process-list-table-edit').click(function() {

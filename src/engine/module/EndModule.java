@@ -3,10 +3,10 @@ package engine.module;
 import engine.ModuleData;
 
 /*
- * 流程模型 - 表格录入
- * 通过表格的方式录入数据
+ * 流程模型 - 结束
+ * 一个工作流程可以有多个结束模型
  */
-public class TableInputModule extends Module {
+public class EndModule extends Module {
 
 	/**
 	 * 模型执行方法体
@@ -14,7 +14,7 @@ public class TableInputModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-		System.out.println("tableinput...");
+		System.out.println("stop...");
 		return inputs;
 	}
 

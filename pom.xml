@@ -70,7 +70,7 @@
     </dependency>
 
     <!-- snakerflow -->
-    <dependency>
+    <!-- <dependency>
       <groupId>com.github.snakerflow</groupId>
       <artifactId>snaker-core</artifactId>
       <version>2.4.0</version>
@@ -84,7 +84,7 @@
       <groupId>commons-dbutils</groupId>
       <artifactId>commons-dbutils</artifactId>
       <version>1.6</version>
-    </dependency>
+    </dependency> -->
     
     <dependency>
       <groupId>net.sf.json-lib</groupId>

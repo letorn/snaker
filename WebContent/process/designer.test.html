@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Snaker</title>
+<script type="text/javascript" src="../common/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../common/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../common/easyui/themes/icon.css">
+<script type="text/javascript" src="../common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../common/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../common/raphael-min.js"></script>
+<script type="text/javascript" src="../common/snaker.designer.js"></script>
+</head>
+<body>
 <div class="easyui-layout" data-options="fit:true">
 	<div id="precess-designer-toolbox" data-options="region:'west',split:true,title:'工具'" style="width:80px;text-align:center">
 		<br /><a id="process-designer-toolbox-save" class="easyui-linkbutton">保存</a><br />
@@ -23,27 +37,10 @@
 	</div>
 </div>
 <script type="text/javascript">
-	$.render(function() {
+	$(function() {
 		Designer.init('process-designer-tabs', 'process-designer-tabs-canvas', 'process-designer-tabs-content', 'precess-designer-toolbox-moveable', 'precess-designer-toolbox-citem', 'process-designer-prop-form', 'process-designer-prop-box');
 		$('#process-designer-toolbox-save').click(function() {
-			var data = Designer.getData();
-			$.getJSON('${ctx}/process/save', {process: process, content: JSON.stringify(data)}, function(resp) {
-				if (resp.success) {
-					$.messager.show({
-						title: '提示',
-						msg: '保存成功！',
-						timeout: 1000,
-						showType: 'slide'
-					});
-				} else {
-					$.messager.show({
-						title: '提示',
-						msg: '保存失败！',
-						timeout: 1000,
-						showType: 'slide'
-					});
-				}
-			});
+			var data = Designer.getData()
 		});
 		var process = '${process}';
 		var content = '${content}';
@@ -52,3 +49,5 @@
 		}
 	});
 </script>
+</body>
+</html>

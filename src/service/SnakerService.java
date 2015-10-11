@@ -3,33 +3,28 @@ package service;
 import static com.jfinal.aop.Enhancer.enhance;
 import static util.Validator.notBlank;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.snaker.engine.access.QueryFilter;
-import org.snaker.engine.entity.Order;
-import org.snaker.engine.entity.Task;
 
 import util.File;
 import engine.SnakerEngine;
+import engine.Workflow;
+import engine.model.WfInstance;
 import engine.model.WfProcess;
 
+/*
+ * 服务类 - 工作流程相关
+ */
 public class SnakerService {
 	
 	private SnakerEngine engine = enhance(SnakerEngine.class);;
 	
 	/**
 	 * 工作流程初始化
-	 * @return
+	 * @return 初始化是否成功
 	 */
 	public boolean initFlows() {
 		try {
-			engine.addWfProcess(File.readFromClasspath("flows/leave.snaker"));
-			engine.addWfProcess(File.readFromClasspath("flows/leave.snaker"));
-			engine.addWfProcess(File.readFromClasspath("flows/mytest.xml"));
+			engine.addProcess(File.readFromClasspath("/flows/test.snaker"));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -38,117 +33,69 @@ public class SnakerService {
 	}
 	
 	/**
-	 * 获取工作流程
+	 * 查询工作流程
 	 * @param name 流程名称
 	 * @param displayName 流程显示名称
 	 * @param state 流程状态
 	 * @param processType 流程类型
-	 * @return
+	 * @return 工作流程列表
 	 */
-	public List<WfProcess> findWfProcess(String name) {
-		if (notBlank(name))
-			return engine.findWfProcess(name);
-		return new ArrayList<WfProcess>();
+	public List<WfProcess> findProcess(String name) {
+		return engine.findProcess(name);
 	}
 	
 	/**
 	 * 获取工作流程
 	 * @param processId 流程主键
-	 * @return
+	 * @return 工作流程
 	 */
-	public WfProcess getWfProcess(Long processId) {
-		return engine.getWfProcess(processId);
+	public WfProcess getProcess(Long processId) {
+		return engine.getProcess(processId);
 	}
 	
 	/**
 	 * 保存工作流程：有主键就更新，没我键就新增
 	 * @param processId 流程主键
 	 * @param content 流程XML内容
-	 * @return
+	 * @return 保存是否成功
 	 */
-	public boolean saveProcesss(String processId, String content) {
-		try (InputStream contentStream = new ByteArrayInputStream(content.getBytes("UTF-8"))) {
-			if (notBlank(processId))
-				engine.process().redeploy(processId, contentStream);
-			else
-				engine.process().deploy(contentStream);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean saveProcesss(Long processId, String content) {
+		if (notBlank(processId))
+			return engine.updateProcess(processId, content);
+		else
+			return engine.addProcess(content);
 	}
 	
 	/**
-	 * 删除工作流程：并不是真正的删除，只是状态改为禁止
+	 * 删除工作流程
 	 * @param processId 流程主键
-	 * @return
+	 * @return 删除是否成功
 	 */
-	public boolean deleteProcess(String processId) {
-		try {
-			engine.process().undeploy(processId);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean deleteProcess(Long processId) {
+		return engine.deleteProcess(processId);
 	}
 	
 	/**
 	 * 获取流程实例
 	 * @param orderId 实例主键
-	 * @return
+	 * @return 流利实例
 	 */
-	public Order getOrderById(String orderId) {
-		return engine.query().getOrder(orderId);
+	public WfInstance getInstance(Long instanceId) {
+		return engine.getInstance(instanceId);
+	}
+	
+	public Workflow getWorkflow(Long processId, Long instanceId) {
+		return engine.getWorkflow(processId, instanceId);
 	}
 	
 	/**
-	 * 获取活动任务
-	 * @param taskId 任务主键
-	 * @return
-	 */
-	public Task getTaskById(String taskId) {
-		return engine.query().getTask(taskId);
-	}
-	
-	/**
-	 * 启程并执行工作流程
+	 * 运行工作流
 	 * @param processId 流程主键
-	 * @param operator 启动者
-	 * @param params 任务变量
-	 * @return
+	 * @param param 实例参数
+	 * @return 是否运行成功
 	 */
-	public Order startAndExecute(String processId, String operator, Map<String, Object> params) {
-		try {
-			Order order = engine.startInstanceById(processId, operator, params);
-			List<Task> tasks = engine.query().getActiveTasks(new QueryFilter().setOrderId(order.getId()));
-			List<Task> newTasks = new ArrayList<Task>();
-			if(tasks != null && tasks.size() > 0) {
-				Task task = tasks.get(0);
-				newTasks.addAll(engine.executeTask(task.getId(), operator, params));
-			}
-			return order;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	/**
-	 * 执行工作流程
-	 * @param taskId 任务主键
-	 * @param operator 执行者
-	 * @param params 任务变量
-	 * @return
-	 */
-	public List<Task> execute(String taskId, String operator, Map<String, Object> params) {
-		try {
-			return engine.executeTask(taskId, operator, params);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public boolean runWorkflow(Long processId, String param) {
+		return engine.runWorkflow(processId, param);
 	}
 	
 }

@@ -3,7 +3,10 @@ package engine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+/*
+ * 模型数据
+ * 用于输入输出
+ */
 public class ModuleData {
 
 	private List<DataHeader> headers = new ArrayList<DataHeader>();

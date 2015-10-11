@@ -1,0 +1,23 @@
+<div class="easyui-layout" data-options="fit:true">
+	<div data-options="region:'north',split:false" style="height:50px">显示一些内容，只是。。。不知道显示什么哈哈哈</div>
+	<div id="flow-all-tabs" class="easyui-tabs" data-options="region:'center'"></div>
+</div>
+<script type="text/javascript">
+	$.render(function() {
+		var $flowAllTabs = $('#flow-all-tabs');
+		var workflow = ${workflow};
+		for (var i = 0; i < workflow.views.length; i ++) {
+			var view = workflow.views[i];
+			if (view.mtype != 'begin' && view.mtype != 'end') {
+				var tab = $flowAllTabs.tabs('add', {
+					title: view.name,
+					href: view.controller != undefined ? '${ctx}/' + view.controller : undefined,
+					onLoad: function() {
+						$.parser.parse(tab);
+						$.doRender(tab);
+					}
+				});
+			}
+		}
+	});
+</script>

@@ -1,7 +1,10 @@
 package engine;
 
+import static util.Validator.notBlank;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,25 +13,58 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
-import util.File;
+
+import org.apache.commons.lang.ArrayUtils;
+
+import util.Json;
+import engine.model.WfInstance;
+import engine.model.WfProcess;
+import engine.module.BeginModule;
 import engine.module.Module;
 
+/*
+ * 工作流
+ */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class Workflow {
 
-	private String name;
-	private List<Module> modules;
+	private String name;// 工作流程名称
+	private Module beginModule;// 开始模型
+	private List<Module> modules;// 所有模型
+	private WorkflowContext context;// 流程上下文
+	private WfInstance instance;// 流程实例
 
-	public Workflow(String name, List<Module> modules) {
+	/**
+	 * 构造方法
+	 * @param name 流程名称
+	 * @param modules 所有模型
+	 */
+	public Workflow(WorkflowContext context, String name, Module beginModule, List<Module> modules) {
+		this.context = context;
 		this.name = name;
+		this.beginModule = beginModule;
 		this.modules = modules;
 	}
 
-	public void run() {
-		for (Module module : modules) {
-			if (module.getPrevModules().size() <= 0)
-				module.run(null);
+	/**
+	 * 运行一个实例
+	 * @param param 实例参数
+	 * @return
+	 */
+	public boolean run(String param) {
+		if (notBlank(beginModule)) {
+			context.setParam(null);
+			beginModule.run();
+			WfInstance instance = new WfInstance().set("process_id", context.getProcessId())
+													.set("param", param)
+													.set("update_date", new Date())
+													.set("create_date", new Date());
+			if (instance.save()) {
+				context.setInstanceId(instance.getLong("id"));
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public String getName() {
@@ -39,40 +75,65 @@ public class Workflow {
 		return modules;
 	}
 
-	public static Workflow create(String content) {
+	public void setInstance(WfInstance instance) {
+		context.setParam(null);
+		this.instance = instance;
+	}
+	
+	public static Workflow get(Long processId, Long instanceId) {
+		Workflow workflow = Workflow.create(processId);
+		workflow.setInstance(WfInstance.dao.findById(instanceId));
+		return workflow;
+	}
+	
+	/**
+	 * 
+	 * @param processId 流程主键
+	 * @return 工作流
+	 */
+	public static Workflow create(Long processId) {
 		try {
-			JSONObject contentObject = JSONObject.fromObject(content);
+			WfProcess process = WfProcess.dao.findById(processId);
+			JSONObject contentObject = JSONObject.fromObject(process.getStr("content"));
 
-			String workname = catchString(contentObject, "name");
+			String workname = Json.catchString(contentObject, "name");
+			Module beginModule = null;
 			List<Module> modules = new ArrayList<Module>();
 
 			Map<String, Module> moduleMap = new HashMap<String, Module>();
 			Map<String, String[]> linkMap = new HashMap<String, String[]>();
 
-			ModuleContext context = new ModuleContext();
-
-			JSONArray moduleArray = catchJSONArray(contentObject, "modules");
+			WorkflowContext context = new WorkflowContext();
+			context.setProcessId(processId);
+			
+			JSONArray moduleArray = Json.catchJSONArray(contentObject, "modules");
 			Iterator<JSONObject> moduleIterator = moduleArray.iterator();
 			while (moduleIterator.hasNext()) {
 				JSONObject moduleObject = moduleIterator.next();
-				String name = catchString(moduleObject, "name");
-				String clazz = catchString(moduleObject, "clazz");
-				String[] tos = catchStrings(moduleObject, "tos");
+				String name = Json.catchString(moduleObject, "name");
+				String clazz = Json.catchString(moduleObject, "clazz");
+				String[] tos = Json.catchStrings(moduleObject, "tos");
 				if (name != null && clazz != null) {
 					Class classType = Class.forName(clazz);
 					Object object = classType.newInstance();
 					if (object instanceof Module) {
-						Field[] fields = classType.getDeclaredFields();
+						Field[] fields = new Field[0];
+						while (classType != Object.class) {
+							fields = (Field[]) ArrayUtils.addAll(fields, classType.getDeclaredFields());
+							classType = classType.getSuperclass();
+						}
 						for (Field field : fields) {
 							Object value = moduleObject.get(field.getName());
-							if (!(value instanceof JSONNull)) {
+							if (value != null && !(value instanceof JSONNull)) {
 								field.setAccessible(true);
 								field.set(object, value);
 							}
 						}
 						Module module = (Module) object;
+						if (module instanceof BeginModule)
+							beginModule = module;
 						modules.add(module);
-
+						
 						module.setContext(context);
 						module.setPrevModules(new ArrayList<Module>());
 						module.setNextModules(new ArrayList<Module>());
@@ -96,85 +157,12 @@ public class Workflow {
 				}
 				module.getNextModules().addAll(nexts);
 			}
-			return new Workflow(workname, modules);
+			if (notBlank(workname) && notBlank(beginModule) && notBlank(modules))
+				return new Workflow(context, workname, beginModule, modules);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private static JSONObject catchJSONObject(JSONObject jsonObject, String key) {
-		if (jsonObject.has(key)) {
-			Object value = jsonObject.get(key);
-			if (value instanceof JSONObject) {
-				return (JSONObject) value;
-			}
-		}
-		return null;
-	}
-
-	private static JSONArray catchJSONArray(JSONObject jsonObject, String key) {
-		if (jsonObject.has(key)) {
-			Object value = jsonObject.get(key);
-			if (value instanceof JSONArray) {
-				return (JSONArray) value;
-			}
-		}
-		return null;
-	}
-
-	private static String catchString(JSONObject jsonObject, String key) {
-		if (jsonObject.has(key)) {
-			Object value = jsonObject.get(key);
-			if (value instanceof String) {
-				return (String) value;
-			}
-		}
-		return null;
-	}
-
-	private static String[] catchStrings(JSONObject jsonObject, String key) {
-		if (jsonObject.has(key)) {
-			Object value = jsonObject.get(key);
-			if (value instanceof JSONArray) {
-				Object[] objects = ((JSONArray) value).toArray();
-				List<String> values = new ArrayList<String>();
-				for (Object object : objects) {
-					values.add(object.toString());
-				}
-				return values.toArray(new String[] {});
-			}
-		}
-		return null;
-	}
-
-	private static Integer catchInt(JSONObject jsonObject, String key) {
-		if (jsonObject.has(key)) {
-			Object value = jsonObject.get(key);
-			if (value instanceof Number) {
-				return (Integer) value;
-			}
-		}
-		return null;
-	}
-
-	private static Long catchLong(JSONObject jsonObject, String key) {
-		if (jsonObject.has(key)) {
-			Object value = jsonObject.get(key);
-			if (value instanceof Number) {
-				return (Long) value;
-			}
-		}
-		return null;
-	}
-
-	private static String filename(String filename) {
-		return System.class.getResource(filename).getFile();
-	}
-
-	public static void main(String[] args) {
-		String content = File.read(filename("/flows/mytest2.snaker"));
-		Workflow workflow = Workflow.create(content);
-		workflow.run();
-	}
 }
