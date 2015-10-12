@@ -4,6 +4,8 @@ import static util.Validator.notBlank;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -157,12 +159,18 @@ public class Workflow {
 				}
 				module.getNextModules().addAll(nexts);
 			}
-			if (notBlank(workname) && notBlank(beginModule) && notBlank(modules))
+			if (notBlank(workname) && notBlank(beginModule) && notBlank(modules)) {
+				Collections.sort(modules, new Comparator<Module>() {
+					public int compare(Map<String, String> map1, Map<String, String> map2) {
+						return map1.get("code").compareTo(map2.get("code"));
+					}
+				});
 				return new Workflow(context, workname, beginModule, modules);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
+	
 }

@@ -15,6 +15,7 @@ var Designer = {
 			pdata: {
 				node: true,
 				clazz: 'engine.module.BeginModule',
+				controller: 'module/begin',
 				name: '开始'
 			}
 		},
@@ -40,14 +41,39 @@ var Designer = {
 			pdata: {
 				node: true,
 				clazz: 'engine.module.TableInputModule',
-				controller: 'module/tableinput',
-				name: '表格输入'
+				view: 'module/basiclog',
+				name: '表格输入',
+				dataHeaders: '[]',
+				dataRows: '[]'
+			}
+		},
+		tablemapper: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.TableMapperModule',
+				view: 'module/basiclog',
+				name: '表格映射',
+				dataHeaders: '[]',
+				dataMappers: '[]'
 			}
 		}
 	}
 };
 
-Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClass, propformId, propboxId) {
+Designer.Attr = {
+	editor: {
+		dataHeaders: 'data-headers',
+		dataRows: 'data-rows'
+	}
+}
+
+Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClass, propformId, propboxId, editor) {
 	var $tabs = $('#' + tabsId), $canvas = $('#' + canvasId), $content = $('#' + contentId), $moveable = $('#' + moveableId), $propform = $('#' + propformId), $propbox = $('#' + propboxId);
 	var paper = Raphael(canvasId, $canvas.width() - 5, $canvas.height() - 5);
 	var canvasOffset = $canvas.offset();
@@ -59,6 +85,7 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 	Designer.$propbox = $propbox;
 	Designer.paper = paper;
 	Designer.canvasOffset = canvasOffset;
+	Designer.editor = editor;
 	
 	$tabs.tabs({
 		onSelect: function(title, index) {
@@ -89,21 +116,15 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 		}
 	});
 	$propbox.propertygrid({
-		onEndEdit: function(index, row) {
-			var PropBox = Designer.PropBox;
-			if (PropBox.current) {
-				if (row.name == 'name') {
-					if (Designer.name[row.value] != undefined) {
-						for (var i = 2; true; i ++) {
-							if (Designer.name[row.value + i] == undefined) {
-								row.value = row.value + i;
-								break;
-							}
-						}
-					}
-				}
-				PropBox.current.data(row.name, row.value);
+		onBeginEdit: function(index, row) {
+			if (editor[row.name]) {
+				editor[row.name].init(index, row);
+				editor[row.name].setValue(row.value);
+				editor[row.name].show();
 			}
+		},
+		onEndEdit: function(index, row) {
+			Designer.PropBox.updateValue(index, row);
 		}
 	});
 	$propform.form('load', {
@@ -461,6 +482,26 @@ Designer.PropBox = {
 				data: props
 			});
 			return props;
+		}
+	},
+	updateValue: function(index, row, refresh) {
+		var $propbox = Designer.$propbox;
+		var current = Designer.PropBox.current;
+		if (current) {
+			if (row.name == 'name') {
+				if (Designer.name[row.value] != undefined) {
+					for (var i = 2; true; i++) {
+						if (Designer.name[row.value + i] == undefined) {
+							row.value = row.value + i;
+							break;
+						}
+					}
+				}
+			}
+			current.data(row.name, row.value);
+			if (refresh) {
+				$propbox.propertygrid('updateRow', {index: index, row: row})
+			}
 		}
 	}
 }

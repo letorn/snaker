@@ -66,10 +66,10 @@ public class WorkflowController extends Controller {
 	public void run() {
 		Long processId = getParaToLong("process");
 		String param = getPara("param");
-		
-		if (blank(processId)) {
+
+		dataMap.put("success", false);
+		if (blank(processId))
 			dataMap.put("success", snakerService.runWorkflow(processId, param));
-		} 
 
 		renderJson(dataMap);
 	}

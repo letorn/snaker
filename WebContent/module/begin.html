@@ -1,0 +1,28 @@
+<div class="easyui-layout" data-options="fit:true">
+	<div data-options="region:'center',split:false" style="height:50px">
+		<a id="module-begin-run" class="easyui-linkbutton" style="width:80px">运行</a>
+	</div>
+</div>
+<script type="text/javascript">
+	$.render(function() {
+		$('#module-begin-run').click(function() {
+			$.getJSON('${ctx}/workflow/run', {process: ${process}, param: ''}, function(resp) {
+				if (resp.success) {
+					$.messager.show({
+						title: '提示',
+						msg: '运行成功！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				} else {
+					$.messager.show({
+						title: '提示',
+						msg: '运行失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+			});
+		});
+	});
+</script>

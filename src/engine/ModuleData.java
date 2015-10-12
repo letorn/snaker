@@ -21,23 +21,43 @@ public class ModuleData {
 	}
 
 	public void add(Map<String, Object> row) {
+		if (row.size() > headers.size())
+			headers = catchHeaders(row);
 		rows.add(row);
 	}
 
 	public void addAll(List<Map<String, Object>> rows) {
+		if (rows.size() > 0) {
+			Map<String, Object> row = rows.get(0);
+			if (row.size() > headers.size())
+				headers = catchHeaders(row);
+		}
 		rows.addAll(rows);
 	}
 
-	static class DataHeader {
+	private List<DataHeader> catchHeaders (Map<String, Object> row) {
+		List<DataHeader> headers = new ArrayList<DataHeader>();
+		for (String key : row.keySet()) {
+			Object value = row.get(key);
+			DataHeader header = new DataHeader();
+			header.setText(key);
+			header.setType(value.getClass());
+			headers.add(header);
+		}
+		return headers;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static class DataHeader {
 		private String text;
-		private Class<Object> type;
+		private Class type;
 		private String format;
 
 		public DataHeader() {
 
 		}
 
-		public DataHeader(String text, Class<Object> type, String format) {
+		public DataHeader(String text, Class type, String format) {
 			this.text = text;
 			this.type = type;
 			this.format = format;
@@ -51,11 +71,11 @@ public class ModuleData {
 			this.text = text;
 		}
 
-		public Class<Object> getType() {
+		public Class getType() {
 			return type;
 		}
 
-		public void setType(Class<Object> type) {
+		public void setType(Class type) {
 			this.type = type;
 		}
 
