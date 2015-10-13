@@ -17,7 +17,7 @@
 			var $el = $(el);
 			if (!$el.rendered || force) {
 				if (!$el.render && $._render) $el.render = $._render;
-				if ($el.render) $el.render();
+				if ($el.render) $el.render($el);
 				$el.rendered = true;
 			}
 			delete $._render;
@@ -25,36 +25,43 @@
 
 		$.parser.auto = false;
 
-		var $indexCenter = $('#index-center'), $indexScripts = $('#index-scripts');
-
-		window.addCenterTab = function(text, location, scripts) {
-			if ($indexCenter.tabs('getTab', text)) {
-				$indexCenter.tabs('select', text)
-			} else {
-				if (scripts) {
-					scripts = scripts.split(';')
-					for (var i = 0; i < scripts.length; i++) {
-						$indexScripts.append('<script type="text/javascript" src="' + scripts[i] + '"><\/script>');
+		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts');
+		
+		window.Content = {
+				$indexContent: $indexContent,
+				addTab: function(text, location, scripts) {
+					if ($indexContent.tabs('getTab', text)) {
+						$indexContent.tabs('select', text)
+					} else {
+						if (scripts) {
+							scripts = scripts.split(';')
+							for (var i = 0; i < scripts.length; i++) {
+								$indexScripts.append('<script type="text/javascript" src="' + scripts[i] + '"><\/script>');
+							}
+							$.parser.parse('index-scripts');
+						}
+						
+						var tab = $indexContent.tabs('add', {
+							closable: true,
+							title: text,
+							href: location,
+							onLoad: function() {
+								$.parser.parse(tab);
+								$.doRender(tab.tabs('getSelected'));
+							}
+						});
 					}
-					$.parser.parse('index-scripts');
+				},
+				getSelected: function() {
+					var _this = window.Content;
+					return _this.$indexContent.tabs('getSelected');
 				}
-				
-				var tab = $indexCenter.tabs('add', {
-					closable: true,
-					title: text,
-					href: location,
-					onLoad: function() {
-						$.parser.parse(tab);
-						$.doRender(tab);
-					}
-				});
-			}
 		}
 		
-		$('#index-west-accordion p').click(function() {
+		$('#index-accordion p').click(function() {
 			var $p = $(this), text = $p.text(), location = $p.data('location'), scripts = $p.data('scripts');
-			if ($indexCenter.tabs('getTab', text)) {
-				$indexCenter.tabs('select', text)
+			if ($indexContent.tabs('getTab', text)) {
+				$indexContent.tabs('select', text)
 			} else {
 				if (scripts) {
 					scripts = scripts.split(';')
@@ -64,7 +71,7 @@
 					$.parser.parse('index-scripts');
 				}
 				
-				var tab = $indexCenter.tabs('add', {
+				var tab = $indexContent.tabs('add', {
 					closable: true,
 					title: text,
 					href: location,
@@ -80,16 +87,15 @@
 </head>
 <body class="easyui-layout">
 	<div id="index-scripts" style="display:none"></div>
-	<div id="index-west-accordion" class="easyui-accordion" data-options="region:'west',title:'菜单',split:true" style="width:100px">
+	<div id="index-accordion" class="easyui-accordion" data-options="region:'west',title:'菜单',split:true" style="width:100px">
 		<div data-options="title:'任务管理'" style="text-align:center">
 			<p data-location="process/list.html" style="cursor:pointer;color:blue">流程定义</p>
-			<p data-location="process/designer.html" data-scripts="common/raphael-min.js;common/snaker.designer.js" style="cursor:pointer;color:blue">流程设计</p>
 			<p data-location="easyui/_basic.html" style="cursor:pointer;color:blue">待办任务</p>
 			<p data-location="http://www.baidu.com" style="cursor:pointer;color:blue">流程实例</p>
 			<p data-location="module/demo.html" style="cursor:pointer;color:blue">模型例子</p>
 		</div>
 	</div>
-	<div id="index-center" class="easyui-tabs" data-options="region:'center'">
+	<div id="index-content" class="easyui-tabs" data-options="region:'center'">
 		<div data-options="title:'主页'">拼命开发中...</div>
 	</div>
 </body>

@@ -2,7 +2,7 @@
 	<thead>
 		<tr>
 			<th data-options="field:'name',width:100">名称</th>
-			<th data-options="field:'content',width:200">内容</th>
+			<th data-options="field:'content',width:600">内容</th>
 			<th data-options="field:'id',width:180,formatter:processListTableActionFormatter">操作</th>
 		</tr>
 	</thead>
@@ -10,6 +10,7 @@
 <div id="process-list-table-toolbar" style="padding: 2px 5px;">
 	<a id="process-list-table-init" class="easyui-linkbutton">初始化</a>
 	<a id="process-list-table-add" class="easyui-linkbutton">部署</a>
+	<a id="process-list-table-designer" class="easyui-linkbutton">设计</a>
 	<input id="process-list-table-search" class="easyui-searchbox" data-options="prompt:'流程显示名称'" style="width:200px"></input>
 </div>
 <form id="process-list-editwin" action="process/save" method="post" class="easyui-window" data-options="title:'编辑',modal:true,closed:true,iconCls:'icon-save'" style="width: 500px; height: 500px; padding: 10px;">
@@ -55,6 +56,10 @@
 			$processListEditWindow.window('open');
 		});
 		
+		$('#process-list-table-designer').click(function() {
+			window.open ('process/designer')
+		});
+		
 		$('#process-list-table-search').searchbox({
 			searcher: function(value) {
 				$processListTable.datagrid('load', {
@@ -66,12 +71,11 @@
 		$processListTable.datagrid({
 			onLoadSuccess: function() {
 				$('.process-list-table-start').click(function() {
-					$this = $(this);
-					window.addCenterTab($this.data('text'), 'workflow/all?process=' + $this.data('process'));
+					Content.addTab($(this).data('text'), 'workflow/all?process=' + $(this).data('process'));
 				});
 				
 				$('.process-list-table-design').click(function() {
-					window.addCenterTab('流程设计', 'process/designer/' + $(this).data('process'), 'common/raphael-min.js;common/snaker.designer.js')
+					Content.addTab('流程设计', 'process/designer/' + $(this).data('process'), 'common/raphael-min.js;common/snaker.designer.js')
 				});
 				
 				$('.process-list-table-edit').click(function() {

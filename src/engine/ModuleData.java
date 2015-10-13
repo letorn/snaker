@@ -32,7 +32,7 @@ public class ModuleData {
 			if (row.size() > headers.size())
 				headers = catchHeaders(row);
 		}
-		rows.addAll(rows);
+		this.rows.addAll(rows);
 	}
 
 	private List<DataHeader> catchHeaders (Map<String, Object> row) {
@@ -40,8 +40,8 @@ public class ModuleData {
 		for (String key : row.keySet()) {
 			Object value = row.get(key);
 			DataHeader header = new DataHeader();
-			header.setText(key);
-			header.setType(value.getClass());
+			header.setName(key);
+			header.setClazz(value.getClass());
 			headers.add(header);
 		}
 		return headers;
@@ -49,34 +49,43 @@ public class ModuleData {
 	
 	@SuppressWarnings("rawtypes")
 	public static class DataHeader {
-		private String text;
-		private Class type;
+		private String name;
+		private String type;
+		private Class clazz;
 		private String format;
 
 		public DataHeader() {
 
 		}
 
-		public DataHeader(String text, Class type, String format) {
-			this.text = text;
+		public DataHeader(String name, String type, String format) {
+			this.name = name;
 			this.type = type;
 			this.format = format;
 		}
 
-		public String getText() {
-			return text;
+		public String getName() {
+			return name;
 		}
 
-		public void setText(String text) {
-			this.text = text;
+		public void setName(String name) {
+			this.name = name;
 		}
 
-		public Class getType() {
+		public String getType() {
 			return type;
 		}
 
-		public void setType(Class type) {
+		public void setType(String type) {
 			this.type = type;
+		}
+
+		public Class getClazz() {
+			return clazz;
+		}
+
+		public void setClazz(Class clazz) {
+			this.clazz = clazz;
 		}
 
 		public String getFormat() {

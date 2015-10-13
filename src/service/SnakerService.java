@@ -94,7 +94,7 @@ public class SnakerService {
 	 * @param param 实例参数
 	 * @return 是否运行成功
 	 */
-	public boolean runWorkflow(Long processId, String param) {
+	public Workflow runWorkflow(Long processId, String param) {
 		return engine.runWorkflow(processId, param);
 	}
 	

@@ -8,13 +8,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -30,20 +27,27 @@ import engine.module.Module;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class Workflow {
 
-	private String name;// 工作流程名称
+	private WfProcess process;// 工作流程
+	private Long processId;// 流程主键
+	private String processName;// 流程名称
+	private String processContent;// 流程内容
+
+	private WfInstance instance;// 流程实例
+	private Long instanceId;// 实例主键
+	private String instanceParam;// 实例参数
+
+	private WorkflowContext context;// 流程上下文
+
 	private Module beginModule;// 开始模型
 	private List<Module> modules;// 所有模型
-	private WorkflowContext context;// 流程上下文
-	private WfInstance instance;// 流程实例
 
 	/**
 	 * 构造方法
 	 * @param name 流程名称
 	 * @param modules 所有模型
 	 */
-	public Workflow(WorkflowContext context, String name, Module beginModule, List<Module> modules) {
+	public Workflow(WorkflowContext context, Module beginModule, List<Module> modules) {
 		this.context = context;
-		this.name = name;
 		this.beginModule = beginModule;
 		this.modules = modules;
 	}
@@ -55,31 +59,17 @@ public class Workflow {
 	 */
 	public boolean run(String param) {
 		if (notBlank(beginModule)) {
-			context.setParam(null);
-			beginModule.run();
 			WfInstance instance = new WfInstance().set("process_id", context.getProcessId())
 													.set("param", param)
 													.set("update_date", new Date())
 													.set("create_date", new Date());
 			if (instance.save()) {
-				context.setInstanceId(instance.getLong("id"));
+				setInstance(instance);
+				beginModule.run();
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public List<Module> getModules() {
-		return modules;
-	}
-
-	public void setInstance(WfInstance instance) {
-		context.setParam(null);
-		this.instance = instance;
 	}
 	
 	public static Workflow get(Long processId, Long instanceId) {
@@ -96,25 +86,23 @@ public class Workflow {
 	public static Workflow create(Long processId) {
 		try {
 			WfProcess process = WfProcess.dao.findById(processId);
-			JSONObject contentObject = JSONObject.fromObject(process.getStr("content"));
+			Map<String, Object> contentMap = Json.parseToMap(process.getStr("content"));
 
-			String workname = Json.catchString(contentObject, "name");
+			String workname = (String) contentMap.get("name");
 			Module beginModule = null;
 			List<Module> modules = new ArrayList<Module>();
 
-			Map<String, Module> moduleMap = new HashMap<String, Module>();
-			Map<String, String[]> linkMap = new HashMap<String, String[]>();
+			Map<String, Module> moduleNameMap = new HashMap<String, Module>();
+			Map<String, List<String>> relatedNameMap = new HashMap<String, List<String>>();
 
 			WorkflowContext context = new WorkflowContext();
 			context.setProcessId(processId);
 			
-			JSONArray moduleArray = Json.catchJSONArray(contentObject, "modules");
-			Iterator<JSONObject> moduleIterator = moduleArray.iterator();
-			while (moduleIterator.hasNext()) {
-				JSONObject moduleObject = moduleIterator.next();
-				String name = Json.catchString(moduleObject, "name");
-				String clazz = Json.catchString(moduleObject, "clazz");
-				String[] tos = Json.catchStrings(moduleObject, "tos");
+			List<Map<String, Object>> moduleMapList = (List<Map<String, Object>>) contentMap.get("modules");
+			for (Map<String, Object> moduleMap : moduleMapList) {
+				String name = (String)moduleMap.get("name");
+				String clazz = (String)moduleMap.get("clazz");
+				List<String> tos = (List<String>)moduleMap.get("tos");
 				if (name != null && clazz != null) {
 					Class classType = Class.forName(clazz);
 					Object object = classType.newInstance();
@@ -125,7 +113,7 @@ public class Workflow {
 							classType = classType.getSuperclass();
 						}
 						for (Field field : fields) {
-							Object value = moduleObject.get(field.getName());
+							Object value = moduleMap.get(field.getName());
 							if (value != null && !(value instanceof JSONNull)) {
 								field.setAccessible(true);
 								field.set(object, value);
@@ -140,18 +128,18 @@ public class Workflow {
 						module.setPrevModules(new ArrayList<Module>());
 						module.setNextModules(new ArrayList<Module>());
 
-						moduleMap.put(name, module);
+						moduleNameMap.put(name, module);
 						if (tos != null)
-							linkMap.put(name, tos);
+							relatedNameMap.put(name, tos);
 					}
 				}
 			}
-			for (String moduleName : linkMap.keySet()) {
-				Module module = moduleMap.get(moduleName);
-				String[] tos = linkMap.get(moduleName);
+			for (String moduleName : relatedNameMap.keySet()) {
+				Module module = moduleNameMap.get(moduleName);
+				List<String> tos = relatedNameMap.get(moduleName);
 				List<Module> nexts = new ArrayList<Module>();
 				for (String to : tos) {
-					Module next = moduleMap.get(to);
+					Module next = moduleNameMap.get(to);
 					if (next != null) {
 						nexts.add(next);
 						next.getPrevModules().add(module);
@@ -167,7 +155,10 @@ public class Workflow {
 						return 0;
 					}
 				});
-				return new Workflow(context, workname, beginModule, modules);
+				Workflow workflow = new Workflow(context, beginModule, modules);
+				workflow.setProcess(process);
+				context.setWorkflow(workflow);
+				return workflow;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -186,6 +177,96 @@ public class Workflow {
 			for (Module prev : m2.getPrevModules())
 				return prev == m1 ? true : prevExist(m1, prev);
 		return false;
+	}
+
+	public WfProcess getProcess() {
+		return process;
+	}
+
+	public void setProcess(WfProcess process) {
+		this.process = process;
+		processId = process.getLong("id");
+		processName = process.getStr("name");
+		processContent = process.getStr("content");
+		context.setProcessId(processId);
+		context.setProcessName(processName);
+		context.setProcessContent(processContent);
+	}
+
+	public Long getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(Long processId) {
+		this.processId = processId;
+	}
+
+	public String getProcessName() {
+		return processName;
+	}
+
+	public void setProcessName(String processName) {
+		this.processName = processName;
+	}
+
+	public String getProcessContent() {
+		return processContent;
+	}
+
+	public void setProcessContent(String processContent) {
+		this.processContent = processContent;
+	}
+
+	public WfInstance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(WfInstance instance) {
+		this.instance = instance;
+		instanceId = instance.getLong("id");
+		instanceParam = instance.getStr("param");
+		context.setInstanceId(instanceId);
+		context.setInstanceParam(instanceParam);
+	}
+
+	public Long getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(Long instanceId) {
+		this.instanceId = instanceId;
+	}
+
+	public String getInstanceParam() {
+		return instanceParam;
+	}
+
+	public void setInstanceParam(String instanceParam) {
+		this.instanceParam = instanceParam;
+	}
+
+	public WorkflowContext getContext() {
+		return context;
+	}
+
+	public void setContext(WorkflowContext context) {
+		this.context = context;
+	}
+
+	public Module getBeginModule() {
+		return beginModule;
+	}
+
+	public void setBeginModule(Module beginModule) {
+		this.beginModule = beginModule;
+	}
+
+	public List<Module> getModules() {
+		return modules;
+	}
+
+	public void setModules(List<Module> modules) {
+		this.modules = modules;
 	}
 	
 }

@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import service.SnakerService;
+import util.Json;
 
 import com.jfinal.core.Controller;
 import com.jfinal.kit.JsonKit;
 
+import engine.ModuleData;
 import engine.Workflow;
+import engine.model.WfRecord;
 import engine.module.Module;
 
 /*
@@ -42,7 +45,8 @@ public class WorkflowController extends Controller {
 
 		if (notBlank(processId)) {
 			Workflow workflow = snakerService.getWorkflow(processId, instanceId);
-			dataMap.put("name", workflow.getName());
+			setAttr("processId", workflow.getProcessId());
+			setAttr("processName", workflow.getProcessName());
 			List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
 			for (Module module : workflow.getModules()) {
 				if (notBlank(module.getController())) {
@@ -60,10 +64,9 @@ public class WorkflowController extends Controller {
 					views.add(view);
 				}
 			}
-			dataMap.put("views", views);
+			setAttr("views", JsonKit.toJson(views));
 		}
 
-		setAttr("workflow", JsonKit.toJson(dataMap));
 		render("/workflow/all.html");
 	}
 	
@@ -77,10 +80,36 @@ public class WorkflowController extends Controller {
 		String param = getPara("param");
 
 		dataMap.put("success", false);
-		if (blank(processId))
-			dataMap.put("success", snakerService.runWorkflow(processId, param));
-
+		if (notBlank(processId)) {
+			Workflow workflow = snakerService.runWorkflow(processId, param);
+			if (workflow != null) {
+				dataMap.put("success", true);
+				dataMap.put("instanceId", workflow.getInstanceId());
+			}
+		}
 		renderJson(dataMap);
 	}
 
+	/**
+	 * 运行输出日志
+	 * process 流程主键
+	 * instance 实例参数
+	 * record 记录主键
+	 * module 模型名称
+	 */
+	public void record() {
+		Long processId = getParaToLong("process");
+		Long instanceId = getParaToLong("instance");
+		Long recordId = getParaToLong("record");
+		String module = getPara("module");
+
+		ModuleData moduleData = new ModuleData();
+		List<WfRecord> records = WfRecord.dao.find("select * from wf_record where instance_id=? and module=?", instanceId, module);
+		for (WfRecord record : records) {
+			List<Map<String, Object>> rows = (List<Map<String, Object>>) Json.parseToList(record.getStr("rows"));
+			moduleData.addAll(rows);
+		}
+		renderJson(Json.toString(moduleData));
+	}
+	
 }

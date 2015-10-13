@@ -3,17 +3,37 @@
 	<div id="flow-all-tabs" class="easyui-tabs" data-options="region:'center'"></div>
 </div>
 <script type="text/javascript">
-	$.render(function() {
+	$.render(function(tab) {
+		var processId = ${processId};
+		var processName = '${processName}';
+		var views = ${views};
+		
+		tab.data('processId', processId);
+		tab.data('processName', processName);
+		tab.data('views', views);
+
 		var $flowAllTabs = $('#flow-all-tabs');
-		var workflow = ${workflow};
-		for (var i = 0; i < workflow.views.length; i ++) {
-			var view = workflow.views[i];
+		tab.data('$flowAllTabs', $flowAllTabs);
+		$flowAllTabs.tabs({
+			onSelect: function(title, index) {
+				var selectedTab = $flowAllTabs.tabs('getTab', index);
+				var doAction = selectedTab.data('doAction');
+				if (doAction) {
+					doAction();
+				}
+			}
+		});
+		for (var i = 0; i < views.length; i ++) {
+			var view = views[i];
 			var tab = $flowAllTabs.tabs('add', {
 				title: view.name,
 				href: '${ctx}/' + view.form,
+				queryParams: {
+					process: processId
+				},
 				onLoad: function() {
 					$.parser.parse(tab);
-					$.doRender(tab);
+					$.doRender(tab.tabs('getSelected'));
 				}
 			});
 		}

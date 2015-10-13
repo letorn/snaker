@@ -43,8 +43,8 @@ var Designer = {
 				clazz: 'engine.module.TableInputModule',
 				view: 'module/basiclog',
 				name: '表格输入',
-				dataHeaders: '[]',
-				dataRows: '[]'
+				dataHeaders: [],
+				dataRows: []
 			}
 		},
 		tablemapper: {
@@ -59,8 +59,8 @@ var Designer = {
 				clazz: 'engine.module.TableMapperModule',
 				view: 'module/basiclog',
 				name: '表格映射',
-				dataHeaders: '[]',
-				dataMappers: '[]'
+				dataHeaders: [],
+				dataMappers: []
 			}
 		}
 	}

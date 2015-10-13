@@ -15,3 +15,14 @@ create table if not exists wf_instance(
 	update_date datetime,
 	create_date datetime
 );
+
+-- drop table if exists wf_record;
+create table if not exists wf_record(
+	id bigint primary key auto_increment,
+	process_id bigint,
+	instance_id bigint,
+	module varchar(50),
+	headers text,
+	outputs text,
+	create_date datetime
+);

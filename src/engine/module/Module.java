@@ -1,10 +1,17 @@
 package engine.module;
+
 import static util.Validator.blank;
+import static util.Validator.notBlank;
 
 import java.util.List;
 
+import util.Json;
+
+import com.jfinal.kit.JsonKit;
+
 import engine.ModuleData;
 import engine.WorkflowContext;
+import engine.model.WfRecord;
 
 /*
  * 流程模型
@@ -39,6 +46,14 @@ public abstract class Module {
 		if (blank(inputs))
 			inputs = new ModuleData();
 		ModuleData outputs = execute(inputs);
+		if (notBlank(view)) {
+			new WfRecord().set("process_id", context.getProcessId())
+							.set("instance_id", context.getInstanceId())
+							.set("module", name)
+							.set("headers", JsonKit.toJson(outputs.getHeaders()))
+							.set("rows", JsonKit.toJson(outputs.getRows()))
+							.save();
+		}
 		for (Module module : nextModules) {
 			module.autoRun(outputs);
 		}
@@ -52,6 +67,14 @@ public abstract class Module {
 		this.inputs = inputs;
 		if (autoRun) {
 			ModuleData outputs = execute(inputs);
+			if (notBlank(view)) {
+				new WfRecord().set("process_id", context.getProcessId())
+								.set("instance_id", context.getInstanceId())
+								.set("module", name)
+								.set("headers", Json.toString(outputs.getHeaders()))
+								.set("rows", Json.toString(outputs.getRows()))
+								.save();
+			}
 			for (Module module : nextModules) {
 				module.autoRun(outputs);
 			}

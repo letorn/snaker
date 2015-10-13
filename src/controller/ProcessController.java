@@ -108,12 +108,10 @@ public class ProcessController extends Controller{
 	public void designer() {
 		Long processId = getParaToLong();
 
-		setAttr("success", false);
+		setAttr("process", processId);
 		if (notBlank(processId)) {
 			WfProcess process = snakerService.getProcess(processId);
 			if (notBlank(process)) {
-				setAttr("success", true);
-				setAttr("process", process.getLong("id"));
 				setAttr("content", process.getStr("content"));
 			}
 		}

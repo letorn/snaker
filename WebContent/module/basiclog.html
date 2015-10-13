@@ -1,8 +1,25 @@
-<div class="easyui-layout" data-options="fit:true">
-	结束了...
+<div data-options="fit:true">
+	<table id="module-basiclog-table" class="easyui-datagrid" data-options="toolbar:'#module-basiclog-table-toolbar'"></table>
+	<div id="module-basiclog-table-toolbar">
+		<a id="module-basiclog-table-reload" class="easyui-linkbutton">刷新</a>
+	</div>
 </div>
 <script type="text/javascript">
-	$.render(function() {
-
+	$.render(function(tab) {
+		$('#module-basiclog-table-reload').click(function() {
+			var content = Content.getSelected();
+			var $flowAllTabs = content.data('$flowAllTabs');
+			var selectedTab = $flowAllTabs.tabs('getSelected');
+			$.getJSON('/snaker/workflow/record', {
+				instance: Content.getSelected().data('instanceId'),
+				module: selectedTab.panel('options').tab.text()
+			}, function(resp) {
+				console.log(resp);
+				$('#module-basiclog-table').datagrid({
+					columns: [resp.headers.map(function(row) {return {title: row.name, field: row.name, width: 100}})],
+					data: resp.rows
+				});
+			});
+		});
 	});
 </script>

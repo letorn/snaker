@@ -8,6 +8,8 @@
 		$('#module-begin-run').click(function() {
 			$.getJSON('${ctx}/workflow/run', {process: ${process}, param: ''}, function(resp) {
 				if (resp.success) {
+					var tab = Content.getSelected();
+					tab.data('instanceId', resp.instanceId);
 					$.messager.show({
 						title: '提示',
 						msg: '运行成功！',

@@ -17,7 +17,9 @@ import controller.IndexController;
 import controller.ModuleController;
 import controller.ProcessController;
 import controller.WorkflowController;
+import engine.model.WfInstance;
 import engine.model.WfProcess;
+import engine.model.WfRecord;
 
 /*
  * jfinal配置类
@@ -67,6 +69,8 @@ public class AppConfig extends JFinalConfig {
 		// 配置ActiveRecord插件
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(c3p0Plugin);
 		arp.addMapping("wf_process", WfProcess.class);
+		arp.addMapping("wf_instance", WfInstance.class);
+		arp.addMapping("wf_record", WfRecord.class);
 		me.add(arp);
 	}
 

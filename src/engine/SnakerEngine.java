@@ -85,11 +85,12 @@ public class SnakerEngine {
 	 * @param param 实例参数
 	 * @return 是否运行成功
 	 */
-	public boolean runWorkflow(Long processId, String param) {
+	public Workflow runWorkflow(Long processId, String param) {
 		Workflow workflow = Workflow.create(processId);
 		if (notBlank(workflow))
-			return workflow.run(param);
-		return false;
+			if (workflow.run(param))
+				return workflow;
+		return null;
 	}
 	
 	/**
