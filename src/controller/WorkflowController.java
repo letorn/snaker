@@ -45,11 +45,20 @@ public class WorkflowController extends Controller {
 			dataMap.put("name", workflow.getName());
 			List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
 			for (Module module : workflow.getModules()) {
-				Map<String, Object> view = new HashMap<String, Object>();
-				view.put("mtype", module.getMtype());
-				view.put("name", module.getName());
-				view.put("controller", module.getController());
-				views.add(view);
+				if (notBlank(module.getController())) {
+					Map<String, Object> view = new HashMap<String, Object>();
+					view.put("mtype", module.getMtype());
+					view.put("name", module.getName());
+					view.put("form", module.getController());
+					views.add(view);
+				}
+				if (notBlank(module.getView())) {
+					Map<String, Object> view = new HashMap<String, Object>();
+					view.put("mtype", module.getMtype());
+					view.put("name", module.getName());
+					view.put("form", module.getView());
+					views.add(view);
+				}
 			}
 			dataMap.put("views", views);
 		}

@@ -18,8 +18,8 @@ import engine.ModuleData.DataHeader;
 @SuppressWarnings("unchecked")
 public class TableMapperModule extends Module {
 
-	private String dataHeaders;
-	private String dataMappers;
+	private JSONArray dataHeaders;
+	private JSONArray dataMappers;
 	
 	private Map<String, Map<Object, Object>> mapper = new HashMap<String, Map<Object,Object>>();
 	
@@ -29,10 +29,8 @@ public class TableMapperModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-		JSONArray jsonHeaders = JSONArray.fromObject(dataHeaders);
-		JSONArray jsonMappers = JSONArray.fromObject(dataMappers);
-		Iterator<JSONObject> headerIterator = jsonHeaders.iterator();
-		Iterator<JSONArray> mapperIterator = jsonMappers.iterator();
+		Iterator<JSONObject> headerIterator = dataHeaders.iterator();
+		Iterator<JSONArray> mapperIterator = dataMappers.iterator();
 		while (headerIterator.hasNext() && mapperIterator.hasNext()) {
 			JSONObject jsonHeader = headerIterator.next();
 			JSONArray jsonMps = mapperIterator.next();

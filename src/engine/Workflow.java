@@ -161,8 +161,10 @@ public class Workflow {
 			}
 			if (notBlank(workname) && notBlank(beginModule) && notBlank(modules)) {
 				Collections.sort(modules, new Comparator<Module>() {
-					public int compare(Map<String, String> map1, Map<String, String> map2) {
-						return map1.get("code").compareTo(map2.get("code"));
+					public int compare(Module m1, Module m2) {
+						if (prevExist(m1, m2)) 
+							return -1;
+						return 0;
 					}
 				});
 				return new Workflow(context, workname, beginModule, modules);
@@ -171,6 +173,19 @@ public class Workflow {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	/**
+	 * 判断模型m1是否是m2之前
+	 * @param m1 模型1
+	 * @param m2 模式2
+	 * @return 是否在m2之前
+	 */
+	private static boolean prevExist(Module m1, Module m2) {
+		if (m2.getPrevModules().size() > 0)
+			for (Module prev : m2.getPrevModules())
+				return prev == m1 ? true : prevExist(m1, prev);
+		return false;
 	}
 	
 }

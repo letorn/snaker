@@ -11,6 +11,10 @@ public class ModuleController extends Controller{
 	 * 开始
 	 */
 	public void begin() {
+		Long processId = getParaToLong("process");
+		
+		setAttr("process", processId);
+		
 		render("/module/begin.html");
 	}
 
@@ -18,6 +22,9 @@ public class ModuleController extends Controller{
 	 * 结束
 	 */
 	public void end() {
+		Long processId = getParaToLong("process");
+		
+		setAttr("process", processId);
 		render("/module/end.html");
 	}
 	
@@ -25,7 +32,20 @@ public class ModuleController extends Controller{
 	 * 表数据录入
 	 */
 	public void tableinput() {
+		Long processId = getParaToLong("process");
+		
+		setAttr("process", processId);
 		render("/module/tableinput.html");
+	}
+	
+	/**
+	 * 表数据录入
+	 */
+	public void basiclog() {
+		Long processId = getParaToLong("process");
+		
+		setAttr("process", processId);
+		render("/module/basiclog.html");
 	}
 	
 }

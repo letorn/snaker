@@ -22,6 +22,8 @@ public abstract class Module {
 	private String mtype;// 模型类型
 	private String name;// 模型名称
 	private String controller;// 模型界面
+	private String service;// 模型服务
+	private String view;// 模型视图
 	
 	/**
 	 * 模型执行方法体
@@ -110,6 +112,14 @@ public abstract class Module {
 
 	public void setController(String controller) {
 		this.controller = controller;
+	}
+
+	public String getView() {
+		return view;
+	}
+
+	public void setView(String view) {
+		this.view = view;
 	}
 
 }

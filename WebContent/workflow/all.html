@@ -8,16 +8,14 @@
 		var workflow = ${workflow};
 		for (var i = 0; i < workflow.views.length; i ++) {
 			var view = workflow.views[i];
-			if (view.mtype != 'begin' && view.mtype != 'end') {
-				var tab = $flowAllTabs.tabs('add', {
-					title: view.name,
-					href: view.controller != undefined ? '${ctx}/' + view.controller : undefined,
-					onLoad: function() {
-						$.parser.parse(tab);
-						$.doRender(tab);
-					}
-				});
-			}
+			var tab = $flowAllTabs.tabs('add', {
+				title: view.name,
+				href: '${ctx}/' + view.form,
+				onLoad: function() {
+					$.parser.parse(tab);
+					$.doRender(tab);
+				}
+			});
 		}
 	});
 </script>

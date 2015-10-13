@@ -15,8 +15,8 @@ import engine.ModuleData;
 @SuppressWarnings("unchecked")
 public class TableInputModule extends Module {
 
-	private String dataHeaders;
-	private String dataRows;
+	private JSONArray dataHeaders;
+	private JSONArray dataRows;
 	
 	/**
 	 * 模型执行方法体
@@ -25,13 +25,12 @@ public class TableInputModule extends Module {
 	 */
 	
 	public ModuleData execute(ModuleData inputs) {
-		JSONArray jsonRows = JSONArray.fromObject(dataRows);
-		Iterator<JSONObject> rowIterator = jsonRows.iterator();
+		Iterator<JSONObject> rowIterator = dataRows.iterator();
 		while (rowIterator.hasNext()) {
-			JSONObject jsonRow = rowIterator.next();
+			JSONObject dataRow = rowIterator.next();
 			Map<String, Object> row = new HashMap<String, Object>();
-			for (Object key : jsonRow.keySet()) {
-				row.put(key.toString(), jsonRow.get(key));
+			for (Object key : dataRow.keySet()) {
+				row.put(key.toString(), dataRow.get(key));
 			}
 			inputs.add(row);
 		}
