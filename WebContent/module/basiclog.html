@@ -1,20 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>基础日志</title>
+<script type="text/javascript" src="${ctx}/common/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/icon.css">
+<script type="text/javascript" src="${ctx}/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${ctx}/common/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
 <div data-options="fit:true">
-	<table id="module-basiclog-table" class="easyui-datagrid" data-options="toolbar:'#module-basiclog-table-toolbar'"></table>
+	<table id="module-basiclog-table" class="easyui-datagrid" data-options="toolbar:'#module-basiclog-table-toolbar'" style="width:500px;height:500px"></table>
 	<div id="module-basiclog-table-toolbar">
 		<a id="module-basiclog-table-reload" class="easyui-linkbutton">刷新</a>
 	</div>
 </div>
 <script type="text/javascript">
-	$.render(function(tab) {
+	$(function() {
+		console.log($('#module-basiclog-table').width())
 		$('#module-basiclog-table-reload').click(function() {
-			var content = Content.getSelected();
-			var $flowAllTabs = content.data('$flowAllTabs');
-			var selectedTab = $flowAllTabs.tabs('getSelected');
 			$.getJSON('/snaker/workflow/record', {
-				instance: Content.getSelected().data('instanceId'),
-				module: selectedTab.panel('options').tab.text()
+				process: '${process}',
+				instance: '${instance}',
+				module: '${module}',
 			}, function(resp) {
-				console.log(resp);
 				$('#module-basiclog-table').datagrid({
 					columns: [resp.headers.map(function(row) {return {title: row.name, field: row.name, width: 100}})],
 					data: resp.rows
@@ -23,3 +33,5 @@
 		});
 	});
 </script>
+</body>
+</html>

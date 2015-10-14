@@ -2,6 +2,7 @@ package engine;
 
 import static util.Validator.notBlank;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,20 @@ import engine.model.WfProcess;
  */
 public class SnakerEngine {
 
+	private static List<Workflow> workflows = new ArrayList<Workflow>();
+	
+	static {
+		/*
+		 * 加载已经存在的流程实例
+		 */
+		List<WfInstance> instances = WfInstance.dao.find("select * from wf_instance");
+		for (WfInstance instance : instances) {
+			Workflow workflow = Workflow.create(instance.getLong("process_id"));
+			workflow.setInstance(instance);
+			workflows.add(workflow);
+		}
+	}
+	
 	/**
 	 * 获取工作流程
 	 * @param processId 流程主键
@@ -87,23 +102,44 @@ public class SnakerEngine {
 	 */
 	public Workflow runWorkflow(Long processId, String param) {
 		Workflow workflow = Workflow.create(processId);
-		if (notBlank(workflow))
-			if (workflow.run(param))
+		if (notBlank(workflow)) {
+			if (workflow.run(param)) {
+				workflows.add(workflow);
 				return workflow;
+			}
+		}
 		return null;
+	}
+	
+	/**
+	 * 创建工作流
+	 * @param processId 流程主键
+	 * @return 工作流
+	 */
+	public Workflow createWorkflow(Long processId) {
+		return Workflow.create(processId);
 	}
 	
 	/**
 	 * 获取工作流
 	 * @param processId 流程主键
 	 * @param instanceId 实例主键
-	 * @return
+	 * @return 工作流
 	 */
 	public Workflow getWorkflow(Long processId, Long instanceId) {
-		if (notBlank(instanceId)) 
-			return Workflow.get(processId, instanceId);
-		else
-			return Workflow.create(processId);
+		for (Workflow workflow : workflows) {
+			if (workflow.getInstanceId().equals(instanceId))
+				return workflow;
+		}
+		return null;
+	}
+	
+	/**
+	 * 查询工作流实例
+	 * @return 工作流实例列表
+	 */
+	public List<Workflow> findWorkflow() {
+		return workflows;
 	}
 	
 }

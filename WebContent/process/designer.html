@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Snaker</title>
+<title>流程设计</title>
 <script type="text/javascript" src="${ctx}/common/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/icon.css">
@@ -21,6 +21,7 @@
 				<p class="precess-designer-toolbox-citem" data-mtype="begin" style="width:50px;height:20px;line-height:20px;background:#fafafa">开始</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="end" style="width:50px;height:20px;line-height:20px;background:#fafafa">结束</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="tableinput" style="width:50px;height:20px;line-height:20px;background:#fafafa">表格输入</p>
+				<p class="precess-designer-toolbox-citem" data-mtype="webinput" style="width:50px;height:20px;line-height:20px;background:#fafafa">页面输入</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="tablemapper" style="width:50px;height:20px;line-height:20px;background:#fafafa">表格映射</p>
 			</div>
 		</div>
@@ -88,6 +89,25 @@
 <div id="module-tableinput-editor-data-mappers-footer" style="padding:5px;">
 	<a id="module-tableinput-editor-data-mappers-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="module-tableinput-editor-data-mappers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+
+<div id="module-tableinput-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-tableinput-editor-data-paths-footer'" style="width:600px;height:500px">
+	<table id="module-tableinput-editor-data-paths-table" class="easyui-datagrid" data-options="toolbar:'#module-tableinput-editor-data-paths-toolbar'">
+		<thead>
+			<tr>
+				<th data-options="field:'name',width:100,editor:{type:'textbox'}">名称</th>
+				<th data-options="field:'xpath',width:100,editor:{type:'textbox'}">XPath</th>
+				<th data-options="field:'regex',width:100,editor:{type:'textbox'}">Regex</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="module-tableinput-editor-data-paths-toolbar">
+		<a id="module-tableinput-editor-data-paths-add" class="easyui-linkbutton">新增</a>
+	</div>
+</div>
+<div id="module-tableinput-editor-data-paths-footer" style="padding:5px;">
+	<a id="module-tableinput-editor-data-paths-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-tableinput-editor-data-paths-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 <script type="text/javascript">
 	$(function() {
@@ -190,7 +210,7 @@
 				});
 				if (!_this._initEvent) {
 					_this.$btnAdd.click(function() {
-						_this.$table.datagrid('appendRow',{type: 'string'});
+						_this.$table.datagrid('appendRow',{});
 					});
 					_this.$btnConfirm.click(function() {
 						if (_this.endEditing()) {
@@ -265,7 +285,7 @@
 						}
 					});
 					_this.$btnAdd.click(function() {
-						_this.$table.datagrid('appendRow',{type: 'string'});
+						_this.$table.datagrid('appendRow',{from: '', to: ''});
 					});
 					_this.$btnConfirm.click(function() {
 						if (_this.endEditing()) {
@@ -289,6 +309,65 @@
 				editor.dataMappers.$window.window('open', true);
 			}
 		}
+		
+		editor.dataPaths = {
+				$window: $('#module-tableinput-editor-data-paths'),
+				$table: $('#module-tableinput-editor-data-paths-table'),
+				$btnAdd: $('#module-tableinput-editor-data-paths-add'),
+				$btnConfirm: $('#module-tableinput-editor-data-paths-confirm'),
+				$btnCancel: $('#module-tableinput-editor-data-paths-cancel'),
+				endEditing: function() {
+					var _this = editor.dataPaths;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				init: function(index, row) {
+					var _this = editor.dataPaths;
+					if (!_this._initEvent) {
+						_this.$table.datagrid({
+							onClickCell: function(index, field) {
+								if (index != _this.lastEditingIndex) {
+									if (_this.endEditing()) {
+										_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+										var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+						                if (editor){
+						                    ($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+						                }
+						                _this.lastEditingIndex = index;
+									} else {
+										_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+									}
+								}
+							}
+						});
+						_this.$btnAdd.click(function() {
+							_this.$table.datagrid('appendRow',{name: '', xpath: '', regex: ''});
+						});
+						_this.$btnConfirm.click(function() {
+							if (_this.endEditing()) {
+								row.value = _this.$table.datagrid('getRows');
+								Designer.PropBox.updateValue(index, row, true);
+								_this.$window.window('close', true);
+							}
+						});
+						_this.$btnCancel.click(function() {
+							_this.$window.window('close', true);
+						});
+						_this._initEvent = true;
+					}
+				},
+				setValue: function(value) {
+					editor.dataPaths.$table.datagrid('loadData', value);
+				},
+				show: function() {
+					editor.dataPaths.$window.window('open', true);
+				}
+			}
 		
 		Designer.init(
 			'process-designer-tabs', 'process-designer-tabs-canvas', 'process-designer-tabs-content', 
@@ -321,6 +400,11 @@
 				}
 			});
 		});
+		
+		var content = '${content?if_exists}';
+		if (content.length > 0) {
+			Designer.setData(JSON.parse(content));
+		}
 	});
 </script>
 </body>

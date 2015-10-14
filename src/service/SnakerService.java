@@ -84,6 +84,21 @@ public class SnakerService {
 		return engine.getInstance(instanceId);
 	}
 	
+	/**
+	 * 创建工作流
+	 * @param processId 流程主键
+	 * @return 工作流
+	 */
+	public Workflow createWorkflow(Long processId) {
+		return engine.createWorkflow(processId);
+	}
+	
+	/**
+	 * 获取工作流
+	 * @param processId 流程主键
+	 * @param instanceId 实例主键
+	 * @return 工作流
+	 */
 	public Workflow getWorkflow(Long processId, Long instanceId) {
 		return engine.getWorkflow(processId, instanceId);
 	}
@@ -96,6 +111,14 @@ public class SnakerService {
 	 */
 	public Workflow runWorkflow(Long processId, String param) {
 		return engine.runWorkflow(processId, param);
+	}
+	
+	/**
+	 * 查询工作流实例
+	 * @return 工作流实例列表
+	 */
+	public List<Workflow> findWorkflow() {
+		return engine.findWorkflow();
 	}
 	
 }

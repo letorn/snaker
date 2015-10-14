@@ -12,9 +12,13 @@ public class ModuleController extends Controller{
 	 */
 	public void begin() {
 		Long processId = getParaToLong("process");
-		
+		Long instanceId = getParaToLong("instance");
+		String moduleName = getPara("module");
+
 		setAttr("process", processId);
-		
+		setAttr("instance", instanceId);
+		setAttr("module", moduleName);
+
 		render("/module/begin.html");
 	}
 
@@ -23,8 +27,13 @@ public class ModuleController extends Controller{
 	 */
 	public void end() {
 		Long processId = getParaToLong("process");
-		
+		Long instanceId = getParaToLong("instance");
+		String moduleName = getPara("module");
+
 		setAttr("process", processId);
+		setAttr("instance", instanceId);
+		setAttr("module", moduleName);
+
 		render("/module/end.html");
 	}
 	
@@ -33,8 +42,13 @@ public class ModuleController extends Controller{
 	 */
 	public void tableinput() {
 		Long processId = getParaToLong("process");
-		
+		Long instanceId = getParaToLong("instance");
+		String moduleName = getPara("module");
+
 		setAttr("process", processId);
+		setAttr("instance", instanceId);
+		setAttr("module", moduleName);
+
 		render("/module/tableinput.html");
 	}
 	
@@ -43,8 +57,13 @@ public class ModuleController extends Controller{
 	 */
 	public void basiclog() {
 		Long processId = getParaToLong("process");
-		
+		Long instanceId = getParaToLong("instance");
+		String moduleName = getPara("module");
+
 		setAttr("process", processId);
+		setAttr("instance", instanceId);
+		setAttr("module", moduleName);
+
 		render("/module/basiclog.html");
 	}
 	

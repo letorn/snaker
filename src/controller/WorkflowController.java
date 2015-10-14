@@ -1,6 +1,5 @@
 package controller;
 
-import static util.Validator.blank;
 import static util.Validator.notBlank;
 
 import java.util.ArrayList;
@@ -43,10 +42,12 @@ public class WorkflowController extends Controller {
 		Long processId = getParaToLong("process");
 		Long instanceId = getParaToLong("instance");
 
-		if (notBlank(processId)) {
+		if (notBlank(processId) && notBlank(instanceId)) {
 			Workflow workflow = snakerService.getWorkflow(processId, instanceId);
-			setAttr("processId", workflow.getProcessId());
+			setAttr("process", workflow.getProcessId());
 			setAttr("processName", workflow.getProcessName());
+			setAttr("instance", workflow.getInstanceId());
+			setAttr("instanceParam", workflow.getInstanceParam());
 			List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
 			for (Module module : workflow.getModules()) {
 				if (notBlank(module.getController())) {
@@ -56,11 +57,11 @@ public class WorkflowController extends Controller {
 					view.put("form", module.getController());
 					views.add(view);
 				}
-				if (notBlank(module.getView())) {
+				if (module.isDoRecord() && notBlank(module.getRecordView())) {
 					Map<String, Object> view = new HashMap<String, Object>();
 					view.put("mtype", module.getMtype());
 					view.put("name", module.getName());
-					view.put("form", module.getView());
+					view.put("form", module.getRecordView());
 					views.add(view);
 				}
 			}
@@ -76,20 +77,33 @@ public class WorkflowController extends Controller {
 	 * param 实例参数
 	 */
 	public void run() {
-		Long processId = getParaToLong("process");
-		String param = getPara("param");
+		Long processId = getParaToLong();
 
 		dataMap.put("success", false);
 		if (notBlank(processId)) {
-			Workflow workflow = snakerService.runWorkflow(processId, param);
+			Workflow workflow = snakerService.runWorkflow(processId, "{}");
 			if (workflow != null) {
 				dataMap.put("success", true);
-				dataMap.put("instanceId", workflow.getInstanceId());
 			}
 		}
 		renderJson(dataMap);
 	}
 
+	/**
+	 * 获取工作流程实例
+	 */
+	public void list() {
+		List<Map<String, Object>> dataList = new ArrayList<Map<String,Object>>();
+		for (Workflow workflow : snakerService.findWorkflow()) {
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put("processId", workflow.getProcessId());
+			m.put("processName", workflow.getProcessName());
+			m.put("instanceId", workflow.getInstanceId());
+			dataList.add(m);
+		}
+		renderJson(dataList);
+	}
+	
 	/**
 	 * 运行输出日志
 	 * process 流程主键

@@ -1,4 +1,4 @@
-<table id="process-list-table" class="easyui-datagrid" data-options="url:'process/list',method:'get',rownumbers:true,toolbar:'#process-list-table-toolbar'">
+<table id="process-list-table" class="easyui-datagrid" data-options="rownumbers:true,toolbar:'#process-list-table-toolbar'">
 	<thead>
 		<tr>
 			<th data-options="field:'name',width:100">名称</th>
@@ -9,26 +9,18 @@
 </table>
 <div id="process-list-table-toolbar" style="padding: 2px 5px;">
 	<a id="process-list-table-init" class="easyui-linkbutton">初始化</a>
-	<a id="process-list-table-add" class="easyui-linkbutton">部署</a>
 	<a id="process-list-table-designer" class="easyui-linkbutton">设计</a>
 	<input id="process-list-table-search" class="easyui-searchbox" data-options="prompt:'流程显示名称'" style="width:200px"></input>
 </div>
-<form id="process-list-editwin" action="process/save" method="post" class="easyui-window" data-options="title:'编辑',modal:true,closed:true,iconCls:'icon-save'" style="width: 500px; height: 500px; padding: 10px;">
-	<input type="hidden" name="process" />
-	<input class="easyui-textbox" data-options="multiline:true" style="width:100%;height:400px" name="content">
-	<a id="process-list-editwin-save" class="easyui-linkbutton" style="width:80px">保存</a>
-	<a id="process-list-editwin-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
-</form>
 <script type="text/javascript">
 	function processListTableActionFormatter(value, row) {
 		return '<a class="process-list-table-start" data-process="' + value + '" data-text="' + row.name + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
 				'<a class="process-list-table-design" data-process="' + value + '" style="cursor:pointer;color:blue">设计</a>&nbsp;&nbsp;' + 
-				'<a class="process-list-table-edit" data-process="' + value + '" style="cursor:pointer;color:blue">编辑</a>&nbsp;&nbsp;' + 
 				'<a class="process-list-table-delete" data-process="' + value + '" style="cursor:pointer;color:blue">删除</a>';
 	}
 
 	$.render(function() {
-		var $processListTable = $('#process-list-table'), $processListEditWindow = $('#process-list-editwin');
+		var $processListTable = $('#process-list-table');
 		
 		$('#process-list-table-init').click(function() {
 			$.getJSON('process/init', function(data) {
@@ -51,11 +43,6 @@
 			});
 		});
 		
-		$('#process-list-table-add').click(function() {
-			$processListEditWindow.form('clear');
-			$processListEditWindow.window('open');
-		});
-		
 		$('#process-list-table-designer').click(function() {
 			window.open ('process/designer')
 		});
@@ -69,18 +56,31 @@
 		});
 		
 		$processListTable.datagrid({
+			url:'process/list',
+			method:'get',
 			onLoadSuccess: function() {
 				$('.process-list-table-start').click(function() {
-					Content.addTab($(this).data('text'), 'workflow/all?process=' + $(this).data('process'));
+					$.getJSON('workflow/run/' + $(this).data('process'), function(data) {
+						if (data.success) {
+							$.messager.show({
+								title: '提示',
+								msg: '启动成功，请到待办任务就查看！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+						} else {
+							$.messager.show({
+								title: '提示',
+								msg: '启动失败！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+						}
+					});
 				});
 				
 				$('.process-list-table-design').click(function() {
-					Content.addTab('流程设计', 'process/designer/' + $(this).data('process'), 'common/raphael-min.js;common/snaker.designer.js')
-				});
-				
-				$('.process-list-table-edit').click(function() {
-					$processListEditWindow.form('load', 'process/edit/' + $(this).data('process'));
-					$processListEditWindow.window('open');
+					window.open ('process/designer/' + $(this).data('process'));
 				});
 				
 				$('.process-list-table-delete').click(function() {
@@ -104,29 +104,6 @@
 					});
 				});
 			}
-		});
-		
-		$('#process-list-editwin-save').click(function() {
-			$processListEditWindow.form('submit', {
-			    success: function(data) {
-			    	data = $.parseJSON(data);
-			    	if (data.success) {
-			    		$processListEditWindow.window('close');
-			    		$processListTable.datagrid('reload');
-			    	} else {
-			    		$.messager.show({
-							title: '提示',
-							msg: '保存失败！',
-							timeout: 1000,
-							showType: 'slide'
-						});
-			    	}
-			    }
-			});
-		});
-		
-		$('#process-list-editwin-cancel').click(function() {
-			$processListEditWindow.window('close');
 		});
 	});
 </script>

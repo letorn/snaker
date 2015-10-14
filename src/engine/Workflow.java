@@ -79,13 +79,22 @@ public class Workflow {
 	}
 	
 	/**
-	 * 
+	 * 创建工作流
 	 * @param processId 流程主键
 	 * @return 工作流
 	 */
 	public static Workflow create(Long processId) {
+		WfProcess process = WfProcess.dao.findById(processId);
+		return create(process);
+	}
+	
+	/**
+	 * 创建工作流
+	 * @param process 流程流程
+	 * @return 工作流
+	 */
+	public static Workflow create(WfProcess process) {
 		try {
-			WfProcess process = WfProcess.dao.findById(processId);
 			Map<String, Object> contentMap = Json.parseToMap(process.getStr("content"));
 
 			String workname = (String) contentMap.get("name");
@@ -96,7 +105,7 @@ public class Workflow {
 			Map<String, List<String>> relatedNameMap = new HashMap<String, List<String>>();
 
 			WorkflowContext context = new WorkflowContext();
-			context.setProcessId(processId);
+			context.setProcessId(process.getLong("id"));
 			
 			List<Map<String, Object>> moduleMapList = (List<Map<String, Object>>) contentMap.get("modules");
 			for (Map<String, Object> moduleMap : moduleMapList) {

@@ -1,15 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>开始</title>
+<script type="text/javascript" src="${ctx}/common/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/icon.css">
+<script type="text/javascript" src="${ctx}/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${ctx}/common/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
 <div class="easyui-layout" data-options="fit:true">
 	<div data-options="region:'center',split:false" style="height:50px">
 		<a id="module-begin-run" class="easyui-linkbutton" style="width:80px">运行</a>
 	</div>
 </div>
 <script type="text/javascript">
-	$.render(function() {
+	$(function() {
 		$('#module-begin-run').click(function() {
-			$.getJSON('${ctx}/workflow/run', {process: ${process}, param: ''}, function(resp) {
+			$.getJSON('${ctx}/workflow/run', {process: ${process}, param: '{}'}, function(resp) {
 				if (resp.success) {
-					var tab = Content.getSelected();
-					tab.data('instanceId', resp.instanceId);
 					$.messager.show({
 						title: '提示',
 						msg: '运行成功！',
@@ -28,3 +38,5 @@
 		});
 	});
 </script>
+</body>
+</html>

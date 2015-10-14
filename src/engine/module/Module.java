@@ -29,8 +29,8 @@ public abstract class Module {
 	private String mtype;// 模型类型
 	private String name;// 模型名称
 	private String controller;// 模型界面
-	private String service;// 模型服务
-	private String view;// 模型视图
+	private boolean doRecord = false;
+	private String recordView;// 模型视图
 	
 	/**
 	 * 模型执行方法体
@@ -46,7 +46,7 @@ public abstract class Module {
 		if (blank(inputs))
 			inputs = new ModuleData();
 		ModuleData outputs = execute(inputs);
-		if (notBlank(view)) {
+		if (doRecord) {
 			new WfRecord().set("process_id", context.getProcessId())
 							.set("instance_id", context.getInstanceId())
 							.set("module", name)
@@ -67,7 +67,7 @@ public abstract class Module {
 		this.inputs = inputs;
 		if (autoRun) {
 			ModuleData outputs = execute(inputs);
-			if (notBlank(view)) {
+			if (doRecord) {
 				new WfRecord().set("process_id", context.getProcessId())
 								.set("instance_id", context.getInstanceId())
 								.set("module", name)
@@ -137,12 +137,20 @@ public abstract class Module {
 		this.controller = controller;
 	}
 
-	public String getView() {
-		return view;
+	public boolean isDoRecord() {
+		return doRecord;
 	}
 
-	public void setView(String view) {
-		this.view = view;
+	public void setDoRecord(boolean doRecord) {
+		this.doRecord = doRecord;
+	}
+
+	public String getRecordView() {
+		return recordView;
+	}
+
+	public void setRecordView(String recordView) {
+		this.recordView = recordView;
 	}
 
 }

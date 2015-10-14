@@ -41,10 +41,27 @@ var Designer = {
 			pdata: {
 				node: true,
 				clazz: 'engine.module.TableInputModule',
-				view: 'module/basiclog',
+				doRecord: true,
+				recordView: 'module/basiclog',
 				name: '表格输入',
 				dataHeaders: [],
 				dataRows: []
+			}
+		},
+		webinput: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.WebInputModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: '页面输入',
+				dataPaths: []
 			}
 		},
 		tablemapper: {
@@ -57,7 +74,8 @@ var Designer = {
 			pdata: {
 				node: true,
 				clazz: 'engine.module.TableMapperModule',
-				view: 'module/basiclog',
+				doRecord: true,
+				recordView: 'module/basiclog',
 				name: '表格映射',
 				dataHeaders: [],
 				dataMappers: []

@@ -35,11 +35,6 @@
       <artifactId>jfinal</artifactId>
       <version>2.0</version>
     </dependency>
-    <!-- <dependency>
-      <groupId>com.jfinal</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>8.1.8</version>
-    </dependency> -->
 
     <!-- c3p0 -->
     <dependency>
@@ -69,11 +64,24 @@
       <version>2.3.23</version>
     </dependency>
     
+    <!-- 解释json -->
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <version>2.4</version>
       <classifier>jdk15</classifier>
+    </dependency>
+    
+    <!-- webmagic爬虫 -->
+    <dependency>
+      <groupId>us.codecraft</groupId>
+      <artifactId>webmagic-core</artifactId>
+      <version>0.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>us.codecraft</groupId>
+      <artifactId>webmagic-extension</artifactId>
+      <version>0.5.2</version>
     </dependency>
   </dependencies>
 </project>
