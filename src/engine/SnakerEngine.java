@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.jfinal.plugin.activerecord.Db;
+
 import net.sf.json.JSONObject;
 import engine.model.WfInstance;
 import engine.model.WfProcess;
+import engine.model.WfRecord;
 
 /*
  * 工作流引擎
@@ -23,9 +26,12 @@ public class SnakerEngine {
 		 */
 		List<WfInstance> instances = WfInstance.dao.find("select * from wf_instance");
 		for (WfInstance instance : instances) {
-			Workflow workflow = Workflow.create(instance.getLong("process_id"));
-			workflow.setInstance(instance);
-			workflows.add(workflow);
+			WfProcess process = WfProcess.dao.findById(instance.getLong("process_id"));
+			if (notBlank(process)) {
+				Workflow workflow = Workflow.create(process);
+				workflow.setInstance(instance);
+				workflows.add(workflow);
+			}
 		}
 	}
 	
@@ -82,7 +88,12 @@ public class SnakerEngine {
 	 * @return 删除是否成功
 	 */
 	public boolean deleteProcess(Long processId) {
-		return WfProcess.dao.deleteById(processId);
+		if (WfProcess.dao.deleteById(processId)) {
+			Db.deleteById("wf_instance", "process_id", processId);
+			Db.deleteById("wf_record", "process_id", processId);
+			return true;
+		}
+		return false;
 	}
 	
 	/**

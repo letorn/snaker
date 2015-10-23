@@ -24,7 +24,12 @@ public class SnakerService {
 	 */
 	public boolean initFlows() {
 		try {
+			engine.addProcess(File.readFromClasspath("/flows/dbprocoutput-save_or_update_ent.snaker"));
+			engine.addProcess(File.readFromClasspath("/flows/dbprocoutput-save_or_update_post.snaker"));
+			engine.addProcess(File.readFromClasspath("/flows/dbtableoutput-db_enterprise.snaker"));
+			engine.addProcess(File.readFromClasspath("/flows/dbtableoutput-db_entpost.snaker"));
 			engine.addProcess(File.readFromClasspath("/flows/test.snaker"));
+//			engine.addProcess(File.readFromClasspath("/flows/webinput.snaker"));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

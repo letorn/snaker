@@ -1,5 +1,6 @@
 package controller;
 
+import static util.Validator.blank;
 import static util.Validator.notBlank;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import util.Json;
 
 import com.jfinal.core.Controller;
 import com.jfinal.kit.JsonKit;
+import com.jfinal.plugin.activerecord.Db;
 
 import engine.ModuleData;
 import engine.Workflow;
@@ -116,14 +118,35 @@ public class WorkflowController extends Controller {
 		Long instanceId = getParaToLong("instance");
 		Long recordId = getParaToLong("record");
 		String module = getPara("module");
+		Integer page = getParaToInt("page");
+		Boolean refresh = getParaToBoolean("refresh");
 
-		ModuleData moduleData = new ModuleData();
-		List<WfRecord> records = WfRecord.dao.find("select * from wf_record where instance_id=? and module=?", instanceId, module);
-		for (WfRecord record : records) {
-			List<Map<String, Object>> rows = (List<Map<String, Object>>) Json.parseToList(record.getStr("rows"));
-			moduleData.addAll(rows);
+		if (notBlank(instanceId) && notBlank(module)) {
+			if (blank(page) || page < 1)
+				page = 1;
+			if (blank(refresh))
+				refresh = true;
+			WfRecord record = WfRecord.dao.findFirst("select * from wf_record where instance_id=? and module=? limit ?,1", instanceId, module, page - 1);
+			List<Map<String, Object>> rows = Json.parseToList(record.getStr("rows"));
+			for (Map<String, Object> row : rows) {
+				for (String key : row.keySet()) {
+					Object value = row.get(key);
+					if (notBlank(value) && value instanceof String) {
+						String str = (String) value;
+						if (str.length() > 100) {
+							row.put(key, str.substring(1000) + "...");
+						}
+					}
+				}
+			}
+			dataMap.put("rows", Json.parseToList(record.getStr("rows")));
+			if (refresh) {
+				dataMap.put("headers", Json.parseToList(record.getStr("headers")));
+				dataMap.put("pageTotal", Db.queryLong("select count(*) from wf_record where instance_id=? and module=?", instanceId, module));
+			}
 		}
-		renderJson(Json.toString(moduleData));
+
+		renderJson(Json.toString(dataMap));
 	}
 	
 }

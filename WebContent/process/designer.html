@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>流程设计</title>
 <script type="text/javascript" src="${ctx}/common/jquery.min.js"></script>
+<script type="text/javascript" src="${ctx}/common/jquery.custom.js"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/icon.css">
 <script type="text/javascript" src="${ctx}/common/easyui/jquery.easyui.min.js"></script>
@@ -23,6 +24,9 @@
 				<p class="precess-designer-toolbox-citem" data-mtype="tableinput" style="width:50px;height:20px;line-height:20px;background:#fafafa">表格输入</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="webinput" style="width:50px;height:20px;line-height:20px;background:#fafafa">页面输入</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="tablemapper" style="width:50px;height:20px;line-height:20px;background:#fafafa">表格映射</p>
+				<p class="precess-designer-toolbox-citem" data-mtype="excelmapper" style="width:50px;height:20px;line-height:20px;background:#fafafa">Excel映射</p>
+				<p class="precess-designer-toolbox-citem" data-mtype="dbprocoutput" style="width:50px;height:20px;line-height:20px;background:#fafafa">存储过程输出</p>
+				<p class="precess-designer-toolbox-citem" data-mtype="dbtableoutput" style="width:50px;height:20px;line-height:20px;background:#fafafa">表输出</p>
 			</div>
 		</div>
 	</div>
@@ -30,10 +34,10 @@
 		<div id="process-designer-tabs-canvas" data-options="title:'画板'" style="position:absolute"></div>
 		<div id="process-designer-tabs-content" data-options="title:'内容'">{}</div>
 	</div>
-	<div data-options="region:'east',split:true,title:'履带'" style="width:180px">
+	<div data-options="region:'east',split:true,title:'属性'" style="width:300px">
 		<form id="process-designer-prop-form" style="height:50px">
 			<br />
-			名称：<input type="text" class="easyui-textbox" style="width:120px" name="name"></input>
+			名称：<input type="text" class="easyui-textbox" style="width:250px" name="name"></input>
 		</form>
 		<table id="process-designer-prop-box" class="easyui-propertygrid" data-options="columns:[[{field:'name',title:'名称'},{field:'value',title:'内容',width:100}]],fix:true"></table>
 	</div>
@@ -52,6 +56,7 @@
 	</table>
 	<div id="module-tableinput-editor-data-headers-toolbar">
 		<a id="module-tableinput-editor-data-headers-add" class="easyui-linkbutton">新增</a>
+		<a id="module-tableinput-editor-data-headers-remove" class="easyui-linkbutton">删除</a>
 	</div>
 </div>
 <div id="module-tableinput-editor-data-headers-footer" style="padding:5px;">
@@ -64,8 +69,12 @@
 	<table id="module-tableinput-editor-data-rows-table" class="easyui-datagrid" data-options="toolbar:'#module-tableinput-editor-data-rows-toolbar'"></table>
 	<div id="module-tableinput-editor-data-rows-toolbar">
 		<a id="module-tableinput-editor-data-rows-add" class="easyui-linkbutton">新增</a>
+		<a id="module-tableinput-editor-data-rows-remove" class="easyui-linkbutton">删除</a>
 	</div>
 </div>
+
+
+
 <div id="module-tableinput-editor-data-rows-footer" style="padding:5px;">
 	<a id="module-tableinput-editor-data-rows-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="module-tableinput-editor-data-rows-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
@@ -91,13 +100,14 @@
 	<a id="module-tableinput-editor-data-mappers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
-<div id="module-tableinput-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-tableinput-editor-data-paths-footer'" style="width:600px;height:500px">
+<div id="module-tableinput-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-tableinput-editor-data-paths-footer'" style="width:1500px;height:700px">
 	<table id="module-tableinput-editor-data-paths-table" class="easyui-datagrid" data-options="toolbar:'#module-tableinput-editor-data-paths-toolbar'">
 		<thead>
 			<tr>
-				<th data-options="field:'name',width:100,editor:{type:'textbox'}">名称</th>
-				<th data-options="field:'xpath',width:100,editor:{type:'textbox'}">XPath</th>
-				<th data-options="field:'regex',width:100,editor:{type:'textbox'}">Regex</th>
+				<th data-options="field:'name',width:200,editor:{type:'textbox'}">名称</th>
+				<th data-options="field:'xpath',width:550,editor:{type:'textbox'}">XPath</th>
+				<th data-options="field:'regex',width:550,editor:{type:'textbox'},formatter:$.encodeHtml">Regex</th>
+				<th data-options="field:'isAll',width:100,editor:{type:'textbox'}">isAll</th>
 			</tr>
 		</thead>
 	</table>
@@ -109,6 +119,21 @@
 	<a id="module-tableinput-editor-data-paths-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="module-tableinput-editor-data-paths-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
+
+<div id="module-tableinput-editor-proc-fields" class="easyui-window" data-options="title:'字段映射',modal:true,closed:true,footer:'#module-tableinput-editor-proc-fields-footer'" style="width:600px;height:500px">
+	<table id="module-tableinput-editor-proc-fields-table" class="easyui-datagrid">
+		<thead>
+			<tr>
+				<th data-options="field:'name',width:100">表字段</th>
+				<th data-options="field:'from',width:100,editor:{type:'textbox'}">映射字段</th>
+			</tr>
+		</thead>
+	</table>
+</div>
+<div id="module-tableinput-editor-proc-fields-footer" style="padding:5px;">
+	<a id="module-tableinput-editor-proc-fields-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-tableinput-editor-proc-fields-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
 <script type="text/javascript">
 	$(function() {
 		var editor = {};
@@ -116,6 +141,7 @@
 			$window: $('#module-tableinput-editor-data-headers'),
 			$table: $('#module-tableinput-editor-data-headers-table'),
 			$btnAdd: $('#module-tableinput-editor-data-headers-add'),
+			$btnRemove: $('#module-tableinput-editor-data-headers-remove'),
 			$btnConfirm: $('#module-tableinput-editor-data-headers-confirm'),
 			$btnCancel: $('#module-tableinput-editor-data-headers-cancel'),
 			endEditing: function() {
@@ -132,6 +158,7 @@
 				var _this = editor.dataHeaders;
 				if (!_this._initEvent) {
 					_this.$table.datagrid({
+						fit: true,
 						onClickCell: function(index, field) {
 							if (index != _this.lastEditingIndex) {
 								if (_this.endEditing()) {
@@ -160,6 +187,10 @@
 					_this.$btnCancel.click(function() {
 						_this.$window.window('close', true);
 					});
+					_this.$btnRemove.click(function() {
+						//_this.$table.datagrid('cancelEdit');
+						_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
+					});
 					_this._initEvent = true;
 				}
 			},
@@ -168,13 +199,33 @@
 			},
 			show: function() {
 				editor.dataHeaders.$window.window('open', true);
+				
+				//console.log("height:"+$('.datagrid-view'));
+				//console.log($('#module-tableinput-editor-data-headers-toolbar .datagrid-view'));
+				var hh=$('#module-tableinput-editor-data-headers').css("height") ;
+				hh=hh.substring(0, hh.length-2);
+				$('#module-tableinput-editor-data-headers-toolbar').next().css("height",hh-32);
+				
 			}
 		}
+		/*editor.selectName = {
+				
+				init: function(index, row) {
+					
+				},
+				show: function() {
+					
+				},
+				setValue:function(value) {
+					
+				}
+		}*/
 		
 		editor.dataRows = {
 			$window: $('#module-tableinput-editor-data-rows'),
 			$table: $('#module-tableinput-editor-data-rows-table'),
 			$btnAdd: $('#module-tableinput-editor-data-rows-add'),
+			$btnRemove: $('#module-tableinput-editor-data-rows-remove'),
 			$btnConfirm: $('#module-tableinput-editor-data-rows-confirm'),
 			$btnCancel: $('#module-tableinput-editor-data-rows-cancel'),
 			endEditing: function() {
@@ -187,6 +238,7 @@
 				}
 				return false;
 			},
+			
 			_editor: {string: {type: 'textbox'}, integer: {type: 'numberbox'}, long: {type: 'numberbox'}},
 			init: function(index, row) {
 				var _this = editor.dataRows;
@@ -208,6 +260,7 @@
 						}
 					}
 				});
+			
 				if (!_this._initEvent) {
 					_this.$btnAdd.click(function() {
 						_this.$table.datagrid('appendRow',{});
@@ -221,6 +274,10 @@
 					});
 					_this.$btnCancel.click(function() {
 						_this.$window.window('close', true);
+					});
+					_this.$btnRemove.click(function() {
+						//_this.$table.datagrid('cancelEdit');
+						_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
 					});
 					_this._initEvent = true;
 				}
@@ -254,11 +311,6 @@
 			init: function(index, row) {
 				var _this = editor.dataMappers;
 				var headers = Designer.PropBox.current.data('dataHeaders')
-				_this.$comboName.combobox('loadData', headers.map(function(row, index) {return {name: row.name, index: index}}));
-				_this._value = headers.map(function() {return []});
-				if (headers.length > 0) {
-					_this.$comboName.combobox('select', headers[0].name);
-				}
 				if (!_this._initEvent) {
 					_this.$table.datagrid({
 						onClickCell: function(index, field) {
@@ -278,10 +330,11 @@
 					});
 					_this.$comboName.combobox({
 						onSelect: function(record) {
+							if (_this.lastSelectedIndex != undefined && _this.endEditing()) {
+								_this._value[_this.lastSelectedIndex] = _this.$table.datagrid('getRows');
+							}
 							_this.$table.datagrid('loadData', _this._value[record.index]);
-						},
-						onUnselect: function(record) {
-							_this._value[record.index] = _this.$table.datagrid('getRows');
+							_this.lastSelectedIndex = record.index;
 						}
 					});
 					_this.$btnAdd.click(function() {
@@ -299,6 +352,11 @@
 					});
 					_this._initEvent = true;
 				}
+				_this.$comboName.combobox('loadData', headers.map(function(row, index) {return {name: row.name, index: index}}));
+				_this._value = headers.map(function() {return []});
+				if (headers.length > 0) {
+					_this.$comboName.combobox('select', headers[0].name);
+				}
 			},
 			setValue: function(value) {
 				for (var i = 0; i <　value.length; i ++) {
@@ -311,13 +369,236 @@
 		}
 		
 		editor.dataPaths = {
-				$window: $('#module-tableinput-editor-data-paths'),
-				$table: $('#module-tableinput-editor-data-paths-table'),
-				$btnAdd: $('#module-tableinput-editor-data-paths-add'),
-				$btnConfirm: $('#module-tableinput-editor-data-paths-confirm'),
-				$btnCancel: $('#module-tableinput-editor-data-paths-cancel'),
+			$window: $('#module-tableinput-editor-data-paths'),
+			$table: $('#module-tableinput-editor-data-paths-table'),
+			$btnAdd: $('#module-tableinput-editor-data-paths-add'),
+			$btnConfirm: $('#module-tableinput-editor-data-paths-confirm'),
+			$btnCancel: $('#module-tableinput-editor-data-paths-cancel'),
+			endEditing: function() {
+				var _this = editor.dataPaths;
+				if (_this.lastEditingIndex == null) return true;
+				if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+					_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+					_this.lastEditingIndex = null;
+					return true;
+				}
+				return false;
+			},
+			init: function(index, row) {
+				var _this = editor.dataPaths;
+				if (!_this._initEvent) {
+					_this.$table.datagrid({
+						onClickCell: function(index, field) {
+							if (index != _this.lastEditingIndex) {
+								if (_this.endEditing()) {
+									_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+									var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+					                if (editor){
+					                    ($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+					                }
+					                _this.lastEditingIndex = index;
+								} else {
+									_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+								}
+							}
+						}
+					});
+					_this.$btnAdd.click(function() {
+						_this.$table.datagrid('appendRow',{name: '', xpath: '', regex: ''});
+					});
+					_this.$btnConfirm.click(function() {
+						if (_this.endEditing()) {
+							row.value = _this.$table.datagrid('getRows');
+							Designer.PropBox.updateValue(index, row, true);
+							_this.$window.window('close', true);
+						}
+					});
+					_this.$btnCancel.click(function() {
+						_this.$window.window('close', true);
+					});
+					_this._initEvent = true;
+				}
+			},
+			setValue: function(value) {
+				editor.dataPaths.$table.datagrid('loadData', value);
+			},
+			show: function() {
+				editor.dataPaths.$window.window('open', true);
+			}
+		}
+		
+		editor.procFields = {
+			$window: $('#module-tableinput-editor-proc-fields'),
+			$table: $('#module-tableinput-editor-proc-fields-table'),
+			$btnConfirm: $('#module-tableinput-editor-proc-fields-confirm'),
+			$btnCancel: $('#module-tableinput-editor-proc-fields-cancel'),
+			endEditing: function() {
+				var _this = editor.procFields;
+				if (_this.lastEditingIndex == null) return true;
+				if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+					_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+					_this.lastEditingIndex = null;
+					return true;
+				}
+				return false;
+			},
+			init: function(index, row) {
+				var _this = editor.procFields;
+				if (!_this._initEvent) {
+					_this.$table.datagrid({
+						onClickCell: function(index, field) {
+							if (index != _this.lastEditingIndex) {
+								if (_this.endEditing()) {
+									_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+									var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+					                if (editor){
+					                    ($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+					                }
+					                _this.lastEditingIndex = index;
+								} else {
+									_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+								}
+							}
+						}
+					});
+					_this.$btnConfirm.click(function() {
+						if (_this.endEditing()) {
+							row.value = _this.$table.datagrid('getRows');
+							Designer.PropBox.updateValue(index, row, true);
+							_this.$window.window('close', true);
+						}
+					});
+					_this.$btnCancel.click(function() {
+						_this.$window.window('close', true);
+					});
+					_this._initEvent = true;
+				}
+			},
+			setValue: function(value) {
+				var procName = Designer.PropBox.current.data('procName');
+				var fields = [], newValue = [];
+				if (procName == 'test') {
+					fields = [{
+						name: 'title',
+						from: ''
+					},{
+						name: 'content',
+						from: ''
+					}];
+				}
+				
+				if (procName == 'save_or_update_user') {
+					fields = [{name:'name',	from:'name'},{
+							name:'gender',from:'gender'},{
+							name:'nation',from:'nation'},{
+							name:'mobile',from:'mobile'},{
+							name:'email',from:'email'},{
+							name:'experienceCode',from:'experienceCode'},{
+							name:'educationCode',from:'educationCode'},{
+							name:'household',from:'household'},{
+							name:'categoryCode',from:'categoryCode'},{
+							name:'status',from:'status'},{
+							name:'marriage',from:'marriage'},{
+							name:'certType',from:'certType'},{
+							name:'certId',from:'certId'},{
+							name:'birth',from:'birth'},{
+							name:'selfComment',from:'selfComment'},{
+							name:'locationCode',from:'locationCode'},{
+							name:'dataSrc',from:'dataSrc'},{
+							name:'dataKey',from:'dataKey'},{
+							name:'updateDate',from:'updateDate'},{
+							name:'createDate',from:'createDate'},{
+							name:'account',from:'account'},{
+							name:'currEnt',from:'currEnt'},{
+							name:'currEntPhone',from:'currEntPhone'},{
+							name:'currPostCode',from:'currPostCode'},{
+							name:'currPost',from:'currPost'},{
+							name:'lbsLon',from:'lbsLon'},{
+							name:'lbsLat',from:'lbsLat'},{
+							name:'accountStatus',from:'accountStatus'}];
+
+
+				}
+				if(procName == 'save_or_update_ent') {
+					fields = 	   [{name: ' name ',from:'name'},{
+					    name: ' categoryCode ',from:'categoryCode'},{
+					        name: ' natureCode ',from:'natureCode'},{
+					        name: ' scaleCode ',from:'scaleCode'},{
+					        name: ' tag ',from:'tag'},{
+					        name: ' establish ',from:'establish'},{
+					        name:  'troduction ',from:'troduction'},{
+					        name: ' address ',from:'address'},{
+					        name: ' website ',from:'website'},{
+					        name: ' areaCode ',from:'areaCode'},{
+					        name: ' lbsLon ',from:'lbsLon'},{
+					        name: ' lbsLat ',from:'lbsLat'},{
+					        name: ' organame:',from:'organame'},{
+					        name: ' license ',from:'license'},{
+					        name: ' contacter ',from:'contacter'},{
+					        name: ' publicContact ',from:'publicContact'},{
+					        name: ' phone ',from:'phone'},{
+					        name: ' fax ',from:'fax'},{
+					        name: ' mobile ',from:'mobile'},{
+					        name: ' email ',from:'email'},{
+					        name: ' qq ',from:'qq'},{
+					        name: ' dataSrc ',from:'dataSrc'},{
+					        name: ' dataKey ',from:'dataKey'},{
+					        name: ' dataUrl ',from:'dataUrl'},{
+					        name: ' updateDate ',from:'updateDate'},{
+					        name: ' createDate ',from:'createDate'},{
+					        name: ' account ',from:'account'}]
+				}
+				if(procName == 'save_or_update_post') {
+					fields = 	  
+						[{name:'NAME',from:'NAME'},
+						 {name:'categoryCode',from:'categoryCode'},
+						 {name:'natureCode',from:'natureCode'},
+						 {name:'headcount',from:'headcount'},
+						 {name:'age',from:'age'},
+						 {name:'gender',from:'gender'},
+						 {name:'salary',from:'salary'},
+						 {name:'tag',from:'tag'},
+						 {name:'troduction',from:'troduction'},
+						 {name:'areaCode',from:'areaCode'},
+						 {name:'address',from:'address'},
+						 {name:'lbsLon',from:'lbsLon'},
+						 {name:'lbsLat',from:'lbsLat'},
+						 {name:'dataSrc',from:'dataSrc'},
+						 {name:'dataKey',from:'dataKey'},
+						 {name:'dataEntKey',from:'dataEntKey'},
+						 {name:'dataUrl',from:'dataUrl'},
+						 {name:'updateDate',from:'updateDate'},
+						 {name:'createDate',from:'createDate'},
+						 {name:'experienceCode',from:'experienceCode'},
+						 {name:'educationCode',from:'educationCode'}]
+				 }
+				
+				for (var i = 0; i < fields.length; i ++) {
+					var exist = false;
+					for (var j = 0; j < value.length; j ++) {
+						if (fields[i].name == value[j].name) {
+							exist = true;
+							newValue.push(value[j]);
+							break;
+						}
+					}
+					if (!exist) {
+						newValue.push(fields[i]);
+					}
+				}
+				editor.procFields.$table.datagrid('loadData', newValue);
+			},
+			show: function() {
+				editor.procFields.$window.window('open', true);
+			}
+		};
+		editor.tableFields = {
+				$window: $('#module-tableinput-editor-proc-fields'),
+				$table: $('#module-tableinput-editor-proc-fields-table'),
+				$btnConfirm: $('#module-tableinput-editor-proc-fields-confirm'),
+				$btnCancel: $('#module-tableinput-editor-proc-fields-cancel'),
 				endEditing: function() {
-					var _this = editor.dataPaths;
+					var _this = editor.procFields;
 					if (_this.lastEditingIndex == null) return true;
 					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
 						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
@@ -327,7 +608,7 @@
 					return false;
 				},
 				init: function(index, row) {
-					var _this = editor.dataPaths;
+					var _this = editor.procFields;
 					if (!_this._initEvent) {
 						_this.$table.datagrid({
 							onClickCell: function(index, field) {
@@ -345,9 +626,6 @@
 								}
 							}
 						});
-						_this.$btnAdd.click(function() {
-							_this.$table.datagrid('appendRow',{name: '', xpath: '', regex: ''});
-						});
 						_this.$btnConfirm.click(function() {
 							if (_this.endEditing()) {
 								row.value = _this.$table.datagrid('getRows');
@@ -362,12 +640,110 @@
 					}
 				},
 				setValue: function(value) {
-					editor.dataPaths.$table.datagrid('loadData', value);
+					var tableName = Designer.PropBox.current.data('tableName');
+					var fields = [], newValue = [];
+					if (tableName == '') {
+						fields = [{
+							name: 'title',
+							from: ''
+						},{
+							name: 'content',
+							from: ''
+						}];
+					}
+					
+					if (tableName == 'blog') {
+						fields = [{name:'title',from:'title'},{
+								name:'content',from:'content'}
+								];
+					}
+					if (tableName == 'db_enterprise') {
+						fields = [{name:'name',from:'name'},{name:'account',from:'account'},{name:'category',from:'category'},{name:'category_code',from:'category_code'},{name:'nature',from:'nature'},{name:'nature_code',from:'nature_code'},{name:'scale',from:'scale'},{name:'scale_code',from:'scale_code'},{name:'tag',from:'tag'},{name:'establish',from:'establish'},{name:'introduction',from:'introduction'},{name:'area',from:'area'},{name:'area_code',from:'area_code'},{name:'address',from:'address'},{name:'lbs_lon',from:'lbs_lon'},{name:'lbs_lat',from:'lbs_lat'},{name:'website',from:'website'},{name:'orgains',from:'orgains'},{name:'license',from:'license'},{name:'contacter',from:'contacter'},{name:'public_contact',from:'public_contact'},{name:'phone',from:'phone'},{name:'fax',from:'fax'},{name:'mobile',from:'mobile'},{name:'email',from:'email'},{name:'qq',from:'qq'},{name:'visit_count',from:'visit_count'},{name:'data_src',from:'data_src'},{name:'data_key',from:'data_key'},{name:'data_url',from:'data_url'},{name:'data_status',from:'data_status'},{name:'update_date',from:'update_date'},{name:'create_date',from:'create_date'},{name:'syn_status',from:'syn_status' }
+								];
+					}
+					if (tableName == 'db_entpost') {
+						fields = [
+									{name:'name',from:'name'},{
+									name:'category',from:'category'},{
+									name:'category_code',from:'category_code'},{
+									name:'nature',from:'nature'},{
+									name:'nature_code',from:'nature_code'},{
+									name:'headcount',from:'headcount'},{
+									name:'age',from:'age'},{
+									name:'gender',from:'gender'},{
+									name:'salary',from:'salary'},{
+									name:'experience',from:'experience'},{
+									name:'experience_code',from:'experience_code'},{
+									name:'education',from:'education'},{
+									name:'education_code',from:'education_code'},{
+									name:'tag',from:'tag'},{
+									name:'introduction',from:'introduction'},{
+									name:'area',from:'area'},{
+									name:'area_code',from:'area_code'},{
+									name:'address',from:'address'},{
+									name:'lbs_lon',from:'lbs_lon'},{
+									name:'lbs_lat',from:'lbs_lat'},{
+									name:'data_src',from:'data_src'},{
+									name:'data_key',from:'data_key'},{
+									name:'data_ent_key',from:'data_ent_key'},{
+									name:'data_url',from:'data_url'},{
+									name:'data_status',from:'data_status'},{
+									name:'update_date',from:'update_date'},{
+									name:'create_date',from:'create_date'},{
+									name:'syn_status',from:'syn_status'}];
+					}
+					for (var i = 0; i < fields.length; i ++) {
+						var exist = false;
+						for (var j = 0; j < value.length; j ++) {
+							if (fields[i].name == value[j].name) {
+								exist = true;
+								newValue.push(value[j]);
+								break;
+							}
+						}
+						if (!exist) {
+							newValue.push(fields[i]);
+						}
+					}
+					editor.tableFields.$table.datagrid('loadData', newValue);
 				},
 				show: function() {
-					editor.dataPaths.$window.window('open', true);
+					editor.tableFields.$window.window('open', true);
 				}
 			}
+		
+		editor.procName = {
+				fixed: true,
+				type: 'combobox',
+				options: {
+					textField: 'text',
+					valueField: 'value',
+					data: [{
+						text: 'save_or_update_post',
+						value: 'save_or_update_post'
+					},{
+						text: 'save_or_update_ent',
+						value: 'save_or_update_ent'
+					}]
+				}
+			};
+		editor.tableName = {
+				fixed: true,
+				type: 'combobox',
+				options: {
+					textField: 'text',
+					valueField: 'value',
+					data: [{
+						text: 'db_entpost',
+						value: 'db_entpost'
+					},
+					{
+						text: 'db_enterprise',
+						value: 'db_enterprise'
+					}]
+				}
+			};
+		
 		
 		Designer.init(
 			'process-designer-tabs', 'process-designer-tabs-canvas', 'process-designer-tabs-content', 
@@ -401,9 +777,9 @@
 			});
 		});
 		
-		var content = '${content?if_exists}';
-		if (content.length > 0) {
-			Designer.setData(JSON.parse(content));
+		var content = ${content!"false"};
+		if (content) {
+			Designer.setData(content);
 		}
 	});
 </script>

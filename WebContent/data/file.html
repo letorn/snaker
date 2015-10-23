@@ -1,0 +1,115 @@
+<table id="data-file-table" class="easyui-datagrid" data-options="rownumbers:true,toolbar:'#data-file-table-toolbar',fit:true">
+	<thead>
+		<tr>
+			<th data-options="field:'id',width:60">文件编号</th>
+			<th data-options="field:'name',width:150">文件名称</th>
+			<th data-options="field:'suffix',width:60">文件后缀</th>
+			<th data-options="field:'ftype',width:80">文件作用</th>
+			<th data-options="field:'action',width:420,formatter:dataFileTableActionFormatter">操作</th>
+		</tr>
+	</thead>
+</table>
+<div id="data-file-table-toolbar" style="padding: 2px 5px;">
+	<select id="data-file-table-ftype" class="easyui-combobox">
+		<option value="excelmapper">excelmapper</option>
+	</select>
+	<input id="data-file-table-select" name="file" type="file" />
+	<a id="data-file-table-upload" class="easyui-linkbutton">上传</a>
+	<input id="data-file-table-search" class="easyui-searchbox" data-options="prompt:'文件名称'" style="width:200px" />
+</div>
+<script type="text/javascript">
+	function dataFileTableActionFormatter(value, row) {
+		return '<a class="data-file-table-delete" data-file="' + row.id + '" style="cursor:pointer;color:blue">删除</a>&nbsp;&nbsp;' + 
+				'<a class="data-file-table-download" href="data/file/download/' + row.id + '" style="cursor:pointer;color:blue">下载</a>&nbsp;&nbsp;' + 
+				'<input id="data-file-table-select-' + row.id + '" name="file" type="file" />&nbsp;&nbsp;' + 
+				'<a class="data-file-table-reupload" data-file="' + row.id + '" style="cursor:pointer;color:blue">重新上传</a>&nbsp;&nbsp;';
+	}
+
+	$.render(function() {
+		var $dataFileTable = $('#data-file-table');
+
+		$('#data-file-table-upload').click(function() {
+			$.ajaxFileUpload({
+				url: 'data/file/save?ftype=' + $('#data-file-table-ftype').val(),
+				fileElementId: 'data-file-table-select',
+				success: function() {
+					$.messager.show({
+						title: '提示',
+						msg: '上传成功！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+					$dataFileTable.datagrid('reload');
+				},
+				error: function() {
+					$.messager.show({
+						title: '提示',
+						msg: '上传失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+			});
+		});
+
+		$('#data-file-table-search').searchbox({
+			searcher: function(value) {
+				$dataFileTable.datagrid('load', {
+					name: value
+				});
+			}
+		});
+
+		$dataFileTable.datagrid({
+			url: 'data/file',
+			method: 'get',
+			onLoadSuccess: function() {
+				$('.data-file-table-delete').click(function() {
+					$.getJSON('data/file/delete/' + $(this).data('file'), function(data) {
+						if (data.success) {
+							$.messager.show({
+								title: '提示',
+								msg: '删除成功！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+							$dataFileTable.datagrid('reload');
+						} else {
+							$.messager.show({
+								title: '提示',
+								msg: '删除失败！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+						}
+					});
+				});
+				
+				$('.data-file-table-reupload').click(function() {
+					debugger;
+					$.ajaxFileUpload({
+						url: 'data/file/save?file=' + $(this).data('file'),
+						fileElementId: 'data-file-table-select-' + $(this).data('file'),
+						success: function() {
+							$.messager.show({
+								title: '提示',
+								msg: '上传成功！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+							$dataFileTable.datagrid('reload');
+						},
+						error: function() {
+							$.messager.show({
+								title: '提示',
+								msg: '上传失败！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+						}
+					});
+				});
+			}
+		});
+	});
+</script>

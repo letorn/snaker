@@ -15,7 +15,6 @@ var Designer = {
 			pdata: {
 				node: true,
 				clazz: 'engine.module.BeginModule',
-				controller: 'module/begin',
 				name: '开始'
 			}
 		},
@@ -61,6 +60,10 @@ var Designer = {
 				doRecord: true,
 				recordView: 'module/basiclog',
 				name: '页面输入',
+				startUrl: '',
+				helpRegion: '',
+				helpUrl: '',
+				targetUrl: '',
 				dataPaths: []
 			}
 		},
@@ -80,6 +83,63 @@ var Designer = {
 				dataHeaders: [],
 				dataMappers: []
 			}
+		},
+		excelmapper: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.ExcelMapperModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: 'Excel映射',
+				excelFile: ''
+			}
+		},
+		dbprocoutput: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.DbProcOutputModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: 'db_proc_output',
+				jdbcUrl: '',
+				jdbcUser: '',
+				jdbcPwd: '',
+				procName: '',
+				procFields: []
+			}
+		},
+		
+		dbtableoutput: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.DbTableOutputModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: 'db_table_output',
+				jdbcUrl: '',
+				jdbcUser: '',
+				jdbcPwd: '',
+				tableName: '',
+				tableFields: []
+			}
 		}
 	}
 };
@@ -89,7 +149,7 @@ Designer.Attr = {
 		dataHeaders: 'data-headers',
 		dataRows: 'data-rows'
 	}
-}
+};
 
 Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClass, propformId, propboxId, editor) {
 	var $tabs = $('#' + tabsId), $canvas = $('#' + canvasId), $content = $('#' + contentId), $moveable = $('#' + moveableId), $propform = $('#' + propformId), $propbox = $('#' + propboxId);
@@ -104,7 +164,12 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 	Designer.paper = paper;
 	Designer.canvasOffset = canvasOffset;
 	Designer.editor = editor;
-	
+	for (var field in editor) {
+		var edt = editor[field];
+		if (edt.fixed) {
+			Designer.PropBox.fixedEditor[field] = edt;
+		}
+	}
 	$tabs.tabs({
 		onSelect: function(title, index) {
 			if (title == $canvas.panel('options').title) {
@@ -113,7 +178,45 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 				$content.text(JSON.stringify(Designer.getData()));
 			}
 		}
-	})
+	});
+	$(document).keydown(function(event) {
+		if (event.keyCode == 46) {
+			var selectedEle = Designer._selectedEle;
+			if (selectedEle) {
+				if (selectedEle.data('node')) {
+					// 删除连接的箭头
+					for (var key in selectedEle.arrowMap) {
+						var ar = selectedEle.arrowMap[key], dire = ar.from == selectedEle ? 'to' : 'from';
+						for (var key2 in ar[dire].arrowMap) {
+							if (ar == ar[dire].arrowMap[key2]) delete ar[dire].arrowMap[key2];
+						}
+						ar.remove();
+					}
+					// 删除文件
+					selectedEle.text.remove();
+					delete selectedEle.text;
+					// 删除图标
+					selectedEle.remove();
+					// 清空属性框
+					delete Designer._selectedEle;
+					Designer.PropBox.setValues({});
+				} else {
+					if (selectedEle.type == 'path') {
+						for (var key in selectedEle.from.arrowMap) {
+							var ar = selectedEle.from.arrowMap[key];
+							if (selectedEle == ar) delete selectedEle.from.arrowMap[key];
+						}
+						for (var key in selectedEle.to.arrowMap) {
+							var ar = selectedEle.to.arrowMap[key];
+							if (selectedEle == ar) delete selectedEle.to.arrowMap[key];
+						}
+						selectedEle.remove();
+						delete Designer._selectedEle;
+					}
+				}
+			}
+		}
+	});
 	$('.' + canvasItemClass).draggable({
 		revert: true,
 		proxy: 'clone',
@@ -135,7 +238,7 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 	});
 	$propbox.propertygrid({
 		onBeginEdit: function(index, row) {
-			if (editor[row.name]) {
+			if (editor[row.name] && editor[row.name].show) {
 				editor[row.name].init(index, row);
 				editor[row.name].setValue(row.value);
 				editor[row.name].show();
@@ -158,6 +261,7 @@ Designer.Arrow = {
 		if (!this.current) {
 			this.current = Designer.eleCreater('arrow', 0, 0);
 			this.current.drag(Designer.eleMove, Designer.eleStart, Designer.eleStop);
+			this.current.click(Designer.eleClick);
 			this.current.toBack();
 			return this.current;
 		}
@@ -327,7 +431,7 @@ Designer.Arrow = {
 			y: y
 		};
 	}
-}
+};
 
 Designer.createName = function () {
 	var now = new Date(),
@@ -344,7 +448,7 @@ Designer.createName = function () {
 		(hour < 10 ? '0' + hour : hour) +
 		(minute < 10 ? '0' + minute : minute) +
 		(second < 10 ? '0' + second : second);
-}
+};
 
 Designer.eleCreater = function(mtype, x, y, data) {
 	var paper = Designer.paper, Arrow = Designer.Arrow, canvasOffset = Designer.canvasOffset;
@@ -395,40 +499,17 @@ Designer.eleCreater = function(mtype, x, y, data) {
 	var ele = null;
 	if (cfg.ptype == 'circle') {
 		ele = paper.circle(x, y, cfg.pattr.radius).attr(cfg.pattr).data(cfg.pdata);
-		ele.arrow = {};
+		ele.arrowMap = {};
+		ele.text = paper.text(x, y + cfg.pattr.radius + 10, cfg.pdata.name);
 	} else if (cfg.ptype == 'rect') {
 		ele = paper.rect(x, y, cfg.pattr.width, cfg.pattr.height).attr(cfg.pattr).data(cfg.pdata);
-		ele.arrow = {};
+		ele.arrowMap = {};
+		ele.text = paper.text(x + cfg.pattr.width / 2, y + cfg.pattr.height + 10, cfg.pdata.name);
 	} else if (cfg.ptype == 'path') {
 		ele = paper.path(Arrow.buildPath(x, y)).attr(cfg.pattr).data(cfg.pdata);
 	}
 	return ele;
-}
-
-Designer.eleMove = function(dx, dy, ex, ey, event) {
-	var $moveable = Designer.$moveable, paper = Designer.paper, Arrow = Designer.Arrow, canvasOffset = Designer.canvasOffset;
-	if (!$moveable.prop('checked')) {
-		var ele = paper.getElementByPoint(ex, ey);
-		if (ele != null && ele != this && ele.data('node')) {
-			Arrow.linkTo(this, ele);
-		} else {
-			Arrow.moveTo(this.startCX, this.startCY, ex - canvasOffset.left, ey - canvasOffset.top);
-		}
-		return;
-	}
-	if (this.type == 'circle') {
-		this.attr('cx', this.startCX + dx);
-		this.attr('cy', this.startCY + dy);
-	} else if (this.type == 'rect') {
-		this.attr('x', this.startX + dx);
-		this.attr('y', this.startY + dy);
-	}
-	if ($moveable.prop('checked')) {
-		Arrow.refresh($.map(this.arrow, function(v) {
-			return v
-		}));
-	}
-}
+};
 
 Designer.eleStart = function(x, y, event) {
 	var $moveable = Designer.$moveable, Arrow = Designer.Arrow;
@@ -444,7 +525,43 @@ Designer.eleStart = function(x, y, event) {
 	if (!$moveable.prop('checked')) {
 		Arrow.next();
 	}
-}
+};
+
+// 图标移动时触发的事件
+Designer.eleMove = function(dx, dy, ex, ey, event) {
+	var $moveable = Designer.$moveable, paper = Designer.paper, Arrow = Designer.Arrow, canvasOffset = Designer.canvasOffset;
+	// 箭头连线
+	if (!$moveable.prop('checked')) {
+		var ele = paper.getElementByPoint(ex, ey);
+		if (ele != null && ele != this && ele.data('node')) {
+			Arrow.linkTo(this, ele);
+		} else {
+			Arrow.moveTo(this.startCX, this.startCY, ex - canvasOffset.left, ey - canvasOffset.top);
+		}
+		return;
+	}
+	if (this.type == 'circle') {
+		// 移动图标
+		this.attr('cx', this.startCX + dx);
+		this.attr('cy', this.startCY + dy);
+		// 移动文本
+		this.text.attr('x', this.startCX + dx);
+		this.text.attr('y', this.startCY + dy + this.attr('r') + 10);
+	} else if (this.type == 'rect') {
+		// 移动图标
+		this.attr('x', this.startX + dx);
+		this.attr('y', this.startY + dy);
+		// 移动文本
+		this.text.attr('x', this.startX + dx + this.attr('width') / 2);
+		this.text.attr('y', this.startY + dy + this.attr('height') + 10);
+	}
+	// 刷新箭头
+	if ($moveable.prop('checked')) {
+		Arrow.refresh($.map(this.arrowMap, function(v) {
+			return v
+		}));
+	}
+};
 
 Designer.eleStop = function(event) {
 	var $moveable = Designer.$moveable, paper = Designer.paper, Arrow = Designer.Arrow;
@@ -455,8 +572,8 @@ Designer.eleStop = function(event) {
 			var arrow = Arrow.current;
 			if (arrow != null) {
 				var exist = false;
-				for (var key in arrow.from.arrow) {
-					var ar = arrow.from.arrow[key];
+				for (var key in arrow.from.arrowMap) {
+					var ar = arrow.from.arrowMap[key];
 					if ((ar.from == arrow.from && ar.to == arrow.to) || (ar.from == arrow.to && ar.to == arrow.from)) {
 						exist = true;
 						break;
@@ -464,28 +581,30 @@ Designer.eleStop = function(event) {
 				}
 				if (!exist) {
 					Arrow.current = null;
-					arrow.from.arrow[arrow.id] = arrow;
-					arrow.to.arrow[arrow.id] = arrow;
+					arrow.from.arrowMap[arrow.id] = arrow;
+					arrow.to.arrowMap[arrow.id] = arrow;
 					return;
 				}
 			}
 		}
 		Arrow.remove();
 	}
-}
+};
 
 Designer.eleClick = function(event) {
 	var PropBox = Designer.PropBox;
+	Designer._selectedEle = this;
 	if (this != PropBox.current && this.data('node')) {
 		PropBox.current = this;
 		PropBox.setValues(this.data());
 	}
-}
+};
 
 Designer.PropBox = {
 	current: null,
+	fixedEditor: {},
 	setValues: function(values) {
-		var $propbox = Designer.$propbox;
+		var fixedEditor = Designer.PropBox.fixedEditor, $propbox = Designer.$propbox;
 		if (values) {
 			var props = [];
 			for (var key in values) {
@@ -493,7 +612,7 @@ Designer.PropBox = {
 				props.push({
 					name: key,
 					value: values[key],
-					editor: 'text'
+					editor: fixedEditor[key] ? fixedEditor[key] : 'text'
 				});
 			}
 			$propbox.propertygrid({
@@ -515,6 +634,7 @@ Designer.PropBox = {
 						}
 					}
 				}
+				current.text.attr('text', row.value);
 			}
 			current.data(row.name, row.value);
 			if (refresh) {
@@ -522,10 +642,10 @@ Designer.PropBox = {
 			}
 		}
 	}
-}
+};
 
-Designer.counter = {}
-Designer.name = {}
+Designer.counter = {};
+Designer.name = {};
 
 Designer.getData = function() {
 	var data = {modules: []}, $propform = Designer.$propform, paper = Designer.paper;
@@ -547,9 +667,9 @@ Designer.getData = function() {
 			}
 			
 			$.extend(true, module, ele.data());
-			if (ele.arrow) {
-				for (var key in ele.arrow) {
-					var arrow = ele.arrow[key];
+			if (ele.arrowMap) {
+				for (var key in ele.arrowMap) {
+					var arrow = ele.arrowMap[key];
 					if (arrow.to != ele) {
 						module.tos.push(arrow.to.data('name'));
 					}
@@ -559,7 +679,7 @@ Designer.getData = function() {
 		}
 	});
 	return data;
-}
+};
 
 Designer.setData = function(data) {
 	var $propform = Designer.$propform, paper = Designer.paper, Arrow = Designer.Arrow;
@@ -583,16 +703,16 @@ Designer.setData = function(data) {
 				if (module2 != undefined) {
 					arrow = Arrow.next();
 					Arrow.linkTo(module, module2);
-					module.arrow[arrow.id] = arrow;
-					module2.arrow[arrow.id] = arrow;
+					module.arrowMap[arrow.id] = arrow;
+					module2.arrowMap[arrow.id] = arrow;
 					Arrow.current = null;
 				}
 			}
 		}
 	}
-}
+};
 
 Designer.clear = function() {
 	var paper = Designer.paper;
 	paper.clear();
-}
+};

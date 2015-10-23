@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>基础日志</title>
 <script type="text/javascript" src="${ctx}/common/jquery.min.js"></script>
+<script type="text/javascript" src="${ctx}/common/jquery.custom.js"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/common/easyui/themes/icon.css">
 <script type="text/javascript" src="${ctx}/common/easyui/jquery.easyui.min.js"></script>
@@ -11,25 +12,45 @@
 </head>
 <body>
 <div data-options="fit:true">
-	<table id="module-basiclog-table" class="easyui-datagrid" data-options="toolbar:'#module-basiclog-table-toolbar'" style="width:500px;height:500px"></table>
-	<div id="module-basiclog-table-toolbar">
-		<a id="module-basiclog-table-reload" class="easyui-linkbutton">刷新</a>
-	</div>
+	<table id="module-basiclog-table" class="easyui-datagrid" data-options="footer:'#module-basiclog-table-pager'" style="width:1000px;height:650px"></table>
+	<div id="module-basiclog-table-pager" class="easyui-pagination"></div>
 </div>
 <script type="text/javascript">
 	$(function() {
-		console.log($('#module-basiclog-table').width())
-		$('#module-basiclog-table-reload').click(function() {
-			$.getJSON('/snaker/workflow/record', {
-				process: '${process}',
-				instance: '${instance}',
-				module: '${module}',
-			}, function(resp) {
-				$('#module-basiclog-table').datagrid({
-					columns: [resp.headers.map(function(row) {return {title: row.name, field: row.name, width: 100}})],
-					data: resp.rows
+		$('#module-basiclog-table-pager').pagination({
+			showPageList: false,
+			displayMsg: '',
+			total: 0,
+			onRefresh: function(page, pageSize) {
+				var $this = $(this);
+				$.getJSON('${ctx}/workflow/record', {
+					process: '${process}',
+					instance: '${instance}',
+					module: '${module}',
+					page: page,
+					refresh: true
+				}, function(resp) {
+					$('#module-basiclog-table').datagrid({
+						columns: [resp.headers.map(function(row) {return {title: row.name, field: row.name, width: 100, formatter: $.encodeHtml}})],
+						data: resp.rows
+					});
+					$this.pagination('refresh', {
+						total: resp.pageTotal * 10
+					})
 				});
-			});
+			},
+			onSelectPage: function(page, pageSize) {
+				var $this = $(this);
+				$.getJSON('${ctx}/workflow/record', {
+					process: '${process}',
+					instance: '${instance}',
+					module: '${module}',
+					page: page,
+					refresh: false
+				}, function(resp) {
+					$('#module-basiclog-table').datagrid('loadData', resp.rows);
+				});
+			}
 		});
 	});
 </script>

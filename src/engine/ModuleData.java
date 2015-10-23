@@ -41,7 +41,8 @@ public class ModuleData {
 			Object value = row.get(key);
 			DataHeader header = new DataHeader();
 			header.setName(key);
-			header.setClazz(value.getClass());
+			if (value != null)
+				header.setClazz(value.getClass());
 			headers.add(header);
 		}
 		return headers;
@@ -95,7 +96,6 @@ public class ModuleData {
 		public void setFormat(String format) {
 			this.format = format;
 		}
-
 	}
-
+	
 }

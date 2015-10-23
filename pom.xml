@@ -36,6 +36,13 @@
       <version>2.0</version>
     </dependency>
 
+	<!-- jfinal 上传文件 -->
+	<dependency>
+		<groupId>com.jfinal</groupId>
+		<artifactId>cos</artifactId>
+		<version>26Dec2008</version>
+	</dependency>
+
     <!-- c3p0 -->
     <dependency>
       <groupId>com.mchange</groupId>
@@ -83,5 +90,27 @@
       <artifactId>webmagic-extension</artifactId>
       <version>0.5.2</version>
     </dependency>
+    
+    <!-- 解析Excel -->
+    <dependency>
+	  <groupId>org.apache.poi</groupId>
+	  <artifactId>poi</artifactId>
+	  <version>3.12</version>
+    </dependency>
+    <dependency>
+	  <groupId>org.apache.poi</groupId>
+	  <artifactId>poi-ooxml</artifactId>
+	  <version>3.12</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.poi</groupId>
+	  <artifactId>poi-ooxml-schemas</artifactId>
+	  <version>3.12</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.xmlbeans</groupId>
+	  <artifactId>xmlbeans</artifactId>
+	  <version>2.6.0</version>
+	</dependency>
   </dependencies>
 </project>

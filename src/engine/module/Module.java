@@ -45,13 +45,20 @@ public abstract class Module {
 	public void run() {
 		if (blank(inputs))
 			inputs = new ModuleData();
+		run(inputs);
+	}
+	
+	/**
+	 * 运行模型
+	 */
+	protected void run(ModuleData inputs) {
 		ModuleData outputs = execute(inputs);
 		if (doRecord) {
 			new WfRecord().set("process_id", context.getProcessId())
 							.set("instance_id", context.getInstanceId())
 							.set("module", name)
-							.set("headers", JsonKit.toJson(outputs.getHeaders()))
-							.set("rows", JsonKit.toJson(outputs.getRows()))
+							.set("headers", Json.toString(outputs.getHeaders()))
+							.set("rows", Json.toString(outputs.getRows()))
 							.save();
 		}
 		for (Module module : nextModules) {
@@ -63,22 +70,10 @@ public abstract class Module {
 	 * 自动运行模型
 	 * @param inputs 输入的数据
 	 */
-	private void autoRun(ModuleData inputs) {
+	protected void autoRun(ModuleData inputs) {
 		this.inputs = inputs;
-		if (autoRun) {
-			ModuleData outputs = execute(inputs);
-			if (doRecord) {
-				new WfRecord().set("process_id", context.getProcessId())
-								.set("instance_id", context.getInstanceId())
-								.set("module", name)
-								.set("headers", Json.toString(outputs.getHeaders()))
-								.set("rows", Json.toString(outputs.getRows()))
-								.save();
-			}
-			for (Module module : nextModules) {
-				module.autoRun(outputs);
-			}
-		}
+		if (autoRun)
+			run(inputs);
 	}
 
 	public WorkflowContext getContext() {

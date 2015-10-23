@@ -31,15 +31,12 @@
 		var $workflowAllTabs = $('#workflow-all-tabs');
 		for (var i = 0; i < views.length; i ++) {
 			var view = views[i];
-			
 			var href = '${ctx}/' + view.form + '?process=' + process + '&instance=' + instance + '&module=' + view.name;
             var _iframe = '<iframe scrolling="auto" frameborder="0"  src="' + href + '" style="width:100%;height:100%;"></iframe>';
 			var tab = $workflowAllTabs.tabs('add', {
 				title: view.name,
 				content: _iframe,
 				closable: true
-				// content: '<iframe src="${ctx}/' + view.form + '?process=' + process + '&instance=' + instance + '&module=' + view.name + '" frameBorder="0" scrolling="no" style="width:100%;height:90%"></iframe>',
-				//href: '${ctx}/' + view.form + '?process=' + process + '&instance=' + instance + '&module=' + view.name
 			});
 			
 			$(_iframe).height($(_iframe).height() - 5);
