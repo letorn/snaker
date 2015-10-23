@@ -113,5 +113,6 @@ create table if not exists sk_file(
 	name varchar(100),
 	suffix varchar(20),
 	ftype varchar(20),
-	content longblob
+	content longblob,
+	unique key sk_file_unique_key(name)
 );

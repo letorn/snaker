@@ -32,19 +32,29 @@
 			$.ajaxFileUpload({
 				url: 'data/file/save?ftype=' + $('#data-file-table-ftype').val(),
 				fileElementId: 'data-file-table-select',
-				success: function() {
-					$.messager.show({
-						title: '提示',
-						msg: '上传成功！',
-						timeout: 1000,
-						showType: 'slide'
-					});
-					$dataFileTable.datagrid('reload');
+				dataType: 'json',
+				success: function(resp) {
+					if (resp.success) {
+						$.messager.show({
+							title: '提示',
+							msg: '上传成功！',
+							timeout: 1000,
+							showType: 'slide'
+						});
+						$dataFileTable.datagrid('reload');
+					} else {
+						$.messager.show({
+							title: '提示',
+							msg: '上传失败！',
+							timeout: 1000,
+							showType: 'slide'
+						});
+					}
 				},
 				error: function() {
 					$.messager.show({
 						title: '提示',
-						msg: '上传失败！',
+						msg: '服务器异常！',
 						timeout: 1000,
 						showType: 'slide'
 					});
@@ -86,23 +96,32 @@
 				});
 				
 				$('.data-file-table-reupload').click(function() {
-					debugger;
 					$.ajaxFileUpload({
 						url: 'data/file/save?file=' + $(this).data('file'),
 						fileElementId: 'data-file-table-select-' + $(this).data('file'),
-						success: function() {
-							$.messager.show({
-								title: '提示',
-								msg: '上传成功！',
-								timeout: 1000,
-								showType: 'slide'
-							});
-							$dataFileTable.datagrid('reload');
+						dataType: 'json',
+						success: function(resp) {
+							if (resp.success) {
+								$.messager.show({
+									title: '提示',
+									msg: '上传成功！',
+									timeout: 1000,
+									showType: 'slide'
+								});
+								$dataFileTable.datagrid('reload');
+							} else {
+								$.messager.show({
+									title: '提示',
+									msg: '上传失败！',
+									timeout: 1000,
+									showType: 'slide'
+								});
+							}
 						},
 						error: function() {
 							$.messager.show({
 								title: '提示',
-								msg: '上传失败！',
+								msg: '服务器异常！',
 								timeout: 1000,
 								showType: 'slide'
 							});

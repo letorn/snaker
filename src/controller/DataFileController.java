@@ -30,9 +30,12 @@ public class DataFileController extends Controller {
 	 */
 	public void index() {
 		String name = getPara("name");
+		String ftype = getPara("ftype");
 		if (blank(name))
 			name = "";
-		List<SkFile> skFiles = SkFile.dao.find("select id,name,suffix,ftype from sk_file where name like ?", "%" + name + "%");
+		if (blank(ftype))
+			ftype = "";
+		List<SkFile> skFiles = SkFile.dao.find("select id,name,suffix,ftype from sk_file where name like ? and ftype like ?", "%" + name + "%", "%" + ftype + "%");
 		renderJson(skFiles);
 	}
 
@@ -45,18 +48,22 @@ public class DataFileController extends Controller {
 		Long fileId = getParaToLong("file");
 		String ftype = getPara("ftype");
 		if (notBlank(uploadFile)) {
-			String name = uploadFile.getFileName();
-			String suffix = name.substring(name.lastIndexOf(".") + 1);
-			SkFile skFile = notBlank(fileId) ? SkFile.dao.findById(fileId) : new SkFile();
-			skFile.set("name", name)
-					.set("suffix", suffix);
-			if (notBlank(ftype))
-				skFile.set("ftype", ftype);
-			try (FileInputStream  fis = new FileInputStream(uploadFile.getFile())) {
-				skFile.set("content", fis);
-				dataMap.put("success", blank(fileId) ? skFile.save() : skFile.update());
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (blank(fileId)) {
+				String name = uploadFile.getOriginalFileName();
+				String suffix = name.substring(name.lastIndexOf(".") + 1);
+				SkFile skFile =  new SkFile().set("name", name).set("suffix", suffix).set("ftype", ftype);
+				try (FileInputStream  fis = new FileInputStream(uploadFile.getFile())) {
+					skFile.set("content", fis);
+					dataMap.put("success", skFile.save());
+				} catch (Exception e) {}
+			} else {
+				SkFile skFile = SkFile.dao.findById(fileId);
+				if (notBlank(skFile)) {
+					try (FileInputStream  fis = new FileInputStream(uploadFile.getFile())) {
+						skFile.set("content", fis);
+						dataMap.put("success", skFile.update());
+					} catch (Exception e) {}
+				}
 			}
 		}
 		renderJson(dataMap);

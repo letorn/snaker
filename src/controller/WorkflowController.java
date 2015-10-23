@@ -36,11 +36,26 @@ public class WorkflowController extends Controller {
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	
 	/**
+	 * 获取工作流程实例
+	 */
+	public void index() {
+		List<Map<String, Object>> dataList = new ArrayList<Map<String,Object>>();
+		for (Workflow workflow : snakerService.findWorkflow()) {
+			Map<String, Object> m = new HashMap<String, Object>();
+			m.put("processId", workflow.getProcessId());
+			m.put("processName", workflow.getProcessName());
+			m.put("instanceId", workflow.getInstanceId());
+			dataList.add(m);
+		}
+		renderJson(dataList);
+	}
+	
+	/**
 	 * 获取工作实例
 	 * @param processId 工作流程主键
 	 * @param instance 工作实例主键
 	 */
-	public void index() {
+	public void all() {
 		Long processId = getParaToLong("process");
 		Long instanceId = getParaToLong("instance");
 
@@ -91,21 +106,6 @@ public class WorkflowController extends Controller {
 		renderJson(dataMap);
 	}
 
-	/**
-	 * 获取工作流程实例
-	 */
-	public void list() {
-		List<Map<String, Object>> dataList = new ArrayList<Map<String,Object>>();
-		for (Workflow workflow : snakerService.findWorkflow()) {
-			Map<String, Object> m = new HashMap<String, Object>();
-			m.put("processId", workflow.getProcessId());
-			m.put("processName", workflow.getProcessName());
-			m.put("instanceId", workflow.getInstanceId());
-			dataList.add(m);
-		}
-		renderJson(dataList);
-	}
-	
 	/**
 	 * 运行输出日志
 	 * process 流程主键

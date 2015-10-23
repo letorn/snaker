@@ -28,11 +28,11 @@
 		});
 		
 		$workflowListTable.datagrid({
-			url:'workflow/list',
+			url:'workflow',
 			method:'get',
 			onLoadSuccess: function() {
 				$('.workflow-list-table-look').click(function() {
-					window.open('workflow/index?process=' + $(this).data('process') + '&instance=' + $(this).data('instance'));
+					window.open('workflow/all?process=' + $(this).data('process') + '&instance=' + $(this).data('instance'));
 				});
 			}
 		});

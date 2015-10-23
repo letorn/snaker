@@ -29,20 +29,10 @@ public class ProcessController extends Controller{
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	
 	/**
-	 * 导入默认的工作流程
-	 * 目录：/src/flows
-	 */
-	public void init() {
-		dataMap.put("success", snakerService.initFlows());
-
-		renderJson(dataMap);
-	}
-	
-	/**
 	 * 获取工作流程，可以根据以下条件过滤
 	 * name 流程名称
 	 */
-	public void list() {
+	public void index() {
 		String name = getPara("name");
 
 		if (blank(name))
@@ -50,6 +40,16 @@ public class ProcessController extends Controller{
 		List<WfProcess> processes = snakerService.findProcess("%" + name + "%");
 
 		renderJson(processes);
+	}
+	
+	/**
+	 * 导入默认的工作流程
+	 * 目录：/src/flows
+	 */
+	public void init() {
+		dataMap.put("success", snakerService.initFlows());
+
+		renderJson(dataMap);
 	}
 	
 	/**

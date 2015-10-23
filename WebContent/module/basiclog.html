@@ -21,34 +21,30 @@
 			showPageList: false,
 			displayMsg: '',
 			total: 0,
-			onRefresh: function(page, pageSize) {
-				var $this = $(this);
-				$.getJSON('${ctx}/workflow/record', {
-					process: '${process}',
-					instance: '${instance}',
-					module: '${module}',
-					page: page,
-					refresh: true
-				}, function(resp) {
-					$('#module-basiclog-table').datagrid({
-						columns: [resp.headers.map(function(row) {return {title: row.name, field: row.name, width: 100, formatter: $.encodeHtml}})],
-						data: resp.rows
-					});
-					$this.pagination('refresh', {
-						total: resp.pageTotal * 10
-					})
-				});
+			onBeforeRefresh: function(page, pageSize) {
+				$(this).data("refresh", true);
 			},
 			onSelectPage: function(page, pageSize) {
-				var $this = $(this);
+				var $this = $(this), refresh = $this.data('refresh');
 				$.getJSON('${ctx}/workflow/record', {
 					process: '${process}',
 					instance: '${instance}',
 					module: '${module}',
 					page: page,
-					refresh: false
+					refresh: refresh
 				}, function(resp) {
-					$('#module-basiclog-table').datagrid('loadData', resp.rows);
+					if (refresh) {
+						$('#module-basiclog-table').datagrid({
+							columns: [resp.headers.map(function(row) {return {title: row.name, field: row.name, width: 100, formatter: $.encodeHtml}})],
+							data: resp.rows
+						});
+						$this.pagination('refresh', {
+							total: resp.pageTotal * 10
+						})
+						$this.data('refresh', false);
+					} else {
+						$('#module-basiclog-table').datagrid('loadData', resp.rows);
+					}
 				});
 			}
 		});

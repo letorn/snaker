@@ -1,14 +1,11 @@
 package engine.module;
 
 import static util.Validator.blank;
-import static util.Validator.notBlank;
 
+import java.util.Date;
 import java.util.List;
 
 import util.Json;
-
-import com.jfinal.kit.JsonKit;
-
 import engine.ModuleData;
 import engine.WorkflowContext;
 import engine.model.WfRecord;
@@ -59,6 +56,7 @@ public abstract class Module {
 							.set("module", name)
 							.set("headers", Json.toString(outputs.getHeaders()))
 							.set("rows", Json.toString(outputs.getRows()))
+							.set("create_date", new Date())
 							.save();
 		}
 		for (Module module : nextModules) {
