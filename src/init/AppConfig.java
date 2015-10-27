@@ -39,6 +39,8 @@ public class AppConfig extends JFinalConfig {
 
 		// 开发模式
 		me.setDevMode(PropKit.getBoolean("devMode"));
+		
+		me.setUploadedFileSaveDirectory("temp");
 	}
 
 	/**

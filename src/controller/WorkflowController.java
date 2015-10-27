@@ -14,8 +14,8 @@ import util.Json;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.JsonKit;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.upload.UploadFile;
 
-import engine.ModuleData;
 import engine.Workflow;
 import engine.model.WfRecord;
 import engine.module.Module;
@@ -34,12 +34,12 @@ public class WorkflowController extends Controller {
 	 * 返回到页面的json数据
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
+	private List<Object> dataList = new ArrayList<Object>();
 	
 	/**
 	 * 获取工作流程实例
 	 */
 	public void index() {
-		List<Map<String, Object>> dataList = new ArrayList<Map<String,Object>>();
 		for (Workflow workflow : snakerService.findWorkflow()) {
 			Map<String, Object> m = new HashMap<String, Object>();
 			m.put("processId", workflow.getProcessId());
@@ -107,6 +107,36 @@ public class WorkflowController extends Controller {
 	}
 
 	/**
+	 * 工作流运行参数
+	 * process 流程主键
+	 */
+	public void params() {
+		Long processId = getParaToLong();
+
+		if (notBlank(processId)) {
+			Workflow workflow = snakerService.createWorkflow(processId);
+			for (Module module : workflow.getModules()) {
+				Map<String, Object> m = new HashMap<String, Object>();
+				m.put("module", module.getName());
+				m.put("params", module.getParams());
+				dataList.add(m);
+			}
+		}
+		renderJson(dataList);
+	}
+	
+	/**
+	 * 上传文件
+	 * file 文件
+	 */
+	public void upload() {
+		UploadFile uploadFile = getFile("file");
+		dataMap.put("success", true);
+		dataMap.put("file", uploadFile.getFileName());
+		renderJson(dataMap);
+	}
+	
+	/**
 	 * 运行输出日志
 	 * process 流程主键
 	 * instance 实例参数
@@ -133,7 +163,7 @@ public class WorkflowController extends Controller {
 					Object value = row.get(key);
 					if (notBlank(value) && value instanceof String) {
 						String str = (String) value;
-						if (str.length() > 100) {
+						if (str.length() > 1000) {
 							row.put(key, str.substring(1000) + "...");
 						}
 					}

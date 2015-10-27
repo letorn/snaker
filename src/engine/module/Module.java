@@ -4,6 +4,7 @@ import static util.Validator.blank;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import util.Json;
 import engine.ModuleData;
@@ -28,7 +29,8 @@ public abstract class Module {
 	private String controller;// 模型界面
 	private boolean doRecord = false;
 	private String recordView;// 模型视图
-	
+	private List<Map<String, Object>> params;
+
 	/**
 	 * 模型执行方法体
 	 * @param inputs 输入的数据
@@ -144,6 +146,14 @@ public abstract class Module {
 
 	public void setRecordView(String recordView) {
 		this.recordView = recordView;
+	}
+
+	public List<Map<String, Object>> getParams() {
+		return params;
+	}
+
+	public void setParams(List<Map<String, Object>> params) {
+		this.params = params;
 	}
 
 }

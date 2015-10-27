@@ -98,14 +98,15 @@ public class DbProcOutputModule extends Module implements ICallback {
 				NewProxyCallableStatement proc = null;
 				proc=(NewProxyCallableStatement) conn.prepareCall(sql.toString());
 				for(int k=0;k<num;k++){
-					proc.setString((k+1),(String)map.get(procFields.get(k).get("from")));
+					String param=(String)map.get(procFields.get(k).get("from"));;
+					proc.setObject((k+1), param);
 				}
 				//proc.setString(1, "title");//设置参数值
 	            // proc.setString(2, "content");
-				proc.registerOutParameter(num+1, java.sql.Types.INTEGER);//设置返回值类型
+				proc.registerOutParameter(num+1, java.sql.Types.LONGNVARCHAR);//设置返回值类型
 	            proc.registerOutParameter(num+2, java.sql.Types.INTEGER);
 	            proc.execute();
-	            Integer result =  proc.getInt(num+1);//得到返回值
+	            String result =  proc.getString(num+1);//得到返回值
 	            Integer isSuccess =proc.getInt(num+2);
 	
 	            System.out.println(result);

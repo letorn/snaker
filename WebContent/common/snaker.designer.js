@@ -60,11 +60,44 @@ var Designer = {
 				doRecord: true,
 				recordView: 'module/basiclog',
 				name: '页面输入',
+				dataSrc: '',
 				startUrl: '',
 				helpRegion: '',
 				helpUrl: '',
 				targetUrl: '',
+				skipJugment: '',
 				dataPaths: []
+			}
+		},
+		excelinput: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.ExcelInputModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: 'Excel输入',
+				params: [{
+					name: 'excelFile',
+					type: 'file',
+					editor: 'filebox',
+					options: ''
+				}, {
+					name: 'name',
+					type: 'string',
+					editor: 'textbox',
+					options: ''
+				}, {
+					name: 'area',
+					type: 'string',
+					editor: 'combobox',
+					options: '[["广东", "1"], ["广西", "2"]]'
+				}]
 			}
 		},
 		tablemapper: {
@@ -112,7 +145,7 @@ var Designer = {
 				clazz: 'engine.module.DbProcOutputModule',
 				doRecord: true,
 				recordView: 'module/basiclog',
-				name: 'db_proc_output',
+				name: '存储过程输出',
 				jdbcUrl: '',
 				jdbcUser: '',
 				jdbcPwd: '',
@@ -120,7 +153,6 @@ var Designer = {
 				procFields: []
 			}
 		},
-		
 		dbtableoutput: {
 			ptype: 'rect',
 			pattr: {
@@ -133,7 +165,7 @@ var Designer = {
 				clazz: 'engine.module.DbTableOutputModule',
 				doRecord: true,
 				recordView: 'module/basiclog',
-				name: 'db_table_output',
+				name: '表输出',
 				jdbcUrl: '',
 				jdbcUser: '',
 				jdbcPwd: '',
@@ -176,44 +208,6 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 				Designer.setData(JSON.parse($content.text()));
 			} else if (title == $content.panel('options').title) {
 				$content.text(JSON.stringify(Designer.getData()));
-			}
-		}
-	});
-	$(document).keydown(function(event) {
-		if (event.keyCode == 46) {
-			var selectedEle = Designer._selectedEle;
-			if (selectedEle) {
-				if (selectedEle.data('node')) {
-					// 删除连接的箭头
-					for (var key in selectedEle.arrowMap) {
-						var ar = selectedEle.arrowMap[key], dire = ar.from == selectedEle ? 'to' : 'from';
-						for (var key2 in ar[dire].arrowMap) {
-							if (ar == ar[dire].arrowMap[key2]) delete ar[dire].arrowMap[key2];
-						}
-						ar.remove();
-					}
-					// 删除文件
-					selectedEle.text.remove();
-					delete selectedEle.text;
-					// 删除图标
-					selectedEle.remove();
-					// 清空属性框
-					delete Designer._selectedEle;
-					Designer.PropBox.setValues({});
-				} else {
-					if (selectedEle.type == 'path') {
-						for (var key in selectedEle.from.arrowMap) {
-							var ar = selectedEle.from.arrowMap[key];
-							if (selectedEle == ar) delete selectedEle.from.arrowMap[key];
-						}
-						for (var key in selectedEle.to.arrowMap) {
-							var ar = selectedEle.to.arrowMap[key];
-							if (selectedEle == ar) delete selectedEle.to.arrowMap[key];
-						}
-						selectedEle.remove();
-						delete Designer._selectedEle;
-					}
-				}
 			}
 		}
 	});
@@ -597,6 +591,43 @@ Designer.eleClick = function(event) {
 	if (this != PropBox.current && this.data('node')) {
 		PropBox.current = this;
 		PropBox.setValues(this.data());
+	}
+};
+
+Designer.eleDelete = function() {
+	var selectedEle = Designer._selectedEle;
+	if (selectedEle) {
+		if (selectedEle.data('node')) {
+			// 删除连接的箭头
+			for (var key in selectedEle.arrowMap) {
+				var ar = selectedEle.arrowMap[key], dire = ar.from == selectedEle ? 'to' : 'from';
+				for (var key2 in ar[dire].arrowMap) {
+					if (ar == ar[dire].arrowMap[key2]) delete ar[dire].arrowMap[key2];
+				}
+				ar.remove();
+			}
+			// 删除文件
+			selectedEle.text.remove();
+			delete selectedEle.text;
+			// 删除图标
+			selectedEle.remove();
+			// 清空属性框
+			delete Designer._selectedEle;
+			Designer.PropBox.setValues({});
+		} else {
+			if (selectedEle.type == 'path') {
+				for (var key in selectedEle.from.arrowMap) {
+					var ar = selectedEle.from.arrowMap[key];
+					if (selectedEle == ar) delete selectedEle.from.arrowMap[key];
+				}
+				for (var key in selectedEle.to.arrowMap) {
+					var ar = selectedEle.to.arrowMap[key];
+					if (selectedEle == ar) delete selectedEle.to.arrowMap[key];
+				}
+				selectedEle.remove();
+				delete Designer._selectedEle;
+			}
+		}
 	}
 };
 

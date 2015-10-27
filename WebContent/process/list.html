@@ -13,6 +13,15 @@
 	<a id="process-list-table-designer" class="easyui-linkbutton">设计</a>
 	<input id="process-list-table-search" class="easyui-searchbox" data-options="prompt:'流程显示名称'" style="width:200px"></input>
 </div>
+
+
+<div id="process-list-params-window" class="easyui-window" data-options="title:'启动',modal:true,closed:true,footer:'#process-list-params-window-footer'" style="width:600px;height:500px">
+
+</div>
+<div id="process-list-params-window-footer" style="padding:5px;">
+	<a id="process-list-params-window-confirm" class="easyui-linkbutton" style="width:80px">运行</a>
+	<a id="process-list-params-window-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
 <script type="text/javascript">
 	function processListTableActionFormatter(value, row) {
 		return '<a class="process-list-table-start" data-process="' + row.id + '" data-text="' + row.name + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
@@ -21,7 +30,7 @@
 	}
 
 	$.render(function() {
-		var $processListTable = $('#process-list-table');
+		var $processListTable = $('#process-list-table'), $processListParamsWindow = $('#process-list-params-window');
 		
 		$('#process-list-table-init').click(function() {
 			$.getJSON('process/init', function(data) {
@@ -56,28 +65,86 @@
 			}
 		});
 		
+		$('#process-list-params-window-confirm').click(function() {
+			var param = {};
+			$processListParamsWindow.find('input,select').each(function(index, input) {
+				var $input = $(input);
+				var module = $input.data('module');
+				var field = $input.data('field');
+				if (module != undefined && field != undefined) {
+					param[module] = param[module] || {};
+					param[module][field] = $input.attr('type') == 'file' ? $input.data('val') : $input.val();
+				}
+			});
+			$.getJSON('workflow/run/' + $processListParamsWindow.data('process'), function(data) {
+				if (data.success) {
+					$.messager.show({
+						title: '提示',
+						msg: '启动成功，请到待办任务就查看！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				} else {
+					$.messager.show({
+						title: '提示',
+						msg: '启动失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+			});
+			$processListParamsWindow.window('close');
+		});
+		
+		$('#process-list-params-window-cancel').click(function() {
+			$processListParamsWindow.window('close');
+		});
+		
 		$processListTable.datagrid({
 			url:'process',
 			method:'get',
 			onLoadSuccess: function() {
 				$('.process-list-table-start').click(function() {
-					$.getJSON('workflow/run/' + $(this).data('process'), function(data) {
-						if (data.success) {
-							$.messager.show({
-								title: '提示',
-								msg: '启动成功，请到待办任务就查看！',
-								timeout: 1000,
-								showType: 'slide'
-							});
-						} else {
-							$.messager.show({
-								title: '提示',
-								msg: '启动失败！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+					$processListParamsWindow.data('process', $(this).data('process'));
+					$processListParamsWindow.html('');
+					$.getJSON('workflow/params/' + $(this).data('process'), function(data) {
+						for (var i = 0; i < data.length; i ++) {
+							var d = data[i];
+							if (d.params) {
+								$processListParamsWindow.append('<h3>' + d.module + '</h3>');
+								for (var j = 0; j < d.params.length; j ++) {
+									var param = d.params[j];
+									if (param.editor == 'combobox') {
+										var options = '';
+										for (var k = 0; k < param.options.length; k ++) {
+											options += '<option value="' + param.options[k][1] + '">' + param.options[k][0] + '</option>';
+										}
+										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<select class="easyui-' + param.editor + '" data-module="' + d.module + '" data-field="' + param.name + '" style="width:173px">' + options + '</select><br />');
+									} else if (param.editor == 'filebox') {
+										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input id="process-list-params-window-' + d.module + '-' + param.name + '" data-module="' + d.module + '" data-field="' + param.name + '" type="file" name="file" /><br />');
+									}else {
+										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-' + param.editor + '" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
+									}
+								}
+							}
 						}
+						$.parser.parse($processListParamsWindow);
+						$processListParamsWindow.find('input[type=file]').change(function(newValue) {
+							var $file = $(this);
+							$.ajaxFileUpload({
+								url: 'workflow/upload',
+								fileElementId: $file.attr('id'),
+								dataType: 'json',
+								success: function(resp) {
+									$file.data('val', resp.file);
+								},
+								error: function() {
+									
+								}
+							});
+						});
 					});
+					$processListParamsWindow.window('open');
 				});
 				
 				$('.process-list-table-design').click(function() {

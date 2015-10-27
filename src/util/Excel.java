@@ -12,6 +12,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import engine.ModuleData;
+import engine.ModuleData.DataHeader;
+
 /*
  * Excel解析工具
  */
@@ -20,16 +23,18 @@ public class Excel {
 	private final static String XLS = "xls";
 	private final static String XLSX = "xlsx";
 	
-	public static Map<String, String> exportFromExcel(InputStream is, String suffix, String sheetName) throws IOException {
-		Map<String, String> result = new HashMap<String, String>();
+	public static Map<String, Map<String, String>> exportFromExcel(InputStream is, String suffix, ModuleData inputs) throws IOException{
+		Map<String, Map<String, String>> excelMaps = new HashMap<String, Map<String, String>>();
+		Workbook workbook = null;
 		if (suffix.toLowerCase().equals(XLS)) {
-			HSSFWorkbook workbook = new HSSFWorkbook(is);
-			result = exportFromExcel(workbook, sheetName);
+			workbook = new HSSFWorkbook(is);
 		} else if (suffix.toLowerCase().equals(XLSX)) {
-			XSSFWorkbook workbook = new XSSFWorkbook(is);
-			result = exportFromExcel(workbook, sheetName);
+			workbook = new XSSFWorkbook(is);
 		}
-		return result;
+		for (DataHeader dh : inputs.getHeaders()) {
+			excelMaps.put(dh.getName(), Excel.exportFromExcel(workbook, dh.getName()));
+		}
+		return excelMaps;
 	}
 	
 	private static Map<String, String> exportFromExcel(Workbook workbook, String sheetName) throws IOException{
@@ -42,9 +47,10 @@ public class Excel {
 			Row row = sheet.getRow(rowIndex);
 			if (row != null) {
 				String code = getValue(row.getCell(0));
-				String value = getValue(row.getCell(1));
-//				String keyWord = getValue(row.getCell(2));
-				result.put(code, value);
+				String keyWord = getValue(row.getCell(2));
+				for (String key : keyWord.split(",")) {
+					result.put(key, code);
+				}
 			}
 		}
 		return result;

@@ -10,7 +10,6 @@ import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.Task;
-import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
@@ -21,10 +20,12 @@ import us.codecraft.webmagic.selector.Selectable;
  */
 public class WebInputModule extends Module {
 
+	private String dataSrc;
 	private String startUrl;
 	private String helpRegion;
 	private String helpUrl;
 	private String targetUrl;
+	private String skipJugment;
 	private List<Map<String, String>> dataPaths;
 	private Spider spider = Spider.create(new SnakerProcessor()).thread(16);
 	
@@ -57,6 +58,9 @@ public class WebInputModule extends Module {
 
 		public void process(Page page) {
 			if (page.getUrl().toString().matches(targetUrl)) {
+				if (page.getHtml().xpath(skipJugment).toString() != null && page.getHtml().xpath(skipJugment).toString().length() > 0) {
+					page.setSkip(true);
+				}
 				targetProcess(page);
 			} else if (page.getUrl().toString().matches(helpUrl)) {
 				helpProcess(page);
@@ -72,6 +76,7 @@ public class WebInputModule extends Module {
 				String regex = dataPath.get("regex");
 				String isAll = dataPath.get("isAll");
 				Selectable result = page.getHtml();
+				page.putField("dataSrc", dataSrc);
 				if ("url".equals(attr)) {
 					result = page.getUrl();
 				}
@@ -118,6 +123,7 @@ public class WebInputModule extends Module {
 
 		private ModuleData inputs;
 		private Module module;
+		private boolean stop = false;
 		private List<Map<String, Object>> tmp = new ArrayList<Map<String, Object>>();
 		public OutputPipeline(ModuleData inputs, Module module){
 			this.inputs = inputs;
@@ -134,10 +140,11 @@ public class WebInputModule extends Module {
 				module.run(inputs);
 				inputs = new ModuleData();
 			}
-			if (spider.getStatus() == Spider.Status.Stopped) {
+			if ((!stop) && spider.getStatus() == Spider.Status.Stopped) {
 				inputs.addAll(tmp);
 				tmp.clear();
 				module.run(inputs);
+				stop = true;
 			}
 		}
 		

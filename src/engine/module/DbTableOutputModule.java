@@ -1,21 +1,17 @@
 package engine.module;
 
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
-import com.jfinal.plugin.druid.DruidPlugin;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
 
 import engine.ModuleData;
-import engine.model.DbEnterprise;
 
 /*
  * 流程模型 - 输出到数据库
@@ -46,38 +42,47 @@ public class DbTableOutputModule extends Module implements ICallback {
 		if(num>0 ){
 			for(int i=0;i<num;i++){
 				if(i==0){
-					sql.append(tableFields.get(i).get("from"));
+					sql.append(tableFields.get(i).get("name"));
 				}else{
 					sql.append(",");
-					sql.append(tableFields.get(i).get("from"));
+					sql.append(tableFields.get(i).get("name"));
 				}
 			}
 			sql.append(") values (");
+		
+	
+			for(int k=0;k<num;k++){
+				
+				if(k==0){
+					sql.append("?");
+				}else{
+					sql.append(",");
+					sql.append("?");
+				}
+				
+			}
+			
+			sql.append(")");
+		try (Connection conn = dataSource.getConnection()) {
+			PreparedStatement ps =  conn.prepareStatement(sql.toString());
 			for(int j=0;j<inputs.getRows().size();j++){
 				Map<String, Object> map= inputs.getRows().get(j);
-				if(j!=0){
-					sql.append("),(");
-				}
-				for(int k=0;k<num;k++){
-					
-					if(k==0){
-						sql.append("'"+map.get(tableFields.get(k).get("from"))+"'");
-					}else{
-						sql.append(",");
-						sql.append("'"+map.get(tableFields.get(k).get("from"))+"'");
+				for(int i=0 ;i<num; i++){
+					Object col= map.get(tableFields.get(i).get("from"));
+					if(col instanceof String && col.toString().equals("")){
+						col=null;
 					}
+					ps.setObject(i+1,col);
 				}
+				ps.addBatch();
 			}
-			sql.append(")");
-			System.out.println("sql====="+sql);
-		try (Connection conn = dataSource.getConnection()) {
-			
-			NewProxyCallableStatement proc = null;
-			proc=(NewProxyCallableStatement) conn.prepareCall(sql.toString());
-				
-			proc.execute();
+			ps.executeBatch();
 	        dataSource.close();
-			} catch (Exception e) {
+			} catch (BatchUpdateException e) {
+				if(!e.getMessage().startsWith("Duplicate entry")){
+					e.printStackTrace();
+				}
+			}catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
