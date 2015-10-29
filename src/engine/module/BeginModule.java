@@ -6,6 +6,7 @@ import engine.ModuleData;
  * 流程模型 - 开始
  * 一个工作流程有且只有一个开始模型
  */
+@SuppressWarnings("serial")
 public class BeginModule extends Module {
 
 	/**

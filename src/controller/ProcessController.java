@@ -10,8 +10,10 @@ import java.util.Map;
 import service.SnakerService;
 
 import com.jfinal.core.Controller;
+import com.jfinal.upload.UploadFile;
 
 import engine.Workflow;
+import engine.module.Module;
 
 /*
  * 控制类 - 工作流程相关
@@ -118,6 +120,61 @@ public class ProcessController extends Controller{
 			}
 		}
 		render("designer.html");
+	}
+	
+	/**
+	 * 运行工作流程
+	 * process 流程主键
+	 * daemon 后台运行
+	 * params 实例参数
+	 */
+	public void start() {
+		Long processId = getParaToLong();
+		Boolean daemon = getParaToBoolean("daemon", false);
+		String params = getPara("params", "{}");
+
+		if (notBlank(processId)) {
+			Workflow instance = snakerService.startProcess(processId, params, daemon);
+			if (instance != null) {
+				dataMap.put("success", true);
+				dataMap.put("process", instance.getProcessId());
+				dataMap.put("instance", instance.getInstanceId());
+			}
+		}
+		renderJson(dataMap);
+	}
+
+	/**
+	 * 上传文件
+	 * file 文件
+	 */
+	public void upload() {
+		UploadFile uploadFile = getFile("file");
+		dataMap.put("success", true);
+		dataMap.put("file", uploadFile.getFileName());
+		dataMap.put("path", uploadFile.getSaveDirectory() + uploadFile.getFileName());
+		renderJson(dataMap);
+	}
+	
+	/**
+	 * 工作流程运行参数
+	 * process 流程主键
+	 */
+	public void params() {
+		Long processId = getParaToLong();
+
+		if (notBlank(processId)) {
+			Workflow process = snakerService.getProcess(processId);
+			for (Module module : process.getModules()) {
+				if (notBlank(module.getParams())) {
+					Map<String, Object> row = new HashMap<String, Object>();
+					row.put("module", module.getName());
+					row.put("params", module.getParams());
+					dataList.add(row);
+				}
+			}
+		}
+		renderJson(dataList);
 	}
 	
 }

@@ -1,33 +1,15 @@
 package engine.module;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.apache.axis.encoding.Base64;
-
 import test.DuXMLDoc;
 import util.HbClient;
-
-import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.ICallback;
-import com.jfinal.plugin.druid.DruidPlugin;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
-
 import engine.ModuleData;
-import engine.model.DbEnterprise;
 
 
 /*
  * 流程模型 - 输出到数据库
  * 数据库存储过程
  */
+@SuppressWarnings("serial")
 public class HbInputModule extends Module  {
 
 	//private String dxUrl="http://10.128.10.141:9090/dxservice/svcs/DataService";

@@ -13,11 +13,11 @@
 </head>
 <body>
 <div class="easyui-layout" data-options="fit:true">
-	<div data-options="region:'north',split:false" style="height:50px">
-		流程名称：${processName}<br />
+	<div data-options="region:'north',split:false" style="height:55px;padding:5px 0px 0px 10px">
+		流程名称：${processName}<br /><br />
 		实例参数：${instanceParams}
 	</div>
-	<div id="workflow-all-tabs" class="easyui-tabs" data-options="region:'center'"></div>
+	<div id="instance-all-tabs" class="easyui-tabs" data-options="region:'center'"></div>
 </div>
 <script type="text/javascript">
 	$(function() {
@@ -29,12 +29,12 @@
 		if (views.length > 0) {
 			views = JSON.parse(views);
 		}
-		var $workflowAllTabs = $('#workflow-all-tabs');
+		var $instanceAllTabs = $('#instance-all-tabs');
 		for (var i = 0; i < views.length; i ++) {
 			var view = views[i];
 			var href = '${ctx}/' + view.form + '?process=' + process + '&instance=' + instance + '&module=' + view.name;
-            var _iframe = '<iframe scrolling="auto" frameborder="0"  src="' + href + '" style="width:100%;height:100%;"></iframe>';
-			var tab = $workflowAllTabs.tabs('add', {
+            var _iframe = '<iframe scrolling="auto" frameborder="0"  src="' + href + '" style="width:100%;height:99%;"></iframe>';
+			var tab = $instanceAllTabs.tabs('add', {
 				title: view.name,
 				content: _iframe,
 				closable: true
@@ -42,7 +42,7 @@
 			
 			$(_iframe).height($(_iframe).height() - 5);
 		}
-		$workflowAllTabs.tabs('select', 0);
+		$instanceAllTabs.tabs('select', 0);
 	});
 </script>
 </body>

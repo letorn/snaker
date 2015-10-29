@@ -6,16 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.SkFile;
+
 import org.apache.commons.io.FilenameUtils;
 
-import engine.ModuleData;
-import model.SkFile;
 import util.Excel;
+import engine.ModuleData;
 
 /*
  * 流程模型 - Excel映射
  * 通过Excel文件映射数据
  */
+@SuppressWarnings({ "serial", "unchecked" })
 public class ExcelMapperModule extends Module {
 
 	private String excelFile;

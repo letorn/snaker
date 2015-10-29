@@ -9,7 +9,6 @@ import java.util.Map;
 
 import com.jfinal.plugin.activerecord.ICallback;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
 
 import engine.ModuleData;
 
@@ -17,6 +16,7 @@ import engine.ModuleData;
  * 流程模型 - 输出到数据库
  * 数据库存储过程
  */
+@SuppressWarnings("serial")
 public class DbTableOutputModule extends Module implements ICallback {
 
 	private String jdbcUrl;

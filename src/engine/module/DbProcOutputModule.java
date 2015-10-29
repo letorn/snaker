@@ -5,9 +5,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
@@ -18,6 +15,7 @@ import engine.ModuleData;
  * 流程模型 - 输出到数据库
  * 数据库存储过程
  */
+@SuppressWarnings("serial")
 public class DbProcOutputModule extends Module implements ICallback {
 
 	private String jdbcUrl;

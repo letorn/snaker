@@ -19,12 +19,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import engine.ModuleData;
-import engine.ModuleData.DataHeader;
 
 /*
  * 流程模型 - Excel输入
  * 通过Excel文件输入数据
  */
+@SuppressWarnings("serial")
 public class ExcelInputModule extends Module {
 
 	private File excelFile;

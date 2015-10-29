@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import engine.ModuleData;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -13,11 +12,13 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
+import engine.ModuleData;
 
 /*
  * 流程模型 - 页面爬取
  * 爬虫
  */
+@SuppressWarnings("serial")
 public class WebInputModule extends Module {
 
 	private String dataSrc;

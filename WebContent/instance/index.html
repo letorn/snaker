@@ -1,0 +1,40 @@
+<table id="instance-index-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#instance-index-table-toolbar'">
+	<thead>
+		<tr>
+			<th data-options="field:'processId'" style="width:60px">流程编号</th>
+			<th data-options="field:'processName'" style="width:150px">流程名称</th>
+			<th data-options="field:'instanceId'" style="width:60px">实例编号</th>
+			<th data-options="field:'action',formatter:instanceIndexTableActionFormatter" style="width:180px">操作</th>
+		</tr>
+	</thead>
+</table>
+<div id="instance-index-table-toolbar">
+	<input id="instance-index-table-search" class="easyui-searchbox" data-options="prompt:'流程名称'" style="width:200px"></input>
+</div>
+<script type="text/javascript">
+	function instanceIndexTableActionFormatter(value, row) {
+		return '<a class="instance-index-table-look" data-instance="' + row.instanceId + '" style="cursor:pointer;color:blue">查看</a>';
+	}
+
+	$.render(function() {
+		var $instanceIndexTable = $('#instance-index-table');
+		
+		$('#instance-index-table-search').searchbox({
+			searcher: function(value) {
+				$instanceIndexTable.datagrid('load', {
+					name: value
+				});
+			}
+		});
+		
+		$instanceIndexTable.datagrid({
+			url:'instance',
+			method:'get',
+			onLoadSuccess: function() {
+				$('.instance-index-table-look').click(function() {
+					window.open('instance/all/' + $(this).data('instance'));
+				});
+			}
+		});
+	});
+</script>

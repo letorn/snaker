@@ -14,7 +14,6 @@ create table if not exists wf_instance(
 	id bigint primary key auto_increment,
 	process_id bigint,
 	params text,
-	update_date datetime,
 	create_date datetime
 );
 
@@ -26,7 +25,7 @@ create table if not exists wf_record(
 	instance_id bigint,
 	module varchar(50),
 	headers text,
-	outputs text,
+	rows text,
 	create_date datetime
 );
 

@@ -20,7 +20,7 @@ import controller.DataJobhunterController;
 import controller.IndexController;
 import controller.ModuleController;
 import controller.ProcessController;
-import controller.WorkflowController;
+import controller.InstanceController;
 import engine.model.DbEnterprise;
 import engine.model.DbEntpost;
 import engine.model.DbJobhunter;
@@ -42,7 +42,7 @@ public class AppConfig extends JFinalConfig {
 
 		// 开发模式
 		me.setDevMode(PropKit.getBoolean("devMode"));
-		
+		// 文件保存目录
 		me.setUploadedFileSaveDirectory("temp");
 	}
 
@@ -100,8 +100,8 @@ public class AppConfig extends JFinalConfig {
 		me.add("/data/jobhunter", DataJobhunterController.class);// 求职者信息
 				
 		// snaker流程相关
-		me.add("/process", ProcessController.class);
-		me.add("/workflow", WorkflowController.class);
+		me.add("/process", ProcessController.class);// 工作流程
+		me.add("/instance", InstanceController.class);// 流程实例
 		
 		// module组件相关
 		me.add("/module", ModuleController.class);

@@ -1,0 +1,193 @@
+<table id="process-index-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#process-index-table-toolbar'">
+	<thead>
+		<tr>
+			<th data-options="field:'id'" style="width:60px">流程编号</th>
+			<th data-options="field:'name'" style="width:150px">流程名称</th>
+			<th data-options="field:'content',formatter:$.encodeHtml" style="width:680px">流程内容</th>
+			<th data-options="field:'action',formatter:processIndexTableActionFormatter" style="width:130px">操作</th>
+		</tr>
+	</thead>
+</table>
+<div id="process-index-table-toolbar">
+	<a id="process-index-table-init" class="easyui-linkbutton">初始化</a>
+	<a id="process-index-table-designer" class="easyui-linkbutton">设计</a>
+	<input id="process-index-table-search" class="easyui-searchbox" data-options="prompt:'流程名称'" style="width:200px"></input>
+</div>
+
+
+<div id="process-index-params-window" class="easyui-window" data-options="title:'启动',modal:true,closed:true,footer:'#process-index-params-window-footer'" style="width:320px;padding:10px">
+</div>
+<div id="process-index-params-window-footer" style="padding:5px;">
+	<a id="process-index-params-window-confirm" class="easyui-linkbutton" style="width:80px">运行</a>
+	<a id="process-index-params-window-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+<script type="text/javascript">
+	function processIndexTableActionFormatter(value, row) {
+		return '<a class="process-index-table-start" data-process="' + row.id + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;' +
+				'<a class="process-index-table-designer" data-process="' + row.id + '" style="cursor:pointer;color:blue">设计</a>&nbsp;&nbsp;' + 
+				'<a class="process-index-table-delete" data-process="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
+	}
+
+	$.render(function() {
+		var $processIndexTable = $('#process-index-table'), $processIndexParamsWindow = $('#process-index-params-window');
+		
+		$('#process-index-table-init').click(function() {
+			$.post('process/init', function(data) {
+				if (data.success) {
+					$.messager.show({
+						title: '提示',
+						msg: '初始化完成！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+					$processIndexTable.datagrid('reload');
+				} else {
+					$.messager.show({
+						title: '提示',
+						msg: '初始化失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+			}, 'json');
+		});
+		
+		$('#process-index-table-designer').click(function() {
+			window.open('process/designer');
+		});
+		
+		$('#process-index-table-search').searchbox({
+			searcher: function(value) {
+				$processIndexTable.datagrid('load', {
+					name: value
+				});
+			}
+		});
+		
+		$('#process-index-params-window-confirm').click(function() {
+			var params = {};
+			$processIndexParamsWindow.find('input,select').each(function(index, input) {
+				var $input = $(input);
+				var module = $input.data('module');
+				var field = $input.data('field');
+				if (module != undefined && field != undefined) {
+					params[module] = params[module] || {};
+					params[module][field] = $input.val();
+				}
+			});
+			$.post('process/start/' + $processIndexParamsWindow.data('process'), {
+				params: JSON.stringify(params)
+			}, function(data) {
+				if (data.success) {
+					window.open('instance/all/' + data.instance);
+				} else {
+					$.messager.show({
+						title: '提示',
+						msg: '启动失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+				$processIndexParamsWindow.window('close');
+			}, 'json');
+		});
+		
+		$('#process-index-params-window-cancel').click(function() {
+			$processIndexParamsWindow.window('close');
+		});
+		
+		$processIndexTable.datagrid({
+			url:'process',
+			method:'get',
+			onLoadSuccess: function() {
+				$('.process-index-table-start').click(function() {
+					$processIndexParamsWindow.data('process', $(this).data('process'));
+					$processIndexParamsWindow.html('');
+					$.post('process/params/' + $(this).data('process'), function(data) {
+						if (data.length <= 0) {
+							$.post('process/start/' + $processIndexParamsWindow.data('process'), function(data) {
+								if (data.success) {
+									window.open('instance/all/' + data.instance);
+								} else {
+									$.messager.show({
+										title: '提示',
+										msg: '启动失败！',
+										timeout: 1000,
+										showType: 'slide'
+									});
+								}
+							}, 'json');
+						} else {
+							for (var i = 0; i < data.length; i ++) {
+								var d = data[i];
+								if (d.params) {
+									$processIndexParamsWindow.append('<h3>' + d.module + '</h3>');
+									for (var j = 0; j < d.params.length; j ++) {
+										var param = d.params[j];
+										if (param.editor == 'combobox') {
+											var options = '';
+											for (var k = 0; k < param.options.length; k ++) {
+												options += '<option value="' + param.options[k][1] + '">' + param.options[k][0] + '</option>';
+											}
+											$processIndexParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<select class="easyui-combobox" data-module="' + d.module + '" data-field="' + param.name + '" style="width:173px">' + options + '</select><br />');
+										} else if (param.editor == 'filebox') {
+											$processIndexParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-textbox file" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
+										} else {
+											$processIndexParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-' + param.editor + '" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
+										}
+									}
+								}
+							}
+							$processIndexParamsWindow.window('open');
+							$.parser.parse($processIndexParamsWindow);
+							$processIndexParamsWindow.find('.file').textbox({
+								buttonText: '选择文件',
+								iconAlign: 'left',
+								onClickButton: function() {
+									$file = $(this);
+									$.upload({
+										url: 'process/upload', 
+										fileName: 'file', 
+										dataType: 'json',
+										onSend: function() {
+											return true;
+										},
+										onComplate: function(data) {
+											$file.textbox('setText', data.file);
+											$file.val(data.path);
+										}
+									});
+								}
+							});
+						}
+					}, 'json');
+				});
+				
+				$('.process-index-table-designer').click(function() {
+					window.open ('process/designer/' + $(this).data('process'));
+				});
+				
+				$('.process-index-table-delete').click(function() {
+					$.post('process/delete/' + $(this).data('process'), function(data) {
+						if (data.success) {
+							$.messager.show({
+								title: '提示',
+								msg: '删除成功！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+							$processIndexTable.datagrid('reload');
+						} else {
+							$.messager.show({
+								title: '提示',
+								msg: '删除失败！',
+								timeout: 1000,
+								showType: 'slide'
+							});
+						}
+					}, 'json');
+				});
+			}
+		});
+	});
+</script>

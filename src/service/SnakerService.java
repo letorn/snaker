@@ -87,6 +87,7 @@ public class SnakerService {
 	 * 运行工作流
 	 * @param processId 流程主键
 	 * @param param 实例参数
+	 * @param daemon 后台运行
 	 * @return 是否运行成功
 	 */
 	public Workflow startProcess(Long processId, String params, boolean daemon) {
@@ -95,7 +96,7 @@ public class SnakerService {
 	
 	/**
 	 * 获取流程实例
-	 * @param orderId 实例主键
+	 * @param instanceId 实例主键
 	 * @return 流利实例
 	 */
 	public Workflow getInstance(Long instanceId) {
@@ -104,16 +105,27 @@ public class SnakerService {
 	
 	/**
 	 * 查询工作流实例
+	 * @param page 页码
+	 * @param limit 每页多少条记录
+	 * @param name 流程名称
 	 * @return 工作流实例列表
 	 */
-	public Page<Workflow> findInstance(int page, int limit) {
+	public Page<Workflow> findInstance(int page, int limit, String name) {
 		List<Workflow> instances = engine.findInstance();
-		int total = instances.size();
+		List<Workflow> list = new ArrayList<Workflow>();
+		if (blank(name)) {
+			list = instances;
+		} else {
+			for (Workflow instance : instances)
+				if (instance.getProcessName().contains(name))
+					list.add(instance);
+		}
+		int total = list.size();
 		int fromIndex = (page - 1) * limit;
 		int toIndex = fromIndex + limit;
 		if (toIndex > total)
 			toIndex = total;
-		return new Page<Workflow>(instances.subList(fromIndex, toIndex), page, limit, total % limit == 0 ? total / limit : total / limit + 1, total);
+		return new Page<Workflow>(list.subList(fromIndex, toIndex), page, limit, total % limit == 0 ? total / limit : total / limit + 1, total);
 	}
 	
 }

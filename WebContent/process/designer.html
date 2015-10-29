@@ -56,8 +56,8 @@
 </div>
 
 
-<div id="module-tableinput-editor-data-headers" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-tableinput-editor-data-headers-footer'" style="width:600px;height:500px">
-	<table id="module-tableinput-editor-data-headers-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-tableinput-editor-data-headers-toolbar'">
+<div id="module-editor-data-headers" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-editor-data-headers-footer'" style="width:600px;height:500px">
+	<table id="module-editor-data-headers-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-data-headers-toolbar'">
 		<thead>
 			<tr>
 				<th data-options="field:'name',width:100,editor:{type:'textbox'}">名称</th>
@@ -66,32 +66,32 @@
 			</tr>
 		</thead>
 	</table>
-	<div id="module-tableinput-editor-data-headers-toolbar">
-		<a id="module-tableinput-editor-data-headers-add" class="easyui-linkbutton">新增</a>
-		<a id="module-tableinput-editor-data-headers-remove" class="easyui-linkbutton">删除</a>
+	<div id="module-editor-data-headers-toolbar">
+		<a id="module-editor-data-headers-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-data-headers-remove" class="easyui-linkbutton">删除</a>
 	</div>
 </div>
-<div id="module-tableinput-editor-data-headers-footer" style="padding:5px;">
-	<a id="module-tableinput-editor-data-headers-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="module-tableinput-editor-data-headers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+<div id="module-editor-data-headers-footer" style="padding:5px;">
+	<a id="module-editor-data-headers-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-data-headers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 
-<div id="module-tableinput-editor-data-rows" class="easyui-window" data-options="title:'表数据',modal:true,closed:true,footer:'#module-tableinput-editor-data-rows-footer'" style="width:600px;height:500px">
-	<table id="module-tableinput-editor-data-rows-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-tableinput-editor-data-rows-toolbar'"></table>
-	<div id="module-tableinput-editor-data-rows-toolbar">
-		<a id="module-tableinput-editor-data-rows-add" class="easyui-linkbutton">新增</a>
-		<a id="module-tableinput-editor-data-rows-remove" class="easyui-linkbutton">删除</a>
+<div id="module-editor-data-rows" class="easyui-window" data-options="title:'表数据',modal:true,closed:true,footer:'#module-editor-data-rows-footer'" style="width:600px;height:500px">
+	<table id="module-editor-data-rows-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-data-rows-toolbar'"></table>
+	<div id="module-editor-data-rows-toolbar">
+		<a id="module-editor-data-rows-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-data-rows-remove" class="easyui-linkbutton">删除</a>
 	</div>
 </div>
-<div id="module-tableinput-editor-data-rows-footer" style="padding:5px;">
-	<a id="module-tableinput-editor-data-rows-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="module-tableinput-editor-data-rows-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+<div id="module-editor-data-rows-footer" style="padding:5px;">
+	<a id="module-editor-data-rows-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-data-rows-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 
-<div id="module-tableinput-editor-data-mappers" class="easyui-window" data-options="title:'表映射',modal:true,closed:true,footer:'#module-tableinput-editor-data-mappers-footer'" style="width:600px;height:500px">
-	<table id="module-tableinput-editor-data-mappers-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-tableinput-editor-data-mappers-toolbar'">
+<div id="module-editor-data-mappers" class="easyui-window" data-options="title:'表映射',modal:true,closed:true,footer:'#module-editor-data-mappers-footer'" style="width:600px;height:500px">
+	<table id="module-editor-data-mappers-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-data-mappers-toolbar'">
 		<thead>
 			<tr>
 				<th data-options="field:'from',width:100,editor:{type:'textbox'}">从</th>
@@ -99,19 +99,19 @@
 			</tr>
 		</thead>
 	</table>
-	<div id="module-tableinput-editor-data-mappers-toolbar">
-		字段：<input id="module-tableinput-editor-data-mappers-name" class="easyui-combobox" data-options="valueField:'name',textField:'name'">
-		<a id="module-tableinput-editor-data-mappers-add" class="easyui-linkbutton">新增</a>
+	<div id="module-editor-data-mappers-toolbar">
+		字段：<input id="module-editor-data-mappers-name" class="easyui-combobox" data-options="valueField:'name',textField:'name'">
+		<a id="module-editor-data-mappers-add" class="easyui-linkbutton">新增</a>
 	</div>
 </div>
-<div id="module-tableinput-editor-data-mappers-footer" style="padding:5px;">
-	<a id="module-tableinput-editor-data-mappers-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="module-tableinput-editor-data-mappers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+<div id="module-editor-data-mappers-footer" style="padding:5px;">
+	<a id="module-editor-data-mappers-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-data-mappers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 
-<div id="module-tableinput-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-tableinput-editor-data-paths-footer'" style="width:1500px;height:700px">
-	<table id="module-tableinput-editor-data-paths-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-tableinput-editor-data-paths-toolbar'">
+<div id="module-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-editor-data-paths-footer'" style="width:1500px;height:700px">
+	<table id="module-editor-data-paths-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-data-paths-toolbar'">
 		<thead>
 			<tr>
 				<th data-options="field:'name',width:200,editor:{type:'textbox'}">名称</th>
@@ -121,18 +121,18 @@
 			</tr>
 		</thead>
 	</table>
-	<div id="module-tableinput-editor-data-paths-toolbar">
-		<a id="module-tableinput-editor-data-paths-add" class="easyui-linkbutton">新增</a>
+	<div id="module-editor-data-paths-toolbar">
+		<a id="module-editor-data-paths-add" class="easyui-linkbutton">新增</a>
 	</div>
 </div>
-<div id="module-tableinput-editor-data-paths-footer" style="padding:5px;">
-	<a id="module-tableinput-editor-data-paths-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="module-tableinput-editor-data-paths-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+<div id="module-editor-data-paths-footer" style="padding:5px;">
+	<a id="module-editor-data-paths-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-data-paths-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 
-<div id="module-tableinput-editor-proc-fields" class="easyui-window" data-options="title:'字段映射',modal:true,closed:true,footer:'#module-tableinput-editor-proc-fields-footer'" style="width:600px;height:500px">
-	<table id="module-tableinput-editor-proc-fields-table" class="easyui-datagrid" data-options="border:false,fit:true">
+<div id="module-editor-proc-fields" class="easyui-window" data-options="title:'字段映射',modal:true,closed:true,footer:'#module-editor-proc-fields-footer'" style="width:600px;height:500px">
+	<table id="module-editor-proc-fields-table" class="easyui-datagrid" data-options="border:false,fit:true">
 		<thead>
 			<tr>
 				<th data-options="field:'name',width:100">表字段</th>
@@ -141,14 +141,14 @@
 		</thead>
 	</table>
 </div>
-<div id="module-tableinput-editor-proc-fields-footer" style="padding:5px;">
-	<a id="module-tableinput-editor-proc-fields-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="module-tableinput-editor-proc-fields-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+<div id="module-editor-proc-fields-footer" style="padding:5px;">
+	<a id="module-editor-proc-fields-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-proc-fields-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 
-<div id="module-tableinput-editor-params" class="easyui-window" data-options="title:'参数定义',modal:true,closed:true,footer:'#module-tableinput-editor-params-footer'" style="width:600px;height:500px">
-	<table id="module-tableinput-editor-params-table" class="easyui-datagrid" data-options="border:false,fit:true">
+<div id="module-editor-params" class="easyui-window" data-options="title:'参数定义',modal:true,closed:true,footer:'#module-editor-params-footer'" style="width:600px;height:500px">
+	<table id="module-editor-params-table" class="easyui-datagrid" data-options="border:false,fit:true">
 		<thead>
 			<tr>
 				<th data-options="field:'name'" style="width:20%">名称</th>
@@ -159,9 +159,13 @@
 		</thead>
 	</table>
 </div>
+<div id="module-editor-params-footer" style="padding:5px;">
+	<a id="module-editor-params-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-params-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
 
-<div id="module-addField-editor-data-headers" class="easyui-window" data-options="title:'添加属性',modal:true,closed:true,footer:'#module-tableinput-editor-params-footer'" style="width:600px;height:500px">
-	<table id="module-addField-editor-data-headers-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-addField-editor-data-headers-toolbar'">
+<div id="module-editor-field-table" class="easyui-window" data-options="title:'添加属性',modal:true,closed:true,footer:'#module-editor-field-table-footer'" style="width:600px;height:500px">
+	<table id="module-editor-field-table-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-field-table-toolbar'">
 		<thead>
 			<tr>
 				<th data-options="field:'name',width:100,editor:{type:'textbox'}">属性名称</th>
@@ -171,27 +175,25 @@
 			</tr>
 		</thead>
 	</table>
-	<div id="module-addField-editor-data-headers-toolbar">
-		<a id="module-addField-editor-data-headers-add" class="easyui-linkbutton">新增</a>
-		<a id="module-addField-editor-data-headers-remove" class="easyui-linkbutton">删除</a>
+	<div id="module-editor-field-table-toolbar">
+		<a id="module-editor-field-table-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-field-table-remove" class="easyui-linkbutton">删除</a>
 	</div>
 </div>
-
-
-<div id="module-tableinput-editor-params-footer" style="padding:5px;">
-	<a id="module-tableinput-editor-params-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="module-tableinput-editor-params-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+<div id="module-editor-field-table-footer" style="padding:5px;">
+	<a id="module-editor-field-table-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-field-table-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 <script type="text/javascript">
 	$(function() {
 		var editor = {};
 		editor.dataHeaders = {
-			$window: $('#module-tableinput-editor-data-headers'),
-			$table: $('#module-tableinput-editor-data-headers-table'),
-			$btnAdd: $('#module-tableinput-editor-data-headers-add'),
-			$btnRemove: $('#module-tableinput-editor-data-headers-remove'),
-			$btnConfirm: $('#module-tableinput-editor-data-headers-confirm'),
-			$btnCancel: $('#module-tableinput-editor-data-headers-cancel'),
+			$window: $('#module-editor-data-headers'),
+			$table: $('#module-editor-data-headers-table'),
+			$btnAdd: $('#module-editor-data-headers-add'),
+			$btnRemove: $('#module-editor-data-headers-remove'),
+			$btnConfirm: $('#module-editor-data-headers-confirm'),
+			$btnCancel: $('#module-editor-data-headers-cancel'),
 			endEditing: function() {
 				var _this = editor.dataHeaders;
 				if (_this.lastEditingIndex == null) return true;
@@ -249,12 +251,12 @@
 		}
 		
 		editor.dataRows = {
-			$window: $('#module-tableinput-editor-data-rows'),
-			$table: $('#module-tableinput-editor-data-rows-table'),
-			$btnAdd: $('#module-tableinput-editor-data-rows-add'),
-			$btnRemove: $('#module-tableinput-editor-data-rows-remove'),
-			$btnConfirm: $('#module-tableinput-editor-data-rows-confirm'),
-			$btnCancel: $('#module-tableinput-editor-data-rows-cancel'),
+			$window: $('#module-editor-data-rows'),
+			$table: $('#module-editor-data-rows-table'),
+			$btnAdd: $('#module-editor-data-rows-add'),
+			$btnRemove: $('#module-editor-data-rows-remove'),
+			$btnConfirm: $('#module-editor-data-rows-confirm'),
+			$btnCancel: $('#module-editor-data-rows-cancel'),
 			endEditing: function() {
 				var _this = editor.dataRows;
 				if (_this.lastEditingIndex == null) return true;
@@ -328,13 +330,12 @@
 		}
 		
 		editor.fieldTable = {
-				$window: $('#module-addField-editor-data-headers'),
-				$table: $('#module-addField-editor-data-headers-table'),
-				//$comboName: $('#module-addField-editor-data-headers-name'),
-				$btnRemove:$('#module-addField-editor-data-headers-remove'),
-				$btnAdds: $('#module-addField-editor-data-headers-add'),
-				$btnConfirm: $('#module-tableinput-editor-params-confirm'),
-				$btnCancel: $('#module-tableinput-editor-params-cancel'),
+				$window: $('#module-editor-field-table'),
+				$table: $('#module-editor-field-table-table'),
+				$btnRemove:$('#module-editor-field-table-remove'),
+				$btnAdds: $('#module-editor-field-table-add'),
+				$btnConfirm: $('#module-editor-field-table-confirm'),
+				$btnCancel: $('#module-editor-field-table-cancel'),
 				endEditing: function() {
 					var _this = editor.fieldTable;
 					if (_this.lastEditingIndex == null) return true;
@@ -348,7 +349,6 @@
 				 _editor: {string: {type: 'textbox'}, integer: {type: 'numberbox'}, long: {type: 'numberbox'}},
 				init: function(index, row) {
 					var _this = editor.fieldTable;
-					var headers = Designer.PropBox.current.data('dataHeaders')
 					if (!_this._initEvent) {
 						_this.$table.datagrid({
 							onClickCell: function(index, field) {
@@ -395,12 +395,12 @@
 		
 		
 		editor.dataMappers = {
-			$window: $('#module-tableinput-editor-data-mappers'),
-			$table: $('#module-tableinput-editor-data-mappers-table'),
-			$comboName: $('#module-tableinput-editor-data-mappers-name'),
-			$btnAdd: $('#module-tableinput-editor-data-mappers-add'),
-			$btnConfirm: $('#module-tableinput-editor-data-mappers-confirm'),
-			$btnCancel: $('#module-tableinput-editor-data-mappers-cancel'),
+			$window: $('#module-editor-data-mappers'),
+			$table: $('#module-editor-data-mappers-table'),
+			$comboName: $('#module-editor-data-mappers-name'),
+			$btnAdd: $('#module-editor-data-mappers-add'),
+			$btnConfirm: $('#module-editor-data-mappers-confirm'),
+			$btnCancel: $('#module-editor-data-mappers-cancel'),
 			endEditing: function() {
 				var _this = editor.dataMappers;
 				if (_this.lastEditingIndex == null) return true;
@@ -473,11 +473,11 @@
 		}
 		
 		editor.dataPaths = {
-			$window: $('#module-tableinput-editor-data-paths'),
-			$table: $('#module-tableinput-editor-data-paths-table'),
-			$btnAdd: $('#module-tableinput-editor-data-paths-add'),
-			$btnConfirm: $('#module-tableinput-editor-data-paths-confirm'),
-			$btnCancel: $('#module-tableinput-editor-data-paths-cancel'),
+			$window: $('#module-editor-data-paths'),
+			$table: $('#module-editor-data-paths-table'),
+			$btnAdd: $('#module-editor-data-paths-add'),
+			$btnConfirm: $('#module-editor-data-paths-confirm'),
+			$btnCancel: $('#module-editor-data-paths-cancel'),
 			endEditing: function() {
 				var _this = editor.dataPaths;
 				if (_this.lastEditingIndex == null) return true;
@@ -532,10 +532,10 @@
 		}
 		
 		editor.procFields = {
-			$window: $('#module-tableinput-editor-proc-fields'),
-			$table: $('#module-tableinput-editor-proc-fields-table'),
-			$btnConfirm: $('#module-tableinput-editor-proc-fields-confirm'),
-			$btnCancel: $('#module-tableinput-editor-proc-fields-cancel'),
+			$window: $('#module-editor-proc-fields'),
+			$table: $('#module-editor-proc-fields-table'),
+			$btnConfirm: $('#module-editor-proc-fields-confirm'),
+			$btnCancel: $('#module-editor-proc-fields-cancel'),
 			endEditing: function() {
 				var _this = editor.procFields;
 				if (_this.lastEditingIndex == null) return true;
@@ -698,10 +698,10 @@
 		};
 
 		editor.tableFields = {
-			$window: $('#module-tableinput-editor-proc-fields'),
-			$table: $('#module-tableinput-editor-proc-fields-table'),
-			$btnConfirm: $('#module-tableinput-editor-proc-fields-confirm'),
-			$btnCancel: $('#module-tableinput-editor-data-paths-cancel'),
+			$window: $('#module-editor-proc-fields'),
+			$table: $('#module-editor-proc-fields-table'),
+			$btnConfirm: $('#module-editor-proc-fields-confirm'),
+			$btnCancel: $('#module-editor-data-paths-cancel'),
 			endEditing: function() {
 				var _this = editor.tableFields;
 				if (_this.lastEditingIndex == null) return true;
@@ -976,10 +976,10 @@
 		};
 
 		editor.params = {
-			$window: $('#module-tableinput-editor-params'),
-			$table: $('#module-tableinput-editor-params-table'),
-			$btnConfirm: $('#module-tableinput-editor-params-confirm'),
-			$btnCancel: $('#module-tableinput-editor-params-cancel'),
+			$window: $('#module-editor-params'),
+			$table: $('#module-editor-params-table'),
+			$btnConfirm: $('#module-editor-params-confirm'),
+			$btnCancel: $('#module-editor-params-cancel'),
 			endEditing: function() {
 				var _this = editor.params;
 				if (_this.lastEditingIndex == null) return true;

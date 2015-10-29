@@ -11,10 +11,8 @@
 <script type="text/javascript" src="${ctx}/common/easyui/locale/easyui-lang-zh_CN.js"></script>
 </head>
 <body>
-<div data-options="fit:true">
-	<table id="module-basiclog-table" class="easyui-datagrid" data-options="footer:'#module-basiclog-table-pager'" style="width:1000px;height:650px"></table>
-	<div id="module-basiclog-table-pager" class="easyui-pagination"></div>
-</div>
+<table id="module-basiclog-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,footer:'#module-basiclog-table-pager'"></table>
+<div id="module-basiclog-table-pager" class="easyui-pagination"></div>
 <script type="text/javascript">
 	$(function() {
 		$('#module-basiclog-table-pager').pagination({
@@ -26,7 +24,7 @@
 			},
 			onSelectPage: function(page, pageSize) {
 				var $this = $(this), refresh = $this.data('refresh');
-				$.getJSON('${ctx}/workflow/record', {
+				$.getJSON('${ctx}/instance/record', {
 					process: '${process}',
 					instance: '${instance}',
 					module: '${module}',

@@ -9,8 +9,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sf.json.JSONObject;
 
@@ -63,7 +65,6 @@ public class SnakerEngine {
 			WfInstance instance = new WfInstance();
 			instance.set("process_id", processId)
 					.set("params", params)
-					.set("update_date", new Date())
 					.set("create_date", new Date());
 			if (instance.save()) {
 				workflow = copy(workflow);
@@ -100,7 +101,7 @@ public class SnakerEngine {
 	
 	/**
 	 * 更新工作流程
-	 * @param id 流程主键
+	 * @param processId 流程主键
 	 * @param content 流程内容
 	 * @return 更新是否成功
 	 */
@@ -128,6 +129,10 @@ public class SnakerEngine {
 			Db.deleteById("wf_instance", "process_id", processId);
 			Db.deleteById("wf_record", "process_id", processId);
 			processIdMap.remove(processId);
+			Iterator<Entry<Long, Workflow>> iterator = instanceIdMap.entrySet().iterator(); 
+			while (iterator.hasNext())
+				if (processId.equals(iterator.next().getValue().getProcessId()))
+					iterator.remove();
 			return true;
 		}
 		return false;
@@ -167,6 +172,11 @@ public class SnakerEngine {
 		return new ArrayList<Workflow>(instanceIdMap.values());
 	}
 	
+	/**
+	 * 深层复制工作流程
+	 * @param workflow 旧工作流程
+	 * @return 新工作流程
+	 */
 	public static Workflow copy(Workflow workflow) {
 		ByteArrayOutputStream baos = null;
 		ObjectOutputStream oos = null;
