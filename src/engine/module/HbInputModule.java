@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 
 import org.apache.axis.encoding.Base64;
 
+import test.DuXMLDoc;
 import util.HbClient;
 
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
@@ -36,7 +37,7 @@ public class HbInputModule extends Module  {
 	String appName = "职场导航网络科技有限公司";
 	String taskOId = "hbjyweb_webservice_cb20_xml_task";
 
-	private String params=
+	private String p=
 			"<maps>"+
 			"<map><key><![CDATA[ACB200]]></key><value><![CDATA[E5AF7B1AB654C27AE040800A9A083FA2]]></value></map> "+
 			"<map><key><![CDATA[AAB004]]></key><value><![CDATA[%]]></value></map>"+
@@ -56,8 +57,10 @@ public class HbInputModule extends Module  {
 
 	public ModuleData execute(ModuleData inputs) {
 		HbClient client = new HbClient(dxUrl, dxUser, dxPwd, "get");
-		Object[] resps = client.execute(appName, taskOId, params);
+		Object[] resps = client.execute(appName, taskOId, p);
 		System.out.println(resps[1]);
+		DuXMLDoc doc = new DuXMLDoc();
+		inputs= doc.xmlElements(resps[1].toString());
 		return inputs;
 	}
 	

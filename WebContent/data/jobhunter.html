@@ -1,0 +1,41 @@
+<table id="data-jobhunter-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#data-jobhunter-table-toolbar'">
+	<thead>
+		<tr>
+			<th data-options="field:'id'" style="width:60px">求职者编号</th>
+			<th data-options="field:'name'" style="width:240px">求职者名称</th>
+			<th data-options="field:'data_src'" style="width:80px">数据源</th>
+			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+			<th data-options="field:'action',formatter:dataJobhunterTableActionFormatter" style="width:180px">操作</th>
+		</tr>
+	</thead>
+</table>
+<div id="data-jobhunter-table-toolbar" style="padding: 2px 5px;">
+	<input id="data-jobhunter-table-search" class="easyui-searchbox" data-options="prompt:'求职者名称'" style="width:200px"></input>
+</div>
+<script type="text/javascript">
+	function dataJobhunterTableActionFormatter(value, row) {
+		return '<a class="data-jobhunter-table-look" data-jobhunter="' + row.id + '" style="cursor:pointer;color:blue">查看</a>';
+	}
+
+	$.render(function() {
+		var $dataJobhunterTable = $('#data-jobhunter-table');
+		
+		$('#data-jobhunter-table-search').searchbox({
+			searcher: function(value) {
+				$dataJobhunterTable.datagrid('load', {
+					name: value
+				});
+			}
+		});
+		
+		$dataJobhunterTable.datagrid({
+			url:'data/jobhunter',
+			method:'get',
+			onLoadSuccess: function() {
+				$('.data-jobhunter-table-look').click(function() {
+					console.log('look...');
+				});
+			}
+		});
+	});
+</script>

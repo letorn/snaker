@@ -55,6 +55,7 @@ public class DataFileController extends Controller {
 				try (FileInputStream  fis = new FileInputStream(uploadFile.getFile())) {
 					skFile.set("content", fis);
 					dataMap.put("success", skFile.save());
+					dataMap.put("file", name);
 				} catch (Exception e) {}
 			} else {
 				SkFile skFile = SkFile.dao.findById(fileId);

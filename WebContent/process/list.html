@@ -1,4 +1,4 @@
-<table id="process-list-table" class="easyui-datagrid" data-options="rownumbers:true,toolbar:'#process-list-table-toolbar',fit:true">
+<table id="process-list-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#process-list-table-toolbar'">
 	<thead>
 		<tr>
 			<th data-options="field:'id',width:60">流程编号</th>
@@ -54,7 +54,7 @@
 		});
 		
 		$('#process-list-table-designer').click(function() {
-			window.open ('process/designer')
+			window.open('process/designer');
 		});
 		
 		$('#process-list-table-search').searchbox({
@@ -66,24 +66,21 @@
 		});
 		
 		$('#process-list-params-window-confirm').click(function() {
-			var param = {};
+			var params = {};
 			$processListParamsWindow.find('input,select').each(function(index, input) {
 				var $input = $(input);
 				var module = $input.data('module');
 				var field = $input.data('field');
 				if (module != undefined && field != undefined) {
-					param[module] = param[module] || {};
-					param[module][field] = $input.attr('type') == 'file' ? $input.data('val') : $input.val();
+					params[module] = params[module] || {};
+					params[module][field] = $input.val();
 				}
 			});
-			$.getJSON('workflow/run/' + $processListParamsWindow.data('process'), function(data) {
+			$.post('workflow/start/' + $processListParamsWindow.data('process'), {
+				params: JSON.stringify(params)
+			}, function(data) {
 				if (data.success) {
-					$.messager.show({
-						title: '提示',
-						msg: '启动成功，请到待办任务就查看！',
-						timeout: 1000,
-						showType: 'slide'
-					});
+					window.open('workflow/all?process=' + data.process + '&instance=' + data.instance);
 				} else {
 					$.messager.show({
 						title: '提示',
@@ -92,8 +89,8 @@
 						showType: 'slide'
 					});
 				}
-			});
-			$processListParamsWindow.window('close');
+				$processListParamsWindow.window('close');
+			}, 'json');
 		});
 		
 		$('#process-list-params-window-cancel').click(function() {
@@ -119,9 +116,9 @@
 										for (var k = 0; k < param.options.length; k ++) {
 											options += '<option value="' + param.options[k][1] + '">' + param.options[k][0] + '</option>';
 										}
-										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<select class="easyui-' + param.editor + '" data-module="' + d.module + '" data-field="' + param.name + '" style="width:173px">' + options + '</select><br />');
+										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<select class="easyui-combobox" data-module="' + d.module + '" data-field="' + param.name + '" style="width:173px">' + options + '</select><br />');
 									} else if (param.editor == 'filebox') {
-										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input id="process-list-params-window-' + d.module + '-' + param.name + '" data-module="' + d.module + '" data-field="' + param.name + '" type="file" name="file" /><br />');
+										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-textbox file" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
 									}else {
 										$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-' + param.editor + '" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
 									}
@@ -129,19 +126,24 @@
 							}
 						}
 						$.parser.parse($processListParamsWindow);
-						$processListParamsWindow.find('input[type=file]').change(function(newValue) {
-							var $file = $(this);
-							$.ajaxFileUpload({
-								url: 'workflow/upload',
-								fileElementId: $file.attr('id'),
-								dataType: 'json',
-								success: function(resp) {
-									$file.data('val', resp.file);
-								},
-								error: function() {
-									
-								}
-							});
+						$processListParamsWindow.find('.file').textbox({
+							buttonText: '选择文件',
+							iconAlign: 'left',
+							onClickButton: function() {
+								$file = $(this);
+								$.upload({
+									url: 'workflow/upload', 
+									fileName: 'file', 
+									dataType: 'json',
+									onSend: function() {
+										return true;
+									},
+									onComplate: function(data) {
+										$file.textbox('setText', data.file);
+										$file.val(data.path);
+									}
+								});
+							}
 						});
 					});
 					$processListParamsWindow.window('open');

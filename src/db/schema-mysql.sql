@@ -13,7 +13,7 @@ create table if not exists wf_process(
 create table if not exists wf_instance(
 	id bigint primary key auto_increment,
 	process_id bigint,
-	param text,
+	params text,
 	update_date datetime,
 	create_date datetime
 );
@@ -106,6 +106,53 @@ create table if not exists db_entpost(
 	unique index db_entpost_unique_index(data_src, data_key)
 );
 
+-- drop table if exists db_jobhunter;
+create table if not exists db_jobhunter(
+	id bigint primary key auto_increment,
+	name varchar(255),
+	account varchar(255),
+	account_status tinyint,
+	gender tinyint,
+	nation varchar(255),
+	mobile varchar(255),
+	email varchar(255),
+	qq varchar(255),
+	experience varchar(255),
+	experience_code varchar(255),
+	education varchar(255),
+	education_code varchar(255),
+	major varchar(255),
+	household varchar(255),
+	polity varchar(255),
+	category varchar(255),
+	category_code varchar(255),
+	hunter_status varchar(255),
+	hunter_status_code varchar(255),
+	marriage varchar(255),
+	cert_type varchar(255),
+	cert_id varchar(255),
+	birth varchar(255),
+	height int,
+	weight int,
+	location varchar(255),
+	location_code varchar(255),
+	address varchar(255),
+	lbs_lon double,
+	lbs_lat double,
+	curr_ent varchar(255),
+	curr_ent_phone varchar(255),
+	curr_post varchar(255),
+	curr_post_code varchar(255),
+	data_src varchar(255),
+	data_key varchar(255),
+	data_url varchar(255),
+	data_status tinyint,
+	update_date datetime,
+	create_date datetime,
+	syn_status tinyint,
+	unique index db_jobhunter_unique_index(data_src, data_key)
+);
+
 -- 文件
 -- drop table if exists sk_file;
 create table if not exists sk_file(
@@ -115,4 +162,24 @@ create table if not exists sk_file(
 	ftype varchar(20),
 	content longblob,
 	unique key sk_file_unique_key(name)
+);
+
+-- 工具 日历表
+-- drop table if exists ut_date;
+create table if not exists ut_date(
+	id bigint primary key auto_increment,
+	date date,
+	year middleint,
+	season tinyint,
+	month tinyint,
+	week tinyint,
+	day tinyint
+);
+
+-- 工具 职位分类
+-- drop table if exists ut_entpost_category;
+create table if not exists ut_entpost_category(
+	id bigint primary key auto_increment,
+	name varchar(255),
+	code varchar(255)
 );

@@ -39,7 +39,7 @@ public class ExcelMapperModule extends Module {
 					continue;
 				} else {
 					if (row.get(attr) instanceof List) {
-						StringBuilder sb = new StringBuilder();
+						StringBuffer sb = new StringBuffer();
 						for (String value : (List<String>) row.get(attr)) {
 							if (tmp.get(value) != null && tmp.get(value).length() > 0) {
 								sb.append("system&" + tmp.get(value) + "&" + value + "$$");
@@ -49,8 +49,8 @@ public class ExcelMapperModule extends Module {
 						}
 						if (sb.length() > 2) {
 							sb.delete(sb.length() - 2, sb.length());
-							row.put(attr, sb.toString());
 						}
+						row.put(attr, sb.toString());
 					} else {
 						row.put(attr, tmp.get(row.get(attr)));
 					}

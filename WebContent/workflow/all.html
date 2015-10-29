@@ -14,7 +14,8 @@
 <body>
 <div class="easyui-layout" data-options="fit:true">
 	<div data-options="region:'north',split:false" style="height:50px">
-		流程名称：${processName}
+		流程名称：${processName}<br />
+		实例参数：${instanceParams}
 	</div>
 	<div id="workflow-all-tabs" class="easyui-tabs" data-options="region:'center'"></div>
 </div>
@@ -23,7 +24,7 @@
 		var process = '${process}';
 		var processName = '${processName}';
 		var instance = '${instance}';
-		var instanceParam = '${instanceParam}';
+		var instanceParams = '${instanceParams}';
 		var views = '${views}';
 		if (views.length > 0) {
 			views = JSON.parse(views);

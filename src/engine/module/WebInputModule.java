@@ -40,11 +40,11 @@ public class WebInputModule extends Module {
 		return inputs;
 	}
 
-	protected void autoRun(ModuleData inputs) {
+	protected void run(ModuleData inputs) {
 		spider.addUrl(startUrl).addPipeline(new OutputPipeline(inputs, this)).run();
 //		spider.addUrl(startUrl).addPipeline(new ConsolePipeline()).run();
 		
-		super.autoRun(inputs);
+		super.run(inputs);
 	}
 	
 	/**

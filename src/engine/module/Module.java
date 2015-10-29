@@ -8,21 +8,19 @@ import java.util.Map;
 
 import util.Json;
 import engine.ModuleData;
-import engine.WorkflowContext;
+import engine.Workflow;
 import engine.model.WfRecord;
 
 /*
  * 流程模型
  */
-public abstract class Module {
+public abstract class Module implements Runnable{
 
-	protected WorkflowContext context;// 模型上下文
+	protected Workflow workflow;// 工作流
 	private List<Module> prevModules;// 前一步的流程模型
 	private List<Module> nextModules;// 后一步的流程模型
 	private ModuleData inputs;// 输入的数据
 	private ModuleData outputs;// 输出的数据
-	
-	private boolean autoRun = true;// 自动执行
 	
 	private String mtype;// 模型类型
 	private String name;// 模型名称
@@ -51,10 +49,10 @@ public abstract class Module {
 	 * 运行模型
 	 */
 	protected void run(ModuleData inputs) {
-		ModuleData outputs = execute(inputs);
+		outputs = execute(inputs);
 		if (doRecord) {
-			new WfRecord().set("process_id", context.getProcessId())
-							.set("instance_id", context.getInstanceId())
+			new WfRecord().set("process_id", workflow.getProcessId())
+							.set("instance_id", workflow.getInstanceId())
 							.set("module", name)
 							.set("headers", Json.toString(outputs.getHeaders()))
 							.set("rows", Json.toString(outputs.getRows()))
@@ -62,26 +60,21 @@ public abstract class Module {
 							.save();
 		}
 		for (Module module : nextModules) {
-			module.autoRun(outputs);
+			module.setInputs(outputs);
+			if (workflow.isDaemon()) {
+				new Thread(module).start();
+			} else {
+				module.run();
+			}
 		}
 	}
 	
-	/**
-	 * 自动运行模型
-	 * @param inputs 输入的数据
-	 */
-	protected void autoRun(ModuleData inputs) {
-		this.inputs = inputs;
-		if (autoRun)
-			run(inputs);
+	public Workflow getWorkflow() {
+		return workflow;
 	}
 
-	public WorkflowContext getContext() {
-		return context;
-	}
-
-	public void setContext(WorkflowContext context) {
-		this.context = context;
+	public void setWorkflow(Workflow workflow) {
+		this.workflow = workflow;
 	}
 
 	public List<Module> getPrevModules() {
@@ -98,6 +91,14 @@ public abstract class Module {
 
 	public void setNextModules(List<Module> nextModules) {
 		this.nextModules = nextModules;
+	}
+
+	public ModuleData getInputs() {
+		return inputs;
+	}
+
+	public void setInputs(ModuleData inputs) {
+		this.inputs = inputs;
 	}
 
 	public ModuleData getOutputs() {

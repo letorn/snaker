@@ -1,38 +1,39 @@
-<table id="data-enterprise-table" class="easyui-datagrid" data-options="rownumbers:true,toolbar:'#data-enterprise-table-toolbar',fit:true">
+<table id="data-enterprise-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#data-enterprise-table-toolbar'">
 	<thead>
 		<tr>
-			<th data-options="field:'processId',width:60">流程编号</th>
-			<th data-options="field:'processName',width:150">流程名称</th>
-			<th data-options="field:'instanceId',width:60">实例编号</th>
-			<th data-options="field:'id',width:180,formatter:workflowListTableActionFormatter">操作</th>
+			<th data-options="field:'id'" style="width:60px">企业编号</th>
+			<th data-options="field:'name'" style="width:240px">企业名称</th>
+			<th data-options="field:'data_src'" style="width:80px">数据源</th>
+			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+			<th data-options="field:'action',formatter:dataEnterpriseTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
 </table>
 <div id="data-enterprise-table-toolbar" style="padding: 2px 5px;">
-	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'未开发...'" style="width:200px"></input>
+	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'企业名称'" style="width:200px"></input>
 </div>
 <script type="text/javascript">
 	function dataEnterpriseTableActionFormatter(value, row) {
-		return '<a class="data-enterprise-table-look" data-process="' + row.processId + '" data-instance="' + row.instanceId + '" style="cursor:pointer;color:blue">查看</a>';
+		return '<a class="data-enterprise-table-look" data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">查看</a>';
 	}
 
 	$.render(function() {
-		var $workflowListTable = $('#data-enterprise-table');
+		var $dataEnterpriseTable = $('#data-enterprise-table');
 		
 		$('#data-enterprise-table-search').searchbox({
 			searcher: function(value) {
-				$workflowListTable.datagrid('load', {
+				$dataEnterpriseTable.datagrid('load', {
 					name: value
 				});
 			}
 		});
 		
-		$workflowListTable.datagrid({
-			url:'workflow/list',
+		$dataEnterpriseTable.datagrid({
+			url:'data/enterprise',
 			method:'get',
 			onLoadSuccess: function() {
 				$('.data-enterprise-table-look').click(function() {
-					window.open('workflow/index?process=' + $(this).data('process') + '&instance=' + $(this).data('instance'));
+					console.log('look...');
 				});
 			}
 		});

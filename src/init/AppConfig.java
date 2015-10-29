@@ -14,13 +14,16 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 
+import controller.DataEnterpriseController;
 import controller.DataFileController;
+import controller.DataJobhunterController;
 import controller.IndexController;
 import controller.ModuleController;
 import controller.ProcessController;
 import controller.WorkflowController;
 import engine.model.DbEnterprise;
 import engine.model.DbEntpost;
+import engine.model.DbJobhunter;
 import engine.model.WfInstance;
 import engine.model.WfProcess;
 import engine.model.WfRecord;
@@ -79,6 +82,7 @@ public class AppConfig extends JFinalConfig {
 		arp.addMapping("wf_record", WfRecord.class);
 		arp.addMapping("db_enterprise", DbEnterprise.class);
 		arp.addMapping("db_entpost", DbEntpost.class);
+		arp.addMapping("db_jobhunter", DbJobhunter.class);
 		arp.addMapping("sk_file", SkFile.class);
 		me.add(arp);
 	}
@@ -90,9 +94,11 @@ public class AppConfig extends JFinalConfig {
 		// 主页相关
 		me.add("/", IndexController.class);
 		
-		// 文件相关
-		me.add("/data/file", DataFileController.class);
-		
+		// 数据相关
+		me.add("/data/file", DataFileController.class);// 文件
+		me.add("/data/enterprise", DataEnterpriseController.class);// 企业信息
+		me.add("/data/jobhunter", DataJobhunterController.class);// 求职者信息
+				
 		// snaker流程相关
 		me.add("/process", ProcessController.class);
 		me.add("/workflow", WorkflowController.class);

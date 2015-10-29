@@ -32,7 +32,6 @@ public class DbTableOutputModule extends Module implements ICallback {
 	 */
 
 	public ModuleData execute(ModuleData inputs) {
-		
 		ComboPooledDataSource dataSource = new ComboPooledDataSource();
 		dataSource.setJdbcUrl(jdbcUrl);
 		dataSource.setUser(jdbcUser);

@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.json.JSONObject;
+
 import com.jfinal.plugin.activerecord.Db;
 
-import net.sf.json.JSONObject;
 import engine.model.WfInstance;
 import engine.model.WfProcess;
-import engine.model.WfRecord;
 
 /*
  * 工作流引擎
@@ -111,10 +111,10 @@ public class SnakerEngine {
 	 * @param param 实例参数
 	 * @return 是否运行成功
 	 */
-	public Workflow runWorkflow(Long processId, String param) {
+	public Workflow startWorkflow(Long processId, String params) {
 		Workflow workflow = Workflow.create(processId);
 		if (notBlank(workflow)) {
-			if (workflow.run(param)) {
+			if (workflow.start(params)) {
 				workflows.add(workflow);
 				return workflow;
 			}

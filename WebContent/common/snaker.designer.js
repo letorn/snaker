@@ -87,16 +87,6 @@ var Designer = {
 					type: 'file',
 					editor: 'filebox',
 					options: ''
-				}, {
-					name: 'name',
-					type: 'string',
-					editor: 'textbox',
-					options: ''
-				}, {
-					name: 'area',
-					type: 'string',
-					editor: 'combobox',
-					options: '[["广东", "1"], ["广西", "2"]]'
 				}]
 			}
 		},
@@ -172,7 +162,45 @@ var Designer = {
 				tableName: '',
 				tableFields: []
 			}
+			
+		},
+		hbinput: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.HbInputModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: '湖北数据输出',
+				dxUrl: '',
+				dxUser: '',
+				dxPwd: '',
+				interfaceName: '',
+				params:[]
+			}
+		},
+		addFields: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.AddFieldModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: '添加属性',
+				fieldTable: []
+			}
 		}
+		
 	}
 };
 
