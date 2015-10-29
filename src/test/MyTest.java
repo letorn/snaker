@@ -1,5 +1,8 @@
 package test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 
 public class MyTest {
@@ -22,6 +25,9 @@ public class MyTest {
 		thread.start();
 		
 		System.out.println("main do something");
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.values();
 	}
 	
 }

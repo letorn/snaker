@@ -2,6 +2,7 @@ package engine.module;
 
 import static util.Validator.blank;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,8 @@ import engine.model.WfRecord;
 /*
  * 流程模型
  */
-public abstract class Module implements Runnable{
+@SuppressWarnings("serial")
+public abstract class Module implements Runnable,Serializable {
 
 	protected Workflow workflow;// 工作流
 	private List<Module> prevModules;// 前一步的流程模型

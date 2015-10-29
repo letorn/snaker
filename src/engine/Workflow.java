@@ -3,11 +3,11 @@ package engine;
 import static util.Validator.notBlank;
 
 import java.io.File;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +25,8 @@ import engine.module.Module;
 /*
  * 工作流
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public class Workflow {
+@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
+public class Workflow implements Serializable {
 
 	private boolean daemon = true;// 后台运行
 	
@@ -41,43 +41,35 @@ public class Workflow {
 	private List<Module> modules;// 所有模型
 
 	/**
-	 * 初始化一个实例
+	 * 初始化参数
 	 * @param params 实例参数
 	 * @return 是否初始化成功
 	 */
 	public boolean init(String params) {
-		WfInstance instance = new WfInstance().set("process_id", processId)
-												.set("params", params)
-												.set("update_date", new Date())
-												.set("create_date", new Date());
-		if (instance.save()) {
-			setInstance(instance);
-			Map<String, Map<String, Object>> allModuleParamMap = Json.parseToMap(params);
-			for (Module module : modules) {
-				String moduleName = module.getName();
-				Map<String, Object> moduleParamMap = allModuleParamMap.get(moduleName);
-				List<Map<String, Object>> moduleParams = module.getParams();
-				if (notBlank(moduleParamMap) && notBlank(moduleParams) && moduleParams.size() > 0) {
-					Class classType = module.getClass();
-					for (Map<String, Object> moduleParam : moduleParams) {
-						String paramName = (String) moduleParam.get("name");
-						Object paramValue = moduleParamMap.get(paramName);
-						try {
-							Field field = classType.getDeclaredField(paramName);
-							field.setAccessible(true);
-							if (field.getGenericType() == File.class) {
-								paramValue = new File(paramValue.toString());
-							}
-							field.set(module, paramValue);
-						} catch (Exception e) {
-							e.printStackTrace();
+		Map<String, Map<String, Object>> allModuleParamMap = Json.parseToMap(params);
+		for (Module module : modules) {
+			String moduleName = module.getName();
+			Map<String, Object> moduleParamMap = allModuleParamMap.get(moduleName);
+			List<Map<String, Object>> moduleParams = module.getParams();
+			if (notBlank(moduleParamMap) && notBlank(moduleParams) && moduleParams.size() > 0) {
+				Class classType = module.getClass();
+				for (Map<String, Object> moduleParam : moduleParams) {
+					String paramName = (String) moduleParam.get("name");
+					Object paramValue = moduleParamMap.get(paramName);
+					try {
+						Field field = classType.getDeclaredField(paramName);
+						field.setAccessible(true);
+						if (field.getGenericType() == File.class) {
+							paramValue = new File(paramValue.toString());
 						}
+						field.set(module, paramValue);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}
-			return true;
 		}
-		return false;
+		return true;
 	}
 	
 	/**
@@ -104,22 +96,6 @@ public class Workflow {
 	 */
 	public boolean stop() {
 		return false;
-	}
-	
-	public static Workflow get(Long processId, Long instanceId) {
-		Workflow workflow = Workflow.create(processId);
-		workflow.setInstance(WfInstance.dao.findById(instanceId));
-		return workflow;
-	}
-	
-	/**
-	 * 创建工作流
-	 * @param processId 流程主键
-	 * @return 工作流
-	 */
-	public static Workflow create(Long processId) {
-		WfProcess process = WfProcess.dao.findById(processId);
-		return create(process);
 	}
 	
 	/**

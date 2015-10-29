@@ -2,9 +2,15 @@ package engine;
 
 import static util.Validator.notBlank;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONObject;
 
@@ -18,39 +24,58 @@ import engine.model.WfProcess;
  */
 public class SnakerEngine {
 
-	private static List<Workflow> workflows = new ArrayList<Workflow>();
+	private static Map<Long, Workflow> processIdMap = new HashMap<Long, Workflow>();
+	private static Map<Long, Workflow> instanceIdMap = new HashMap<Long, Workflow>();
 	
 	static {
 		/*
 		 * 加载已经存在的流程实例
 		 */
+		List<WfProcess> processes = WfProcess.dao.find("select * from wf_process");
+		for (WfProcess process : processes) {
+			Workflow workflow = Workflow.create(process);
+			if (notBlank(workflow))
+				processIdMap.put(workflow.getProcessId(), workflow);
+		}
+		
 		List<WfInstance> instances = WfInstance.dao.find("select * from wf_instance");
 		for (WfInstance instance : instances) {
-			WfProcess process = WfProcess.dao.findById(instance.getLong("process_id"));
-			if (notBlank(process)) {
-				Workflow workflow = Workflow.create(process);
+			Long processId = instance.getLong("process_id");
+			Workflow workflow = processIdMap.get(processId);
+			if (notBlank(workflow)) {
+				workflow = copy(workflow);
 				workflow.setInstance(instance);
-				workflows.add(workflow);
+				instanceIdMap.put(workflow.getInstanceId(), workflow);
 			}
 		}
 	}
 	
 	/**
-	 * 获取工作流程
+	 * 运行工作流程
 	 * @param processId 流程主键
-	 * @return 工作流程
+	 * @param param 实例参数
+	 * @param daemon 后台运行
+	 * @return 流程实例
 	 */
-	public WfProcess getProcess(Long processId) {
-		return WfProcess.dao.findById(processId);
-	}
-	
-	/**
-	 * 查询工作流程
-	 * @param name 流程名称
-	 * @return 工作流程列表
-	 */
-	public List<WfProcess> findProcess(String name) {
-		return WfProcess.dao.find("select * from wf_process where name like ?", name);
+	public Workflow startProcess(Long processId, String params, boolean daemon) {
+		Workflow workflow = processIdMap.get(processId);
+		if (notBlank(workflow)) {
+			WfInstance instance = new WfInstance();
+			instance.set("process_id", processId)
+					.set("params", params)
+					.set("update_date", new Date())
+					.set("create_date", new Date());
+			if (instance.save()) {
+				workflow = copy(workflow);
+				workflow.setInstance(instance);
+				workflow.setDaemon(daemon);
+				if (workflow.start(params)) {
+					instanceIdMap.put(workflow.getInstanceId(), workflow);
+					return workflow;
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -60,11 +85,17 @@ public class SnakerEngine {
 	 */
 	public boolean addProcess(String content) {
 		String name = JSONObject.fromObject(content).getString("name");
-		WfProcess process = new WfProcess().set("name", name)
-											.set("content", content)
-											.set("update_date", new Date())
-											.set("create_date", new Date());
-		return process.save();
+		WfProcess process = new WfProcess();
+		process.set("name", name)
+				.set("content", content)
+				.set("update_date", new Date())
+				.set("create_date", new Date());
+		if (process.save()) {
+			Workflow workflow = Workflow.create(process);
+			processIdMap.put(workflow.getProcessId(), workflow);
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -75,11 +106,16 @@ public class SnakerEngine {
 	 */
 	public boolean updateProcess(Long processId, String content) {
 		String name = JSONObject.fromObject(content).getString("name");
-		return WfProcess.dao.set("id", processId)
-							.set("name", name)
-							.set("content", content)
-							.set("update_date", new Date())
-							.update();
+		WfProcess process = new WfProcess();
+		process.set("id", processId)
+				.set("name", name)
+				.set("content", content)
+				.set("update_date", new Date());
+		if(process.update()) {
+			Workflow workflow = Workflow.create(process);
+			processIdMap.put(workflow.getProcessId(), workflow);
+		}
+		return false;
 	}
 	
 	/**
@@ -91,9 +127,27 @@ public class SnakerEngine {
 		if (WfProcess.dao.deleteById(processId)) {
 			Db.deleteById("wf_instance", "process_id", processId);
 			Db.deleteById("wf_record", "process_id", processId);
+			processIdMap.remove(processId);
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 获取工作流程
+	 * @param processId 流程主键
+	 * @return 工作流程
+	 */
+	public Workflow getProcess(Long processId) {
+		return processIdMap.get(processId);
+	}
+	
+	/**
+	 * 查询工作流程
+	 * @return 工作流程列表
+	 */
+	public List<Workflow> findProcess() {
+		return new ArrayList<Workflow>(processIdMap.values());
 	}
 	
 	/**
@@ -101,56 +155,43 @@ public class SnakerEngine {
 	 * @param instanceId 实例主键
 	 * @return 流程实例
 	 */
-	public WfInstance getInstance(Long instanceId) {
-		return WfInstance.dao.findById(instanceId);
+	public Workflow getInstance(Long instanceId) {
+		return instanceIdMap.get(instanceId);
 	}
 	
 	/**
-	 * 运行工作流程
-	 * @param processId 流程主键
-	 * @param param 实例参数
-	 * @return 是否运行成功
+	 * 查询流程实例
+	 * @return 流程实例列表
 	 */
-	public Workflow startWorkflow(Long processId, String params) {
-		Workflow workflow = Workflow.create(processId);
-		if (notBlank(workflow)) {
-			if (workflow.start(params)) {
-				workflows.add(workflow);
-				return workflow;
+	public List<Workflow> findInstance() {
+		return new ArrayList<Workflow>(instanceIdMap.values());
+	}
+	
+	public static Workflow copy(Workflow workflow) {
+		ByteArrayOutputStream baos = null;
+		ObjectOutputStream oos = null;
+		ByteArrayInputStream bais = null;
+		ObjectInputStream ois = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(workflow);
+			bais = new ByteArrayInputStream(baos.toByteArray());
+			ois = new ObjectInputStream(bais);
+			return (Workflow) ois.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			try {
+				baos.close();
+				oos.close();
+				bais.close();
+				ois.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
 			}
 		}
-		return null;
-	}
-	
-	/**
-	 * 创建工作流
-	 * @param processId 流程主键
-	 * @return 工作流
-	 */
-	public Workflow createWorkflow(Long processId) {
-		return Workflow.create(processId);
-	}
-	
-	/**
-	 * 获取工作流
-	 * @param processId 流程主键
-	 * @param instanceId 实例主键
-	 * @return 工作流
-	 */
-	public Workflow getWorkflow(Long processId, Long instanceId) {
-		for (Workflow workflow : workflows) {
-			if (workflow.getInstanceId().equals(instanceId))
-				return workflow;
-		}
-		return null;
-	}
-	
-	/**
-	 * 查询工作流实例
-	 * @return 工作流实例列表
-	 */
-	public List<Workflow> findWorkflow() {
-		return workflows;
 	}
 	
 }

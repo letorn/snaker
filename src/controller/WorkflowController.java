@@ -3,7 +3,6 @@ package controller;
 import static util.Validator.blank;
 import static util.Validator.notBlank;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,7 @@ import util.Json;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.JsonKit;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.upload.MultipartRequest;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.upload.UploadFile;
 
 import engine.Workflow;
@@ -49,20 +48,15 @@ public class WorkflowController extends Controller {
 		Integer rows = getParaToInt("rows");
 		if (blank(rows))
 			rows = 30;
-		List<Workflow> workflows = snakerService.findWorkflow();
-		int total = workflows.size();
-		int fromIndex = (page - 1) * rows;
-		int toIndex = fromIndex + rows;
-		if (toIndex > total)
-			toIndex = total;
-		for (Workflow workflow : workflows.subList(fromIndex, toIndex)) {
+		Page<Workflow> pager = snakerService.findInstance(page, rows);
+		for (Workflow workflow : pager.getList()) {
 			Map<String, Object> m = new HashMap<String, Object>();
 			m.put("processId", workflow.getProcessId());
 			m.put("processName", workflow.getProcessName());
 			m.put("instanceId", workflow.getInstanceId());
 			dataList.add(m);
 		}
-		dataMap.put("total", total);
+		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", dataList);
 		renderJson(dataMap);
 	}
@@ -73,11 +67,10 @@ public class WorkflowController extends Controller {
 	 * @param instance 工作实例主键
 	 */
 	public void all() {
-		Long processId = getParaToLong("process");
 		Long instanceId = getParaToLong("instance");
 
-		if (notBlank(processId) && notBlank(instanceId)) {
-			Workflow workflow = snakerService.getWorkflow(processId, instanceId);
+		if (notBlank(instanceId)) {
+			Workflow workflow = snakerService.getInstance(instanceId);
 			setAttr("process", workflow.getProcessId());
 			setAttr("processName", workflow.getProcessName());
 			setAttr("instance", workflow.getInstanceId());
@@ -112,11 +105,14 @@ public class WorkflowController extends Controller {
 	 */
 	public void start() {
 		Long processId = getParaToLong();
+		Boolean daemon = getParaToBoolean("daemon");
+		if (blank(daemon))
+			daemon = false;
 		String params = getPara("params");
 		if (blank(params))
 			params = "";
 		if (notBlank(processId)) {
-			Workflow workflow = snakerService.startWorkflow(processId, params);
+			Workflow workflow = snakerService.startProcess(processId, params, daemon);
 			if (workflow != null) {
 				dataMap.put("success", true);
 				dataMap.put("process", workflow.getProcessId());
@@ -134,7 +130,7 @@ public class WorkflowController extends Controller {
 		Long processId = getParaToLong();
 
 		if (notBlank(processId)) {
-			Workflow workflow = snakerService.createWorkflow(processId);
+			Workflow workflow = snakerService.getProcess(processId);
 			for (Module module : workflow.getModules()) {
 				Map<String, Object> m = new HashMap<String, Object>();
 				m.put("module", module.getName());
@@ -165,9 +161,7 @@ public class WorkflowController extends Controller {
 	 * module 模型名称
 	 */
 	public void record() {
-		// Long processId = getParaToLong("process");
 		Long instanceId = getParaToLong("instance");
-		// Long recordId = getParaToLong("record");
 		String module = getPara("module");
 		Integer page = getParaToInt("page");
 		Boolean refresh = getParaToBoolean("refresh");

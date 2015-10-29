@@ -331,6 +331,7 @@
 				$window: $('#module-addField-editor-data-headers'),
 				$table: $('#module-addField-editor-data-headers-table'),
 				//$comboName: $('#module-addField-editor-data-headers-name'),
+				$btnRemove:$('#module-addField-editor-data-headers-remove'),
 				$btnAdds: $('#module-addField-editor-data-headers-add'),
 				$btnConfirm: $('#module-tableinput-editor-params-confirm'),
 				$btnCancel: $('#module-tableinput-editor-params-cancel'),
@@ -377,6 +378,9 @@
 						});
 						_this.$btnCancel.click(function() {
 							editor.fieldTable.$window.window('close', true);
+						});
+						_this.$btnRemove.click(function() {
+							_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
 						});
 						_this._initEvent = true;
 					}
@@ -755,7 +759,8 @@
 				
 				if (tableName == 'blog') {
 					fields = [{name:'title',from:'title'},{
-							name:'content',from:'content'}
+							name:'content',from:'content'},{
+							name:'test',from:'test'}
 							];
 				}
 				if (tableName == 'db_enterprise') {
@@ -849,25 +854,93 @@
 					textField: 'text',
 					valueField: 'value',
 					data: [{
-						text: 'hbjyweb_webservice_cb20_xml_task',
+						text: '用人单位信息查询',
 						value: 'hbjyweb_webservice_cb20_xml_task'
+					},{
+						text: '招聘岗位信息查询',
+						value: 'hbjyweb_webservice_cb21_xml_task'
+					},{
+						text: '个人信息查询',
+						value: 'hbjyweb_webservice_cc20_xml_task'
 					}],
 					onSelect: function(record){
 						if(record.value='hbjyweb_webservice_cb20_xml_task'){
-							alert(123);
 							Designer.PropBox.updateValue(9, {
 								editor: 'text',
 								name: 'params',
 								value: [ {
-									name: 'name',
+									name: 'AAB003',
 									type: 'string',
 									editor: 'textbox',
 									options: ''
 								}, {
-									name: 'area',
+									name: 'AAB004',
 									type: 'string',
-									editor: 'combobox',
-									options: '[["广东", "1"], ["广西", "2"]]'
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAB003',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAE022',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAF036_1',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAF036_2',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								}]
+							}, true);
+						}else if(record.value='hbjyweb_webservice_cb21_xml_task'){
+							Designer.PropBox.updateValue(9, {
+								editor: 'text',
+								name: 'params',
+								value: [ {
+									name: 'ACB217',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								}, {
+									name: 'ACA111',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAF036_1',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAF036_2',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},
+								{
+									name: 'AAE022',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								}]
+							}, true);
+						}else if(record.value='hbjyweb_webservice_cc20_xml_task'){
+							Designer.PropBox.updateValue(9, {
+								editor: 'text',
+								name: 'params',
+								value: [ {
+									name: 'AAC002',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
 								}]
 							}, true);
 						}

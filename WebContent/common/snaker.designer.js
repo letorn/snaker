@@ -177,9 +177,9 @@ var Designer = {
 				doRecord: true,
 				recordView: 'module/basiclog',
 				name: '湖北数据输出',
-				dxUrl: '',
-				dxUser: '',
-				dxPwd: '',
+				dxUrl: 'http://10.128.10.141:9090/dxservice/svcs/DataService',
+				dxUser: 'admin',
+				dxPwd: '1',
 				interfaceName: '',
 				params:[]
 			}
