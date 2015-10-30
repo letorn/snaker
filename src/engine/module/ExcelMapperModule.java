@@ -2,27 +2,27 @@ package engine.module;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.SkFile;
-
 import org.apache.commons.io.FilenameUtils;
 
-import util.Excel;
 import engine.ModuleData;
+import model.SkFile;
+import util.Excel;
 
 /*
  * 流程模型 - Excel映射
  * 通过Excel文件映射数据
  */
-@SuppressWarnings({ "serial", "unchecked" })
+@SuppressWarnings("unchecked")
 public class ExcelMapperModule extends Module {
 
 	private String excelFile;
-	private static boolean initFlag = true;
-	private Map<String, Map<String, String>> excelMaps = new HashMap<String, Map<String, String>>();
+	private static Map<String, Date> mapUpdateTime = new HashMap<String, Date>();
+	private static Map<String, Map<String, Map<String, String>>> excelMaps = new HashMap<String, Map<String, Map<String, String>>>();
 	
 	/**
 	 * 模型执行方法体
@@ -30,13 +30,10 @@ public class ExcelMapperModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-//		System.out.println(inputs.getRows());
-		if (initFlag) {
-			initMapper(inputs);
-		}
+		initMapper(inputs);
 		for (Map<String, Object> row : inputs.getRows()) {
 			for (String attr : row.keySet()) {
-				Map<String, String> tmp = excelMaps.get(attr);
+				Map<String, String> tmp = excelMaps.get(excelFile).get(attr);
 				if (row.get(attr) == null || tmp == null || tmp.size() == 0) {
 					continue;
 				} else {
@@ -63,22 +60,24 @@ public class ExcelMapperModule extends Module {
 	}
 	
 	private void initMapper(ModuleData inputs) {
-		SkFile skFile = SkFile.dao.findFirst("select * from sk_file where name='" + excelFile + "'");
-		byte[] content = skFile.getBytes("content");
-		ByteArrayInputStream bais = new ByteArrayInputStream(content);
-		try {
-			excelMaps = Excel.exportFromExcel(bais, FilenameUtils.getExtension(excelFile), inputs);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
+		Date updateTime = SkFile.dao.findFirst("select update_date from sk_file where name=? limit 1", excelFile).getDate("update_time");
+		if (mapUpdateTime.get(excelFile) == null || updateTime.after(mapUpdateTime.get(excelFile))) {
+			byte[] content = SkFile.dao.findFirst("select content from sk_file where name=? limit 1", excelFile).getBytes("content");
+			ByteArrayInputStream bais = new ByteArrayInputStream(content);
 			try {
-				if (bais != null)
-					bais.close();
+					excelMaps.put(excelFile, Excel.exportFromExcel(bais, FilenameUtils.getExtension(excelFile), inputs));
+					mapUpdateTime.put(excelFile, updateTime);
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				try {
+					if (bais != null)
+						bais.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		initFlag = false;
 	}
 
 }

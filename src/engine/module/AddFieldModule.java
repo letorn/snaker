@@ -5,7 +5,6 @@ import java.util.Map;
 
 import engine.ModuleData;
 
-@SuppressWarnings("serial")
 public class AddFieldModule extends Module {
 
 	private List<Map<String, Object>> fieldTable;

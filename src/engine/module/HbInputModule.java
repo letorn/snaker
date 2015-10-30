@@ -9,7 +9,6 @@ import engine.ModuleData;
  * 流程模型 - 输出到数据库
  * 数据库存储过程
  */
-@SuppressWarnings("serial")
 public class HbInputModule extends Module  {
 
 	//private String dxUrl="http://10.128.10.141:9090/dxservice/svcs/DataService";
@@ -49,26 +48,26 @@ public class HbInputModule extends Module  {
 		if(interfaceName.equals("hbjyweb_webservice_cb20_xml_task")){
 			//用人单位信息查询
 			p = "<maps>"+
-				"<map><key><![CDATA[ACB200]]></key><value><![CDATA["+ACB200==null||ACB200.equals("")?"%":ACB200+"]]></value></map> "+
-				"<map><key><![CDATA[AAB004]]></key><value><![CDATA["+AAB004==null||AAB004.equals("")?"%":AAB004+"]]></value></map>"+
-				"<map><key><![CDATA[AAB003]]></key><value><![CDATA["+AAB003==null||AAB003.equals("")?"%":AAB003+"]]></value></map>"+ 
-				"<map><key><![CDATA[AAE022]]></key><value><![CDATA["+AAE022==null||AAE022.equals("")?"%":AAE022+"]]></value></map>"+
-				"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1+"]]></value></map>"+
-				"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+AAF036_2==null||AAF036_2.equals("")?"%":AAF036_2+"]]></value></map>"+ 
+				"<map><key><![CDATA[ACB200]]></key><value><![CDATA["+(ACB200==null||ACB200.equals("")?"%":ACB200)+"]]></value></map> "+
+				"<map><key><![CDATA[AAB004]]></key><value><![CDATA["+(AAB004==null||AAB004.equals("")?"%":AAB004)+"]]></value></map>"+
+				"<map><key><![CDATA[AAB003]]></key><value><![CDATA["+(AAB003==null||AAB003.equals("")?"%":AAB003)+"]]></value></map>"+ 
+				"<map><key><![CDATA[AAE022]]></key><value><![CDATA["+(AAE022==null||AAE022.equals("")?"%":AAE022)+"]]></value></map>"+
+				"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+(AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1)+"]]></value></map>"+
+				"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+(AAF036_2==null||AAF036_2.equals("")?"%":AAF036_2)+"]]></value></map>"+ 
 				"</maps>";
 		}else if(interfaceName.equals("hbjyweb_webservice_cb21_xml_task")){
 			//招聘岗位信息查询
 			p = "<maps>"+
-					"<map><key><![CDATA[ACB217]]></key><value><![CDATA["+ACB217==null||ACB217.equals("")?"%":ACB217+"]]></value></map> "+
-					"<map><key><![CDATA[ACA111]]></key><value><![CDATA["+ACA111==null||ACA111.equals("")?"%":ACA111+"]]></value></map>"+
-					"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1+"]]></value></map>"+
-					"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+AAF036_2==null||AAF036_2.equals("")?"%":AAF036_2+"]]></value></map>"+ 
-					"<map><key><![CDATA[AAE022]]></key><value><![CDATA["+AAE022==null||AAE022.equals("")?"%":AAE022+"]]></value></map>"+
+					"<map><key><![CDATA[ACB217]]></key><value><![CDATA["+(ACB217==null||ACB217.equals("")?"%":ACB217)+"]]></value></map> "+
+					"<map><key><![CDATA[ACA111]]></key><value><![CDATA["+(ACA111==null||ACA111.equals("")?"%":ACA111)+"]]></value></map>"+
+					"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+(AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1)+"]]></value></map>"+
+					"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+(AAF036_2==null||AAF036_2.equals("")?"%":AAF036_2)+"]]></value></map>"+ 
+					"<map><key><![CDATA[AAE022]]></key><value><![CDATA["+(AAE022==null||AAE022.equals("")?"%":AAE022)+"]]></value></map>"+
 					"</maps>";
 		}else if(interfaceName.equals("hbjyweb_webservice_cc20_xml_task")){
 			//个人信息查询
 			p = "<maps>"+
-					"<map><key><![CDATA[AAC002]]></key><value><![CDATA["+AAC002==null||AAC002.equals("")?"%":AAC002+"]]></value></map> "+
+					"<map><key><![CDATA[AAC002]]></key><value><![CDATA["+(AAC002==null||AAC002.equals("")?"%":AAC002)+"]]></value></map> "+
 				"</maps>";
 		} 
 		HbClient client = new HbClient(dxUrl, dxUser, dxPwd, "get");

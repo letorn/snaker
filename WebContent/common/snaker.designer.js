@@ -60,7 +60,6 @@ var Designer = {
 				doRecord: true,
 				recordView: 'module/basiclog',
 				name: '页面输入',
-				dataSrc: '',
 				startUrl: '',
 				helpRegion: '',
 				helpUrl: '',
@@ -136,9 +135,6 @@ var Designer = {
 				doRecord: true,
 				recordView: 'module/basiclog',
 				name: '存储过程输出',
-				jdbcUrl: '',
-				jdbcUser: '',
-				jdbcPwd: '',
 				procName: '',
 				procFields: []
 			}
@@ -156,9 +152,6 @@ var Designer = {
 				doRecord: true,
 				recordView: 'module/basiclog',
 				name: '表输出',
-				jdbcUrl: '',
-				jdbcUser: '',
-				jdbcPwd: '',
 				tableName: '',
 				tableFields: []
 			}

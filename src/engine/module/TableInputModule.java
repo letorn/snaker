@@ -9,7 +9,6 @@ import engine.ModuleData;
  * 流程模型 - 表格输入
  * 通过表格的方式输入数据
  */
-@SuppressWarnings("serial")
 public class TableInputModule extends Module {
 
 	private List<Map<String, Object>> dataHeaders;

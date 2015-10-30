@@ -1,6 +1,9 @@
 package init;
 
 import model.SkFile;
+import model.ViEnterprise;
+import model.ViEntpost;
+import model.ViJobhunter;
 import plugin.SQLPlugin;
 
 import com.jfinal.config.Constants;
@@ -18,9 +21,9 @@ import controller.DataEnterpriseController;
 import controller.DataFileController;
 import controller.DataJobhunterController;
 import controller.IndexController;
+import controller.InstanceController;
 import controller.ModuleController;
 import controller.ProcessController;
-import controller.InstanceController;
 import engine.model.DbEnterprise;
 import engine.model.DbEntpost;
 import engine.model.DbJobhunter;
@@ -76,15 +79,24 @@ public class AppConfig extends JFinalConfig {
 		me.add(c3p0Plugin);
 
 		// 配置ActiveRecord插件
-		ActiveRecordPlugin arp = new ActiveRecordPlugin(c3p0Plugin);
-		arp.addMapping("wf_process", WfProcess.class);
-		arp.addMapping("wf_instance", WfInstance.class);
-		arp.addMapping("wf_record", WfRecord.class);
-		arp.addMapping("db_enterprise", DbEnterprise.class);
-		arp.addMapping("db_entpost", DbEntpost.class);
-		arp.addMapping("db_jobhunter", DbJobhunter.class);
-		arp.addMapping("sk_file", SkFile.class);
-		me.add(arp);
+		ActiveRecordPlugin c3p0Arp = new ActiveRecordPlugin(c3p0Plugin);
+		c3p0Arp.addMapping("wf_process", WfProcess.class);
+		c3p0Arp.addMapping("wf_instance", WfInstance.class);
+		c3p0Arp.addMapping("wf_record", WfRecord.class);
+		c3p0Arp.addMapping("db_enterprise", DbEnterprise.class);
+		c3p0Arp.addMapping("vi_enterprise", ViEnterprise.class);
+		c3p0Arp.addMapping("db_entpost", DbEntpost.class);
+		c3p0Arp.addMapping("vi_entpost", ViEntpost.class);
+		c3p0Arp.addMapping("db_jobhunter", DbJobhunter.class);
+		c3p0Arp.addMapping("vi_jobhunter", ViJobhunter.class);
+		c3p0Arp.addMapping("sk_file", SkFile.class);
+		me.add(c3p0Arp);
+		
+		// 配置正式环境数据库连接池插件
+		C3p0Plugin zcdhPlugin = new C3p0Plugin(PropKit.get("zcdh.url"), PropKit.get("zcdh.user"), PropKit.get("zcdh.pwd").trim());
+		me.add(zcdhPlugin);
+		ActiveRecordPlugin zcdhArp = new ActiveRecordPlugin("zcdh", zcdhPlugin);
+		me.add(zcdhArp);
 	}
 
 	/**

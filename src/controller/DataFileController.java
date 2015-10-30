@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +42,25 @@ public class DataFileController extends Controller {
 		String name = getPara("name", "");
 		String ftype = getPara("ftype", "");
 		
-		Page<SkFile> pager = SkFile.dao.paginate(page, rows, "select id,name,suffix,ftype", "from sk_file where name like ? and ftype like ?", "%" + name + "%", "%" + ftype + "%");
+		Page<SkFile> pager = SkFile.dao.paginate(page, rows, "select id,name,suffix,ftype,update_date", "from sk_file where name like ? and ftype like ?", "%" + name + "%", "%" + ftype + "%");
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
 	}
 
+	/**
+	 * 列表
+	 * page 页码
+	 * rows 每页多少条记录
+	 * name 文件名
+	 * ftype 文件类型
+	 */
+	public void list() {
+		String ftype = getPara("ftype", "");
+		
+		renderJson(SkFile.dao.find("select id,name from sk_file where ftype=?", ftype));
+	}
+	
 	/**
 	 * 上传或更新文件
 	 * file 文件
@@ -62,7 +76,7 @@ public class DataFileController extends Controller {
 			if (blank(fileId)) {
 				String name = uploadFile.getOriginalFileName();
 				String suffix = name.substring(name.lastIndexOf(".") + 1);
-				SkFile skFile =  new SkFile().set("name", name).set("suffix", suffix).set("ftype", ftype);
+				SkFile skFile =  new SkFile().set("name", name).set("suffix", suffix).set("ftype", ftype).set("update_date", new Date());
 				try (FileInputStream  fis = new FileInputStream(uploadFile.getFile())) {
 					skFile.set("content", fis);
 					dataMap.put("success", skFile.save());
@@ -72,7 +86,7 @@ public class DataFileController extends Controller {
 				SkFile skFile = SkFile.dao.findById(fileId);
 				if (notBlank(skFile)) {
 					try (FileInputStream  fis = new FileInputStream(uploadFile.getFile())) {
-						skFile.set("content", fis);
+						skFile.set("content", fis).set("update_date", new Date());
 						dataMap.put("success", skFile.update());
 					} catch (Exception e) {}
 				}

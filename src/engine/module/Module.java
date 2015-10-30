@@ -2,7 +2,6 @@ package engine.module;
 
 import static util.Validator.blank;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,21 +14,20 @@ import engine.model.WfRecord;
 /*
  * 流程模型
  */
-@SuppressWarnings("serial")
-public abstract class Module implements Runnable,Serializable {
+public abstract class Module implements Runnable {
 
 	protected Workflow workflow;// 工作流
-	private List<Module> prevModules;// 前一步的流程模型
-	private List<Module> nextModules;// 后一步的流程模型
-	private ModuleData inputs;// 输入的数据
-	private ModuleData outputs;// 输出的数据
+	protected List<Module> prevModules;// 前一步的流程模型
+	protected List<Module> nextModules;// 后一步的流程模型
+	protected ModuleData inputs;// 输入的数据
+	protected ModuleData outputs;// 输出的数据
 	
-	private String mtype;// 模型类型
-	private String name;// 模型名称
-	private String controller;// 模型界面
-	private boolean doRecord = false;
-	private String recordView;// 模型视图
-	private List<Map<String, Object>> params;
+	protected String mtype;// 模型类型
+	protected String name;// 模型名称
+	protected String controller;// 模型界面
+	protected boolean doRecord = false;
+	protected String recordView;// 模型视图
+	protected List<Map<String, Object>> params;
 
 	/**
 	 * 模型执行方法体
@@ -47,10 +45,14 @@ public abstract class Module implements Runnable,Serializable {
 		run(inputs);
 	}
 	
+	public void start() {
+		new Thread(this).start();
+	}
+	
 	/**
 	 * 运行模型
 	 */
-	protected void run(ModuleData inputs) {
+	public void run(ModuleData inputs) {
 		outputs = execute(inputs);
 		if (doRecord) {
 			new WfRecord().set("process_id", workflow.getProcessId())
@@ -64,7 +66,7 @@ public abstract class Module implements Runnable,Serializable {
 		for (Module module : nextModules) {
 			module.setInputs(outputs);
 			if (workflow.isDaemon()) {
-				new Thread(module).start();
+				module.start();
 			} else {
 				module.run();
 			}

@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,9 +45,10 @@ public class SnakerEngine {
 		List<WfInstance> instances = WfInstance.dao.find("select * from wf_instance");
 		for (WfInstance instance : instances) {
 			Long processId = instance.getLong("process_id");
-			Workflow workflow = processIdMap.get(processId);
+			// Workflow workflow = processIdMap.get(processId);
+			Workflow workflow = Workflow.create(WfProcess.dao.findById(processId));
 			if (notBlank(workflow)) {
-				workflow = copy(workflow);
+				workflow = workflow.clone();
 				workflow.setInstance(instance);
 				instanceIdMap.put(workflow.getInstanceId(), workflow);
 			}
@@ -60,14 +63,15 @@ public class SnakerEngine {
 	 * @return 流程实例
 	 */
 	public Workflow startProcess(Long processId, String params, boolean daemon) {
-		Workflow workflow = processIdMap.get(processId);
+		// Workflow workflow = processIdMap.get(processId);
+		Workflow workflow = Workflow.create(WfProcess.dao.findById(processId));
 		if (notBlank(workflow)) {
 			WfInstance instance = new WfInstance();
 			instance.set("process_id", processId)
 					.set("params", params)
 					.set("create_date", new Date());
 			if (instance.save()) {
-				workflow = copy(workflow);
+				// workflow = workflow.clone();
 				workflow.setInstance(instance);
 				workflow.setDaemon(daemon);
 				if (workflow.start(params)) {
@@ -115,6 +119,7 @@ public class SnakerEngine {
 		if(process.update()) {
 			Workflow workflow = Workflow.create(process);
 			processIdMap.put(workflow.getProcessId(), workflow);
+			return true;
 		}
 		return false;
 	}
@@ -152,7 +157,13 @@ public class SnakerEngine {
 	 * @return 工作流程列表
 	 */
 	public List<Workflow> findProcess() {
-		return new ArrayList<Workflow>(processIdMap.values());
+		List<Workflow> list = new ArrayList<Workflow>(processIdMap.values());
+		Collections.sort(list, new Comparator<Workflow>() {
+			public int compare(Workflow wf1, Workflow wf2) {
+				return wf1.getProcessId() > wf2.getProcessId() ? 1 : -1;
+			}
+		});
+		return list;
 	}
 	
 	/**
@@ -169,7 +180,13 @@ public class SnakerEngine {
 	 * @return 流程实例列表
 	 */
 	public List<Workflow> findInstance() {
-		return new ArrayList<Workflow>(instanceIdMap.values());
+		List<Workflow> list = new ArrayList<Workflow>(instanceIdMap.values());
+		Collections.sort(list, new Comparator<Workflow>() {
+			public int compare(Workflow wf1, Workflow wf2) {
+				return wf1.getProcessId() > wf2.getProcessId() ? 1 : -1;
+			}
+		});
+		return list;
 	}
 	
 	/**

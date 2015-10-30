@@ -18,10 +18,8 @@ import engine.ModuleData;
  * 流程模型 - 页面爬取
  * 爬虫
  */
-@SuppressWarnings("serial")
 public class WebInputModule extends Module {
 
-	private String dataSrc;
 	private String startUrl;
 	private String helpRegion;
 	private String helpUrl;
@@ -37,15 +35,16 @@ public class WebInputModule extends Module {
 	 */
 	
 	public ModuleData execute(ModuleData inputs) {
-		// spider.addUrl(startUrl).addPipeline(new OutputPipeline(inputs)).run();
+		spider = spider.addUrl(startUrl);
+		for (Module next : this.getNextModules()) {
+			spider = spider.addPipeline(new OutputPipeline(inputs, next));
+		}
+		if (workflow.isDaemon()) {
+			spider.start();
+		} else {
+			spider.run();
+		}
 		return inputs;
-	}
-
-	protected void run(ModuleData inputs) {
-		spider.addUrl(startUrl).addPipeline(new OutputPipeline(inputs, this)).run();
-//		spider.addUrl(startUrl).addPipeline(new ConsolePipeline()).run();
-		
-		super.run(inputs);
 	}
 	
 	/**
@@ -77,7 +76,6 @@ public class WebInputModule extends Module {
 				String regex = dataPath.get("regex");
 				String isAll = dataPath.get("isAll");
 				Selectable result = page.getHtml();
-				page.putField("dataSrc", dataSrc);
 				if ("url".equals(attr)) {
 					result = page.getUrl();
 				}
@@ -136,16 +134,23 @@ public class WebInputModule extends Module {
 				tmp.add(resultItems.getAll());
 			}
 			if (tmp.size() >= 20) {
-				inputs.addAll(tmp);
-				tmp.clear();
-				module.run(inputs);
+				output();
 				inputs = new ModuleData();
 			}
 			if ((!stop) && spider.getStatus() == Spider.Status.Stopped) {
-				inputs.addAll(tmp);
-				tmp.clear();
-				module.run(inputs);
+				output();
 				stop = true;
+			}
+		}
+		
+		private void output() {
+			inputs.addAll(tmp);
+			tmp.clear();
+			module.setInputs(inputs);
+			if (workflow.isDaemon()) {
+				module.start();
+			} else {
+				module.run();
 			}
 		}
 		

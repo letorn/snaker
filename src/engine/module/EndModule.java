@@ -6,7 +6,6 @@ import engine.ModuleData;
  * 流程模型 - 结束
  * 一个工作流程可以有多个结束模型
  */
-@SuppressWarnings("serial")
 public class EndModule extends Module {
 
 	/**

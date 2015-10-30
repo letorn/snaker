@@ -3,7 +3,6 @@ package engine;
 import static util.Validator.notBlank;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,8 +24,8 @@ import engine.module.Module;
 /*
  * 工作流
  */
-@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
-public class Workflow implements Serializable {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class Workflow implements Cloneable {
 
 	private boolean daemon = true;// 后台运行
 	
@@ -246,6 +245,15 @@ public class Workflow implements Serializable {
 
 	public void setModules(List<Module> modules) {
 		this.modules = modules;
+	}
+	
+	protected Workflow clone() {
+		try {
+			return (Workflow) super.clone();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }

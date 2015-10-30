@@ -137,6 +137,7 @@
 			<tr>
 				<th data-options="field:'name',width:100">表字段</th>
 				<th data-options="field:'from',width:100,editor:{type:'textbox'}">映射字段</th>
+				<th data-options="field:'default',width:100,editor:{type:'textbox'}">默认值</th>
 			</tr>
 		</thead>
 	</table>
@@ -592,89 +593,91 @@
 				}
 				
 				if (procName == 'save_or_update_user') {
-					fields = [{name:'name',	from:'name'},{
-							name:'gender',from:'gender'},{
-							name:'nation',from:'nation'},{
-							name:'mobile',from:'mobile'},{
-							name:'email',from:'email'},{
-							name:'experienceCode',from:'experienceCode'},{
-							name:'educationCode',from:'educationCode'},{
-							name:'household',from:'household'},{
-							name:'categoryCode',from:'categoryCode'},{
-							name:'status',from:'status'},{
-							name:'marriage',from:'marriage'},{
-							name:'certType',from:'certType'},{
-							name:'certId',from:'certId'},{
-							name:'birth',from:'birth'},{
-							name:'selfComment',from:'selfComment'},{
-							name:'locationCode',from:'locationCode'},{
-							name:'dataSrc',from:'dataSrc'},{
-							name:'dataKey',from:'dataKey'},{
-							name:'updateDate',from:'updateDate'},{
-							name:'createDate',from:'createDate'},{
-							name:'account',from:'account'},{
-							name:'currEnt',from:'currEnt'},{
-							name:'currEntPhone',from:'currEntPhone'},{
-							name:'currPostCode',from:'currPostCode'},{
-							name:'currPost',from:'currPost'},{
-							name:'lbsLon',from:'lbsLon'},{
-							name:'lbsLat',from:'lbsLat'},{
-							name:'accountStatus',from:'accountStatus'}];
+					fields = [{name:'name',	from:'name',default:''},{
+							name:'gender',from:'gender',default:''},{
+							name:'nation',from:'nation',default:''},{
+							name:'mobile',from:'mobile',default:''},{
+							name:'email',from:'email',default:''},{
+							name:'experienceCode',from:'experienceCode',default:''},{
+							name:'educationCode',from:'educationCode',default:''},{
+							name:'household',from:'household',default:''},{
+							name:'categoryCode',from:'categoryCode',default:''},{
+							name:'status',from:'status',default:''},{
+							name:'marriage',from:'marriage',default:''},{
+							name:'certType',from:'certType',default:''},{
+							name:'certId',from:'certId',default:''},{
+							name:'birth',from:'birth',default:''},{
+							name:'selfComment',from:'selfComment',default:''},{
+							name:'locationCode',from:'locationCode',default:''},{
+							name:'dataSrc',from:'dataSrc',default:''},{
+							name:'dataKey',from:'dataKey',default:''},{
+							name:'updateDate',from:'updateDate',default:''},{
+							name:'createDate',from:'createDate',default:''},{
+							name:'account',from:'account',default:''},{
+							name:'currEnt',from:'currEnt',default:''},{
+							name:'currEntPhone',from:'currEntPhone',default:''},{
+							name:'currPostCode',from:'currPostCode',default:''},{
+							name:'currPost',from:'currPost',default:''},{
+							name:'lbsLon',from:'lbsLon',default:''},{
+							name:'lbsLat',from:'lbsLat',default:''},{
+							name:'accountStatus',from:'accountStatus',default:''}];
 
 
 				}
 				if(procName == 'save_or_update_ent') {
-					fields = 	   [{name: ' name ',from:'name'},{
-					    name: ' categoryCode ',from:'categoryCode'},{
-					        name: ' natureCode ',from:'natureCode'},{
-					        name: ' scaleCode ',from:'scaleCode'},{
-					        name: ' tag ',from:'tag'},{
-					        name: ' establish ',from:'establish'},{
-					        name:  'troduction ',from:'troduction'},{
-					        name: ' address ',from:'address'},{
-					        name: ' website ',from:'website'},{
-					        name: ' areaCode ',from:'areaCode'},{
-					        name: ' lbsLon ',from:'lbsLon'},{
-					        name: ' lbsLat ',from:'lbsLat'},{
-					        name: ' organame:',from:'organame'},{
-					        name: ' license ',from:'license'},{
-					        name: ' contacter ',from:'contacter'},{
-					        name: ' publicContact ',from:'publicContact'},{
-					        name: ' phone ',from:'phone'},{
-					        name: ' fax ',from:'fax'},{
-					        name: ' mobile ',from:'mobile'},{
-					        name: ' email ',from:'email'},{
-					        name: ' qq ',from:'qq'},{
-					        name: ' dataSrc ',from:'dataSrc'},{
-					        name: ' dataKey ',from:'dataKey'},{
-					        name: ' dataUrl ',from:'dataUrl'},{
-					        name: ' updateDate ',from:'updateDate'},{
-					        name: ' createDate ',from:'createDate'},{
-					        name: ' account ',from:'account'}]
+					fields = 	   
+						[{
+							name: ' name ',from:'name',default:''},{
+					   		name: ' categoryCode ',from:'categoryCode',default:''},{
+					        name: ' natureCode ',from:'natureCode',default:''},{
+					        name: ' scaleCode ',from:'scaleCode',default:''},{
+					        name: ' tag ',from:'tag',default:''},{
+					        name: ' establish ',from:'establish',default:''},{
+					        name:  'troduction ',from:'troduction',default:''},{
+					        name: ' address ',from:'address',default:''},{
+					        name: ' website ',from:'website',default:''},{
+					        name: ' areaCode ',from:'areaCode',default:''},{
+					        name: ' lbsLon ',from:'lbsLon',default:''},{
+					        name: ' lbsLat ',from:'lbsLat',default:''},{
+					        name: ' orgains',from:'orgains',default:''},{
+					        name: ' license ',from:'license',default:''},{
+					        name: ' contacter ',from:'contacter',default:''},{
+					        name: ' publicContact ',from:'publicContact',default:''},{
+					        name: ' phone ',from:'phone',default:''},{
+					        name: ' fax ',from:'fax',default:''},{
+					        name: ' mobile ',from:'mobile',default:''},{
+					        name: ' email ',from:'email',default:''},{
+					        name: ' qq ',from:'qq',default:''},{
+					        name: ' dataSrc ',from:'dataSrc',default:''},{
+					        name: ' dataKey ',from:'dataKey',default:''},{
+					        name: ' dataUrl ',from:'dataUrl',default:''},{
+					        name: ' updateDate ',from:'updateDate',default:''},{
+					        name: ' createDate ',from:'createDate',default:''},{
+					        name: ' account ',from:'account',default:''}]
 				}
 				if(procName == 'save_or_update_post') {
 					fields = 	  
 						[{name:'NAME',from:'NAME'},
-						 {name:'categoryCode',from:'categoryCode'},
-						 {name:'natureCode',from:'natureCode'},
-						 {name:'headcount',from:'headcount'},
-						 {name:'age',from:'age'},
-						 {name:'gender',from:'gender'},
-						 {name:'salary',from:'salary'},
-						 {name:'tag',from:'tag'},
-						 {name:'troduction',from:'troduction'},
-						 {name:'areaCode',from:'areaCode'},
-						 {name:'address',from:'address'},
-						 {name:'lbsLon',from:'lbsLon'},
-						 {name:'lbsLat',from:'lbsLat'},
-						 {name:'dataSrc',from:'dataSrc'},
-						 {name:'dataKey',from:'dataKey'},
-						 {name:'dataEntKey',from:'dataEntKey'},
-						 {name:'dataUrl',from:'dataUrl'},
-						 {name:'updateDate',from:'updateDate'},
-						 {name:'createDate',from:'createDate'},
-						 {name:'experienceCode',from:'experienceCode'},
-						 {name:'educationCode',from:'educationCode'}]
+						 {name:'categoryCode',from:'categoryCode',default:''},
+						 {name:'natureCode',from:'natureCode',default:''},
+						 {name:'headcount',from:'headcount',default:''},
+						 {name:'age',from:'age',default:''},
+						 {name:'gender',from:'gender',default:''},
+						 {name:'salary',from:'salary',default:''},
+						 {name:'tag',from:'tag',default:''},
+						 {name:'troduction',from:'troduction',default:''},
+						 {name:'areaCode',from:'areaCode',default:''},
+						 {name:'address',from:'address',default:''},
+						 {name:'lbsLon',from:'lbsLon',default:''},
+						 {name:'lbsLat',from:'lbsLat',default:''},
+						 {name:'dataSrc',from:'dataSrc',default:''},
+						 {name:'dataKey',from:'dataKey',default:''},
+						 {name:'dataEntKey',from:'dataEntKey',default:''},
+						 {name:'dataUrl',from:'dataUrl',default:''},
+						 {name:'updateDate',from:'updateDate',default:''},
+						 {name:'createDate',from:'createDate',default:''},
+						 {name:'experienceCode',from:'experienceCode',default:''},
+						 {name:'educationCode',from:'educationCode',default:''}]
 				 }
 				
 				for (var i = 0; i < fields.length; i ++) {
@@ -868,18 +871,19 @@
 							Designer.PropBox.updateValue(9, {
 								editor: 'text',
 								name: 'params',
-								value: [ {
+								value: [ 
+								{
+									name: 'ACB200',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
 									name: 'AAB003',
 									type: 'string',
 									editor: 'textbox',
 									options: ''
 								}, {
 									name: 'AAB004',
-									type: 'string',
-									editor: 'textbox',
-									options: ''
-								},{
-									name: 'AAB003',
 									type: 'string',
 									editor: 'textbox',
 									options: ''
@@ -971,7 +975,7 @@
 			options: {
 				textField: 'name',
 				valueField: 'name',
-				url: '${ctx}/data/file?ftype=excelmapper'
+				url: '${ctx}/data/file/list?ftype=excelmapper'
 			}
 		};
 

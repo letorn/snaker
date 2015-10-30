@@ -13,7 +13,6 @@ import engine.ModuleData.DataHeader;
  * 流程模型 - 表格映射
  * 通过表格的方式映射数据
  */
-@SuppressWarnings("serial")
 public class TableMapperModule extends Module {
 
 	private List<Map<String, Object>> dataHeaders;
