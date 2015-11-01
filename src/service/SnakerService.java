@@ -2,7 +2,6 @@ package service;
 
 import static com.jfinal.aop.Enhancer.enhance;
 import static util.Validator.blank;
-import static util.Validator.notBlank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,11 +66,8 @@ public class SnakerService {
 	 * @param content 流程XML内容
 	 * @return 保存是否成功
 	 */
-	public boolean saveProcesss(Long processId, String content) {
-		if (notBlank(processId))
-			return engine.updateProcess(processId, content);
-		else
-			return engine.addProcess(content);
+	public Workflow saveProcesss(Long processId, String content) {
+		return blank(processId) ? engine.addProcess(content) : engine.updateProcess(processId, content);
 	}
 	
 	/**

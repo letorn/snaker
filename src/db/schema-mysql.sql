@@ -285,6 +285,7 @@ create table if not exists sk_file(
 	suffix varchar(20),
 	ftype varchar(20),
 	content longblob,
+	update_date datetime,
 	unique key sk_file_unique_key(name)
 );
 
@@ -301,9 +302,19 @@ create table if not exists ut_date(
 );
 
 -- 工具 职位分类
--- drop table if exists ut_entpost_category;
-create table if not exists ut_entpost_category(
+-- drop table if exists ut_post;
+create table if not exists ut_post(
 	id bigint primary key auto_increment,
-	name varchar(255),
-	code varchar(255)
+	name varchar(100),
+	code varchar(7),
+	parent varchar(7)
+);
+
+-- 工具 行业分类
+-- drop table if exists ut_industry;
+create table if not exists ut_industry(
+	id bigint primary key auto_increment,
+	name varchar(100),
+	code varchar(7),
+	parent varchar(3)
 );

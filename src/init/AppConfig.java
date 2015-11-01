@@ -1,6 +1,9 @@
 package init;
 
 import model.SkFile;
+import model.UtDate;
+import model.UtIndustry;
+import model.UtPost;
 import model.ViEnterprise;
 import model.ViEntpost;
 import model.ViJobhunter;
@@ -80,16 +83,26 @@ public class AppConfig extends JFinalConfig {
 
 		// 配置ActiveRecord插件
 		ActiveRecordPlugin c3p0Arp = new ActiveRecordPlugin(c3p0Plugin);
+		// 工作流
+		c3p0Arp.setShowSql(true);
+		c3p0Arp.setDevMode(true);
 		c3p0Arp.addMapping("wf_process", WfProcess.class);
 		c3p0Arp.addMapping("wf_instance", WfInstance.class);
 		c3p0Arp.addMapping("wf_record", WfRecord.class);
+		// 自动采集
 		c3p0Arp.addMapping("db_enterprise", DbEnterprise.class);
-		c3p0Arp.addMapping("vi_enterprise", ViEnterprise.class);
 		c3p0Arp.addMapping("db_entpost", DbEntpost.class);
-		c3p0Arp.addMapping("vi_entpost", ViEntpost.class);
 		c3p0Arp.addMapping("db_jobhunter", DbJobhunter.class);
+		// 视图
+		c3p0Arp.addMapping("vi_enterprise", ViEnterprise.class);
+		c3p0Arp.addMapping("vi_entpost", ViEntpost.class);
 		c3p0Arp.addMapping("vi_jobhunter", ViJobhunter.class);
+		// 项目
 		c3p0Arp.addMapping("sk_file", SkFile.class);
+		// 工具
+		c3p0Arp.addMapping("ut_date", UtDate.class);
+		c3p0Arp.addMapping("ut_industry", UtIndustry.class);
+		c3p0Arp.addMapping("ut_post", UtPost.class);
 		me.add(c3p0Arp);
 		
 		// 配置正式环境数据库连接池插件

@@ -87,8 +87,13 @@ public class ProcessController extends Controller{
 		Long processId = getParaToLong("process");
 		String content = getPara("content");
 
-		if (notBlank(content))
-			dataMap.put("success", snakerService.saveProcesss(processId, content));
+		if (notBlank(content)) {
+			Workflow process = snakerService.saveProcesss(processId, content);
+			if (notBlank(process)) {
+				dataMap.put("success", true);
+				dataMap.put("process", process.getProcessId());
+			}
+		}
 
 		renderJson(dataMap);
 	}

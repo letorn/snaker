@@ -10,7 +10,16 @@
 	</thead>
 </table>
 <div id="data-jobhunter-table-toolbar" style="padding: 2px 5px;">
-	<input id="data-jobhunter-table-search" class="easyui-searchbox" data-options="prompt:'求职者名称'" style="width:200px"></input>
+	数据源：<input id="data-jobhunter-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text',url:'data/jobhunter/sources'" style="width:120px" />
+	<input id="data-jobhunter-table-search" class="easyui-searchbox" data-options="prompt:'求职者名称'" style="width:200px" />
+	<a id="data-jobhunter-table-upload" class="easyui-linkbutton">上传</a>
+</div>
+<div id="data-jobhunter-upload-window" class="easyui-window" data-options="title:'上传',modal:true,closed:true,footer:'#data-jobhunter-upload-footer'" style="width:600px;height:400px">
+    <ul id="data-jobhunter-upload-tree" class="easyui-tree" data-options="checkbox:true,url:'data/jobhunter/categories'" style="width:100%;height:100%"></ul>
+</div>
+<div id="data-jobhunter-upload-footer" style="padding:5px;">
+	<a id="data-jobhunter-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="data-jobhunter-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 <script type="text/javascript">
 	function dataJobhunterTableActionFormatter(value, row) {
@@ -18,11 +27,26 @@
 	}
 
 	$.render(function() {
-		var $dataJobhunterTable = $('#data-jobhunter-table');
+		var $dataJobhunterTable = $('#data-jobhunter-table'), $dataJobhunterTableSource = $('#data-jobhunter-table-source'), $dataJobhunterTableSearch = $('#data-jobhunter-table-search');
+		var $dataJobhunterUploadWindow = $('#data-jobhunter-upload-window'), $dataJobhunterUploadTree = $('#data-jobhunter-upload-tree');
 		
-		$('#data-jobhunter-table-search').searchbox({
+		$('#data-jobhunter-table-upload').click(function() {
+			$dataJobhunterUploadWindow.window('open');
+		});
+		
+		$dataJobhunterTableSource.combobox({
+			onSelect: function(record) {
+				$dataJobhunterTable.datagrid('load', {
+					source: record.value,
+					name: $dataJobhunterTableSearch.val()
+				});
+			}
+		});
+		
+		$dataJobhunterTableSearch.searchbox({
 			searcher: function(value) {
 				$dataJobhunterTable.datagrid('load', {
+					source: $dataJobhunterTableSource.combobox('getValue'),
 					name: value
 				});
 			}
@@ -36,6 +60,36 @@
 					console.log('look...');
 				});
 			}
+		});
+		
+		$('#data-jobhunter-upload-confirm').click(function() {
+			var nodes = $dataJobhunterUploadTree.tree('getChecked'), codes = [];
+			for (var i = 0; i < nodes.length; i ++) {
+				if (nodes[i].code)
+					codes.push(nodes[i].code);
+			}
+			$.post('data/jobhunter/upload', {
+				codes: codes
+			}, function(resp) {
+				if (resp.success) {
+					$.messager.show({
+						title: '提示',
+						msg: '上传成功！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				} else {
+					$.messager.show({
+						title: '提示',
+						msg: '上传失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+			}, 'json')
+		});
+		$('#data-jobhunter-upload-cancel').click(function() {
+			$dataJobhunterUploadWindow.window('close');
 		});
 	});
 </script>

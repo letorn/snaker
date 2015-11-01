@@ -32,8 +32,8 @@
 		var $processIndexTable = $('#process-index-table'), $processIndexParamsWindow = $('#process-index-params-window');
 		
 		$('#process-index-table-init').click(function() {
-			$.post('process/init', function(data) {
-				if (data.success) {
+			$.post('process/init', function(resp) {
+				if (resp.success) {
 					$.messager.show({
 						title: '提示',
 						msg: '初始化完成！',
@@ -76,9 +76,9 @@
 				}
 			});
 			$.post('process/start/' + $processIndexParamsWindow.data('process'), {
-				params: JSON.stringify(params)
-			}, function(data) {
-				if (data.success) {
+				params: $.encodeJson(params)
+			}, function(resp) {
+				if (resp.success) {
 					window.open('instance/all/' + data.instance);
 				} else {
 					$.messager.show({
@@ -105,9 +105,9 @@
 					$processIndexParamsWindow.html('');
 					$.post('process/params/' + $(this).data('process'), function(data) {
 						if (data.length <= 0) {
-							$.post('process/start/' + $processIndexParamsWindow.data('process'), function(data) {
-								if (data.success) {
-									window.open('instance/all/' + data.instance);
+							$.post('process/start/' + $processIndexParamsWindow.data('process'), function(resp) {
+								if (resp.success) {
+									window.open('instance/all/' + resp.instance);
 								} else {
 									$.messager.show({
 										title: '提示',
@@ -168,8 +168,8 @@
 				});
 				
 				$('.process-index-table-delete').click(function() {
-					$.post('process/delete/' + $(this).data('process'), function(data) {
-						if (data.success) {
+					$.post('process/delete/' + $(this).data('process'), function(resp) {
+						if (resp.success) {
 							$.messager.show({
 								title: '提示',
 								msg: '删除成功！',

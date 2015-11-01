@@ -197,51 +197,77 @@ var Designer = {
 	}
 };
 
-Designer.Attr = {
-	editor: {
-		dataHeaders: 'data-headers',
-		dataRows: 'data-rows'
-	}
-};
-
-Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClass, propformId, propboxId, editor) {
-	var $tabs = $('#' + tabsId), $canvas = $('#' + canvasId), $content = $('#' + contentId), $moveable = $('#' + moveableId), $propform = $('#' + propformId), $propbox = $('#' + propboxId);
+Designer.init = function(tabsId, canvasId, contentId, btnAddId, moveableId, btnDeleteId, propformId, propboxId, canvasItemClass, editor, process, content) {
+	var $tabs = $('#' + tabsId), $canvas = $('#' + canvasId), $content = $('#' + contentId), $contentArea = $content.find('textarea');
+	var $btnAdd = $('#' + btnAddId), $moveable = $('#' + moveableId), $btnDelete = $('#' + btnDeleteId);
+	var $propform = $('#' + propformId), $propbox = $('#' + propboxId);
 	var paper = Raphael(canvasId, $canvas.width() - 5, $canvas.height() - 5);
 	var canvasOffset = $canvas.offset();
+
 	Designer.$tabs = $tabs;
 	Designer.$canvas = $canvas;
 	Designer.$content = $content;
+	Designer.$contentArea = $contentArea;
+
+	Designer.$btnAdd = $btnAdd;
 	Designer.$moveable = $moveable;
+	Designer.$btnDelete = $btnDelete;
+
 	Designer.$propform = $propform;
 	Designer.$propbox = $propbox;
+
 	Designer.paper = paper;
 	Designer.canvasOffset = canvasOffset;
 	Designer.editor = editor;
+
 	for (var field in editor) {
 		var edt = editor[field];
 		if (edt.fixed) {
 			Designer.PropBox.fixedEditor[field] = edt;
 		}
 	}
+	
 	$tabs.tabs({
 		onSelect: function(title, index) {
 			if (title == $canvas.panel('options').title) {
-				Designer.setData(JSON.parse($content.text()));
+				Designer.setData($.decodeJson($contentArea.val()));
 			} else if (title == $content.panel('options').title) {
-				$content.text(JSON.stringify(Designer.getData()));
+				$contentArea.val($.encodeJson(Designer.getData(), "  "));
 			}
 		}
 	});
-	$('.' + canvasItemClass).draggable({
-		revert: true,
-		proxy: 'clone',
-		onStartDrag: function(e) {
-			$this = $(this);
-			e.data.startLeft = $this.offset().left;
-			e.data.startTop = $this.offset().top - 12;
-			$this.draggable('proxy').css('position', 'fixed');
-		}
+	
+	$btnAdd.click(function() {
+		$.post(ctx + '/process/save', {
+			process: process,
+			content: $.encodeJson(Designer.getData())
+		}, function(resp) {
+			if (resp.success) {
+				debugger;
+				if (process == undefined) {
+					process = resp.process;
+					history.replaceState({}, 'save', ctx + '/process/designer/' + process);
+				}
+				$.messager.show({
+					title: '提示',
+					msg: '保存成功！',
+					timeout: 1000,
+					showType: 'slide'
+				});
+			} else {
+				$.messager.show({
+					title: '提示',
+					msg: '保存失败！',
+					timeout: 1000,
+					showType: 'slide'
+				});
+			}
+		}, 'json');
 	});
+	$btnDelete.click(function() {
+		Designer.eleDelete();
+	});
+	
 	$canvas.droppable({
 		accept: '.' + canvasItemClass,
 		onDrop: function(e, source) {
@@ -251,6 +277,7 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 			ele.click(Designer.eleClick);
 		}
 	});
+	
 	$propbox.propertygrid({
 		onBeginEdit: function(index, row) {
 			if (editor[row.name] && editor[row.name].show) {
@@ -265,7 +292,22 @@ Designer.init = function(tabsId, canvasId, contentId, moveableId, canvasItemClas
 	});
 	$propform.form('load', {
 		name: Designer.createName()
-	})
+	});
+	
+	$('.' + canvasItemClass).draggable({
+		revert: true,
+		proxy: 'clone',
+		onStartDrag: function(e) {
+			$this = $(this);
+			e.data.startLeft = $this.offset().left;
+			e.data.startTop = $this.offset().top - 12;
+			$this.draggable('proxy').css('position', 'fixed');
+		}
+	});
+	
+	if (content) {
+		Designer.setData(content);
+	}
 };
 
 Designer.Arrow = {

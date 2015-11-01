@@ -25,14 +25,16 @@ import engine.module.Module;
  * 工作流
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class Workflow implements Cloneable {
+public class Workflow {
 
 	private boolean daemon = true;// 后台运行
 	
+	private WfProcess process;// 工作流程
 	private Long processId;// 流程主键
 	private String processName;// 流程名称
 	private String processContent;// 流程内容
 
+	private WfInstance instance;// 流程实例
 	private Long instanceId;// 实例主键
 	private String instanceParams;// 实例参数
 
@@ -205,11 +207,16 @@ public class Workflow implements Cloneable {
 	}
 
 	public void setProcess(WfProcess process) {
+		this.process = process;
 		processId = process.getLong("id");
 		processName = process.getStr("name");
 		processContent = process.getStr("content");
 	}
 
+	public WfProcess getProcess() {
+		return process;
+	}
+	
 	public Long getProcessId() {
 		return processId;
 	}
@@ -223,10 +230,15 @@ public class Workflow implements Cloneable {
 	}
 
 	public void setInstance(WfInstance instance) {
+		this.instance = instance;
 		instanceId = instance.getLong("id");
 		instanceParams = instance.getStr("params");
 	}
 
+	public WfInstance getInstance() {
+		return instance;
+	}
+	
 	public Long getInstanceId() {
 		return instanceId;
 	}
@@ -245,15 +257,6 @@ public class Workflow implements Cloneable {
 
 	public void setModules(List<Module> modules) {
 		this.modules = modules;
-	}
-	
-	protected Workflow clone() {
-		try {
-			return (Workflow) super.clone();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 	
 }

@@ -10,7 +10,16 @@
 	</thead>
 </table>
 <div id="data-enterprise-table-toolbar" style="padding: 2px 5px;">
-	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'企业名称'" style="width:200px"></input>
+	数据源：<input id="data-enterprise-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text',url:'data/enterprise/sources'" style="width:120px" />
+	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'企业名称'" style="width:200px" />
+	<a id="data-enterprise-table-upload" class="easyui-linkbutton">上传</a>
+</div>
+<div id="data-enterprise-upload-window" class="easyui-window" data-options="title:'上传',modal:true,closed:true,footer:'#data-enterprise-upload-footer'" style="width:600px;height:400px">
+    <ul id="data-enterprise-upload-tree" class="easyui-tree" data-options="checkbox:true,url:'data/enterprise/categories'" style="width:100%;height:100%"></ul>
+</div>
+<div id="data-enterprise-upload-footer" style="padding:5px;">
+	<a id="data-enterprise-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="data-enterprise-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 <script type="text/javascript">
 	function dataEnterpriseTableActionFormatter(value, row) {
@@ -18,11 +27,26 @@
 	}
 
 	$.render(function() {
-		var $dataEnterpriseTable = $('#data-enterprise-table');
+		var $dataEnterpriseTable = $('#data-enterprise-table'), $dataEnterpriseTableSource = $('#data-enterprise-table-source'), $dataEnterpriseTableSearch = $('#data-enterprise-table-search');
+		var $dataEnterpriseUploadWindow = $('#data-enterprise-upload-window'), $dataEnterpriseUploadTree = $('#data-enterprise-upload-tree');
+
+		$('#data-enterprise-table-upload').click(function() {
+			$dataEnterpriseUploadWindow.window('open');
+		});
 		
-		$('#data-enterprise-table-search').searchbox({
+		$dataEnterpriseTableSource.combobox({
+			onSelect: function(record) {
+				$dataEnterpriseTable.datagrid('load', {
+					source: record.value,
+					name: $dataEnterpriseTableSearch.val()
+				});
+			}
+		});
+		
+		$dataEnterpriseTableSearch.searchbox({
 			searcher: function(value) {
 				$dataEnterpriseTable.datagrid('load', {
+					source: $dataEnterpriseTableSource.combobox('getValue'),
 					name: value
 				});
 			}
@@ -36,6 +60,37 @@
 					console.log('look...');
 				});
 			}
+		});
+		
+		$('#data-enterprise-upload-confirm').click(function() {
+			var nodes = $dataEnterpriseUploadTree.tree('getChecked'), codes = [];
+			for (var i = 0; i < nodes.length; i ++) {
+				if (nodes[i].code)
+					codes.push(nodes[i].code);
+			}
+			$.post('data/enterprise/upload', {
+				ids: [1,2],
+				codes: codes
+			}, function(resp) {
+				if (resp.success) {
+					$.messager.show({
+						title: '提示',
+						msg: '上传成功！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				} else {
+					$.messager.show({
+						title: '提示',
+						msg: '上传失败！',
+						timeout: 1000,
+						showType: 'slide'
+					});
+				}
+			}, 'json')
+		});
+		$('#data-enterprise-upload-cancel').click(function() {
+			$dataEnterpriseUploadWindow.window('close');
 		});
 	});
 </script>
