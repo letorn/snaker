@@ -31,7 +31,7 @@ public class HbInputModule extends Module  {
 	private String ACA111;	//职业（工种）
 	private String AAC002; //公民身份号码
 	private String p=null;  // 参数 xml字符串
-
+	private String AAC001;  //AAC001
 	
 	
 	
@@ -58,6 +58,7 @@ public class HbInputModule extends Module  {
 		}else if(interfaceName.equals("hbjyweb_webservice_cb21_xml_task")){
 			//招聘岗位信息查询
 			p = "<maps>"+
+					"<map><key><![CDATA[ACB200]]></key><value><![CDATA["+(ACB200==null||ACB200.equals("")?"%":ACB200)+"]]></value></map> "+
 					"<map><key><![CDATA[ACB217]]></key><value><![CDATA["+(ACB217==null||ACB217.equals("")?"%":ACB217)+"]]></value></map> "+
 					"<map><key><![CDATA[ACA111]]></key><value><![CDATA["+(ACA111==null||ACA111.equals("")?"%":ACA111)+"]]></value></map>"+
 					"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+(AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1)+"]]></value></map>"+
@@ -67,7 +68,7 @@ public class HbInputModule extends Module  {
 		}else if(interfaceName.equals("hbjyweb_webservice_cc20_xml_task")){
 			//个人信息查询
 			p = "<maps>"+
-					"<map><key><![CDATA[AAC002]]></key><value><![CDATA["+(AAC002==null||AAC002.equals("")?"%":AAC002)+"]]></value></map> "+
+					"<map><key><![CDATA[AAC001]]></key><value><![CDATA["+(AAC001==null||AAC001.equals("")?"%":AAC001)+"]]></value></map>" +
 				"</maps>";
 		} 
 		HbClient client = new HbClient(dxUrl, dxUser, dxPwd, "get");

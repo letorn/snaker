@@ -112,22 +112,24 @@ public class InstanceController extends Controller {
 			if (page <= 0)
 				page = 1;
 			WfRecord record = WfRecord.dao.findFirst("select * from wf_record where instance_id=? and module=? limit ?,1", instanceId, module, page - 1);
-			List<Map<String, Object>> rows = Json.parseToList(record.getStr("rows"));
-			for (Map<String, Object> row : rows) {
-				for (String key : row.keySet()) {
-					Object value = row.get(key);
-					if (notBlank(value) && value instanceof String) {
-						String str = (String) value;
-						if (str.length() > 1000) {
-							row.put(key, str.substring(1000) + "...");
+			if (notBlank(record)) {
+				List<Map<String, Object>> rows = Json.parseToList(record.getStr("rows"));
+				for (Map<String, Object> row : rows) {
+					for (String key : row.keySet()) {
+						Object value = row.get(key);
+						if (notBlank(value) && value instanceof String) {
+							String str = (String) value;
+							if (str.length() > 1000) {
+								row.put(key, str.substring(1000) + "...");
+							}
 						}
 					}
 				}
-			}
-			dataMap.put("rows", Json.parseToList(record.getStr("rows")));
-			if (refresh) {
-				dataMap.put("headers", Json.parseToList(record.getStr("headers")));
-				dataMap.put("pageTotal", Db.queryLong("select count(*) from wf_record where instance_id=? and module=?", instanceId, module));
+				dataMap.put("rows", Json.parseToList(record.getStr("rows")));
+				if (refresh) {
+					dataMap.put("headers", Json.parseToList(record.getStr("headers")));
+					dataMap.put("pageTotal", Db.queryLong("select count(*) from wf_record where instance_id=? and module=?", instanceId, module));
+				}
 			}
 		}
 

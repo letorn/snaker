@@ -84,8 +84,6 @@ public class AppConfig extends JFinalConfig {
 		// 配置ActiveRecord插件
 		ActiveRecordPlugin c3p0Arp = new ActiveRecordPlugin(c3p0Plugin);
 		// 工作流
-		c3p0Arp.setShowSql(true);
-		c3p0Arp.setDevMode(true);
 		c3p0Arp.addMapping("wf_process", WfProcess.class);
 		c3p0Arp.addMapping("wf_instance", WfInstance.class);
 		c3p0Arp.addMapping("wf_record", WfRecord.class);

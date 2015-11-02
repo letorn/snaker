@@ -34,8 +34,9 @@ public class MyTest {
 				
 			}
 		});
-		thread.run();
-		thread2.run();
+		thread.setDaemon(false);
+		thread.start();
+		// thread2.start();
 		
 		System.out.println("main do something");
 	}

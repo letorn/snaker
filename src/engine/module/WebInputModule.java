@@ -1,9 +1,11 @@
 package engine.module;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import engine.ModuleData;
+import engine.model.WfRecord;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -12,7 +14,7 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
-import engine.ModuleData;
+import util.Json;
 
 /*
  * 流程模型 - 页面爬取
@@ -35,16 +37,23 @@ public class WebInputModule extends Module {
 	 */
 	
 	public ModuleData execute(ModuleData inputs) {
-		spider = spider.addUrl(startUrl);
-		for (Module next : this.getNextModules()) {
-			spider = spider.addPipeline(new OutputPipeline(inputs, next));
-		}
-		if (workflow.isDaemon()) {
-			spider.start();
-		} else {
-			spider.run();
-		}
 		return inputs;
+	}
+	
+	@Override
+	public void run() {
+		if (spider.getStatus() == Spider.Status.Init) {
+			spider = spider.addUrl(startUrl);
+			spider = spider.addPipeline(new OutputPipeline(inputs, this));
+			if (workflow.isDaemon()) {
+				spider.start();
+			} else {
+				spider.run();
+			}
+		}
+		if (spider.getStatus() == Spider.Status.Running) {
+			super.run();
+		}
 	}
 	
 	/**
@@ -62,7 +71,7 @@ public class WebInputModule extends Module {
 					page.setSkip(true);
 				}
 				targetProcess(page);
-			} else if (page.getUrl().toString().matches(helpUrl)) {
+			} else if (page.getUrl().toString().equals(startUrl) || page.getUrl().toString().matches(helpUrl)) {
 				helpProcess(page);
 			} else {
 				page.setSkip(true);
@@ -123,7 +132,6 @@ public class WebInputModule extends Module {
 		private ModuleData inputs;
 		private Module module;
 		private boolean stop = false;
-		private List<Map<String, Object>> tmp = new ArrayList<Map<String, Object>>();
 		public OutputPipeline(ModuleData inputs, Module module){
 			this.inputs = inputs;
 			this.module = module;
@@ -131,9 +139,9 @@ public class WebInputModule extends Module {
 		
 		public synchronized void process(ResultItems resultItems, Task task) {
 			if (resultItems.getRequest().getUrl().matches(targetUrl)){
-				tmp.add(resultItems.getAll());
+				inputs.add(resultItems.getAll());
 			}
-			if (tmp.size() >= 20) {
+			if (inputs.getRows().size() >= 20) {
 				output();
 				inputs = new ModuleData();
 			}
@@ -144,8 +152,6 @@ public class WebInputModule extends Module {
 		}
 		
 		private void output() {
-			inputs.addAll(tmp);
-			tmp.clear();
 			module.setInputs(inputs);
 			if (workflow.isDaemon()) {
 				module.start();

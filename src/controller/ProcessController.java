@@ -135,7 +135,7 @@ public class ProcessController extends Controller{
 	 */
 	public void start() {
 		Long processId = getParaToLong();
-		Boolean daemon = getParaToBoolean("daemon", false);
+		Boolean daemon = getParaToBoolean("daemon", true);
 		String params = getPara("params", "{}");
 
 		if (notBlank(processId)) {

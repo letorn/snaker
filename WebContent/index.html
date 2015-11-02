@@ -84,6 +84,36 @@
 				});
 			}
 		});
+		
+		$('#index-content-enterprise-table').datagrid({
+			url: 'data/enterprise/sum',
+			onLoadSuccess: function(data) {
+				var row = {name: '全部', total: 0, day_new: 0, syn: 0, day_syn: 0};
+				for (var i = 0; i < data.rows.length; i ++) {
+					row.total = row.total + data.rows[i].total;
+					row.day_new = row.day_new + data.rows[i].day_new;
+					row.syn = row.syn + data.rows[i].syn;
+					row.day_syn = row.day_syn + data.rows[i].day_syn;
+				}
+				$(this).datagrid('insertRow', {index: 0, row: row});
+				$(this).datagrid('freezeRow', 0);
+			}
+		});
+		
+		$('#index-content-jobhunter-table').datagrid({
+			url: 'data/jobhunter/sum',
+			onLoadSuccess: function(data) {
+				var row = {name: '全部', total: 0, day_new: 0, syn: 0, day_syn: 0};
+				for (var i = 0; i < data.rows.length; i ++) {
+					row.total = row.total + data.rows[i].total;
+					row.day_new = row.day_new + data.rows[i].day_new;
+					row.syn = row.syn + data.rows[i].syn;
+					row.day_syn = row.day_syn + data.rows[i].day_syn;
+				}
+				$(this).datagrid('insertRow', {index: 0, row: row});
+				$(this).datagrid('freezeRow', 0);
+			}
+		});
 	});
 </script>
 </head>
@@ -99,7 +129,38 @@
 		</div>
 	</div>
 	<div id="index-content" class="easyui-tabs" data-options="region:'center'">
-		<div data-options="title:'主页'">拼命开发中...</div>
+		<div data-options="title:'企业汇总'">
+			<table id="index-content-enterprise-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#index-content-enterprise-toolbar'">
+				<thead>
+					<tr>
+						<th data-options="field:'name'" style="width:260px">行业</th>
+						<th data-options="field:'total'" style="width:60px">所有</th>
+						<th data-options="field:'day_new'" style="width:60px">当日新增</th>
+						<th data-options="field:'syn'" style="width:60px">已上传</th>
+						<th data-options="field:'day_syn'" style="width:60px">当日上传</th>
+					</tr>
+				</thead>
+			</table>
+			<div id="index-content-enterprise-toolbar" style="padding: 2px 5px;">
+				当日：<input class="easyui-datebox" data-options="value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()}" style="width:100px" />
+			</div>
+		</div>
+		<div data-options="title:'求职者汇总'">
+			<table id="index-content-jobhunter-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#index-content-jobhunter-toolbar'">
+				<thead>
+					<tr>
+						<th data-options="field:'name'" style="width:260px">岗位</th>
+						<th data-options="field:'total'" style="width:60px">所有</th>
+						<th data-options="field:'day_new'" style="width:60px">当日新增</th>
+						<th data-options="field:'syn'" style="width:60px">已上传</th>
+						<th data-options="field:'day_syn'" style="width:60px">当日上传</th>
+					</tr>
+				</thead>
+			</table>
+			<div id="index-content-jobhunter-toolbar" style="padding: 2px 5px;">
+				当日：<input class="easyui-datebox" data-options="value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()}" style="width:100px" />
+			</div>
+		</div>
 	</div>
 </body>
 </html>

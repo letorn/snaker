@@ -1,10 +1,13 @@
 package controller;
 
+import static util.Validator.blank;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import service.DataService;
 import model.UtPost;
 import model.ViJobhunter;
 
@@ -19,6 +22,11 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings("unchecked")
 public class DataJobhunterController extends Controller {
 
+	/*
+	 * snaker工作流程服务类
+	 */
+	private DataService dataService = enhance(DataService.class);
+	
 	/*
 	 * 返回到页面的json数据
 	 */
@@ -89,9 +97,27 @@ public class DataJobhunterController extends Controller {
 	 * 上传岗位信息
 	 */
 	public void upload() {
+		Long[] ids = getParaValuesToLong("ids[]");
 		String[] codes = getParaValues("codes[]");
-		dataMap.put("success", true);
+		if (blank(ids))
+			ids = new Long[0];
+		if (blank(codes))
+			codes = new String[0];
+		if (dataService.isPostJobhunterFinished()) {
+			dataMap.put("success", dataService.postJobhunter(ids, codes));
+		} else {
+			dataMap.put("success", false);
+			dataMap.put("finished", false);
+		}
 		renderJson(dataMap);
+	}
+	
+	/**
+	 * 求职者数据汇总
+	 */
+	public void sum() {
+		List<Record> records = Db.find("select p.name, (select count(*) from db_jobhunter where curr_post_code=p.code) total, (select count(*) from db_jobhunter where curr_post_code=p.code and create_date between '2015-11-01 00:00:00' and '2015-11-01 23:59:59') day_new, (select count(*) from db_jobhunter where curr_post_code=p.code and syn_status=1) syn, (select count(*) from db_jobhunter where curr_post_code=p.code and syn_status=1 and create_date between '2015-11-01 00:00:00' and '2015-11-01 23:59:59') day_syn from ut_post p");
+		renderJson(records);
 	}
 	
 }

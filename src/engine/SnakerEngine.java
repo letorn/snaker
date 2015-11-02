@@ -31,15 +31,20 @@ public class SnakerEngine {
 		/*
 		 * 加载已经存在的流程实例
 		 */
-		List<WfProcess> processes = WfProcess.dao.find("select * from wf_process");
-		for (WfProcess process : processes)
-			processWorkflowIdMap.put(process.getLong("id"), Workflow.create(process));
+		List<WfProcess> processes = WfProcess.dao.find("select id,name,content from wf_process");
+		for (WfProcess process : processes) {
+			Workflow workflow = Workflow.create(process.getStr("content"));
+			workflow.setProcess(process);
+			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
+		}
 		
-		List<WfInstance> instances = WfInstance.dao.find("select * from wf_instance");
+		List<WfInstance> instances = WfInstance.dao.find("select id,process_id,params from wf_instance");
 		for (WfInstance instance : instances) {
-			Workflow workflow = Workflow.create(processWorkflowIdMap.get(instance.getLong("process_id")).getProcess());
+			Workflow prototype = processWorkflowIdMap.get(instance.getLong("process_id"));
+			Workflow workflow = Workflow.create(prototype.getProcessContent());
+			workflow.setProcess(prototype.getProcess());
 			workflow.setInstance(instance);
-			instanceWorkflowIdMap.put(instance.getLong("id"), workflow);
+			instanceWorkflowIdMap.put(workflow.getInstanceId(), workflow);
 		}
 	}
 	
@@ -56,7 +61,9 @@ public class SnakerEngine {
 				.set("params", params)
 				.set("create_date", new Date());
 		if (instance.save()) {
-			Workflow workflow = Workflow.create(processWorkflowIdMap.get(processId).getProcess());
+			Workflow prototype = processWorkflowIdMap.get(processId);
+			Workflow workflow = Workflow.create(prototype.getProcessContent());
+			workflow.setProcess(prototype.getProcess());
 			workflow.setInstance(instance);
 			workflow.setDaemon(daemon);
 			if (workflow.start(params)) {
@@ -73,14 +80,15 @@ public class SnakerEngine {
 	 * @return 新增是否成功
 	 */
 	public Workflow addProcess(String content) {
+		Workflow workflow = Workflow.create(content);
 		String name = JSONObject.fromObject(content).getString("name");
 		WfProcess process = new WfProcess();
 		process.set("name", name)
 				.set("content", content)
 				.set("update_date", new Date())
 				.set("create_date", new Date());
-		Workflow workflow = Workflow.create(process);
 		if (notBlank(workflow) && process.save()) {
+			workflow.setProcess(process);
 			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
 			return workflow;
 		}
@@ -94,14 +102,15 @@ public class SnakerEngine {
 	 * @return 更新是否成功
 	 */
 	public Workflow updateProcess(Long processId, String content) {
+		Workflow workflow = Workflow.create(content);
 		String name = JSONObject.fromObject(content).getString("name");
 		WfProcess process = new WfProcess();
 		process.set("id", processId)
 				.set("name", name)
 				.set("content", content)
 				.set("update_date", new Date());
-		Workflow workflow = Workflow.create(process);
 		if(notBlank(workflow) && process.update()) {
+			workflow.setProcess(process);
 			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
 			return workflow;
 		}

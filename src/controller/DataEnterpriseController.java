@@ -2,10 +2,6 @@ package controller;
 
 import static util.Validator.blank;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +13,6 @@ import service.DataService;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.ICallback;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -99,22 +94,25 @@ public class DataEnterpriseController extends Controller {
 	public void upload() {
 		Long[] ids = getParaValuesToLong("ids[]");
 		String[] codes = getParaValues("codes[]");
-		Db.execute(new ICallback() {
-			public Object call(Connection conn) throws SQLException {
-				CallableStatement proc = conn.prepareCall("call my_proc(?,?)");
-				proc.setObject(1, "001");
-				proc.registerOutParameter(2, Types.BOOLEAN);
-				proc.execute();
-				Boolean yourCode = proc.getBoolean(2);
-				System.out.println(yourCode);
-				
-				conn.close();
-				return null;
-			}
-			
-		});
-		// dataMap.put("success", dataService.postEnterprise(ids, codes));
+		if (blank(ids))
+			ids = new Long[0];
+		if (blank(codes))
+			codes = new String[0];
+		if (dataService.isPostEnterpriseFinished()) {
+			dataMap.put("success", dataService.postEnterprise(ids, codes));
+		} else {
+			dataMap.put("success", false);
+			dataMap.put("finished", false);
+		}
 		renderJson(dataMap);
+	}
+	
+	/**
+	 * 企业数据汇总
+	 */
+	public void sum() {
+		List<Record> records = Db.find("select i.name, (select count(*) from db_enterprise where category_code=i.code) total, (select count(*) from db_enterprise where category_code=i.code and create_date between '2015-11-01 00:00:00' and '2015-11-01 23:59:59') day_new, (select count(*) from db_enterprise where category_code=i.code and syn_status=1) syn, (select count(*) from db_enterprise where category_code=i.code and syn_status=1 and create_date between '2015-11-01 00:00:00' and '2015-11-01 23:59:59') day_syn from ut_industry i");
+		renderJson(records);
 	}
 	
 }

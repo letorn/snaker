@@ -104,9 +104,9 @@ public class Workflow {
 	 * @param process 流程流程
 	 * @return 工作流
 	 */
-	public static Workflow create(WfProcess process) {
+	public static Workflow create(String content) {
 		try {
-			Map<String, Object> contentMap = Json.parseToMap(process.getStr("content"));
+			Map<String, Object> contentMap = Json.parseToMap(content);
 
 			String workname = (String) contentMap.get("name");
 			Module beginModule = null;
@@ -174,7 +174,6 @@ public class Workflow {
 						return 0;
 					}
 				});
-				workflow.setProcess(process);
 				workflow.setBeginModule(beginModule);
 				workflow.setModules(modules);
 				return workflow;

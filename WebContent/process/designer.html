@@ -706,7 +706,7 @@
 			$window: $('#module-editor-proc-fields'),
 			$table: $('#module-editor-proc-fields-table'),
 			$btnConfirm: $('#module-editor-proc-fields-confirm'),
-			$btnCancel: $('#module-editor-data-paths-cancel'),
+			$btnCancel: $('#module-editor-proc-fields-cancel'),
 			endEditing: function() {
 				var _this = editor.tableFields;
 				if (_this.lastEditingIndex == null) return true;
@@ -803,6 +803,53 @@
 								name:'create_date',from:'create_date'},{
 								name:'syn_status',from:'syn_status'}];
 				}
+				if (tableName == 'db_jobhunter') {
+					fields = [
+								{name:'name',from: 'name'},
+								{name:'account',from: 'account'},
+								{name:'account_status',from: 'account_status'},
+								{name:'gender',from: 'gender'},
+								{name:'nation',from: 'nation'},
+								{name:'mobile',from: 'mobile'},
+								{name:'email',from: 'email'},
+								{name:'qq',from: 'qq'},
+								{name:'experience',from: 'experience'},
+								{name:'experience_code',from: 'experience_code'},
+								{name:'education',from: 'education'},
+								{name:'education_code',from: 'education_code'},
+								{name:'major',from: 'major'},
+								{name:'household',from: 'household'},
+								{name:'polity',from: 'polity'},
+								{name:'category',from: 'category'},
+								{name:'category_code',from: 'category_code'},
+								{name:'hunter_status',from: 'hunter_status'},
+								{name:'hunter_status_code',from: 'hunter_status_code'},
+								{name:'marriage',from: 'marriage'},
+								{name:'cert_type',from: 'cert_type'},
+								{name:'cert_id',from: 'cert_id'},
+								{name:'birth',from: 'birth'},
+								{name:'height',from: 'height'},
+								{name:'weight',from: 'weight'},
+								{name:'location',from: 'location'},
+								{name:'location_code',from: 'location_code'},
+								{name:'address',from: 'address'},
+								{name:'lbs_lon',from: 'lbs_lon'},
+								{name:'lbs_lat',from: 'lbs_lat'},
+								{name:'curr_ent',from: 'curr_ent'},
+								{name:'curr_ent_phone',from: 'curr_ent_phone'},
+								{name:'curr_post',from: 'curr_post'},
+								{name:'curr_post_code',from: 'curr_post_code'},
+								{name:'data_src',from: 'data_src'},
+								{name:'data_key',from: 'data_key'},
+								{name:'data_url',from: 'data_url'},
+								{name:'data_status',from: 'data_status'},
+								{name:'update_date',from: 'update_date'},
+								{name:'create_date',from: 'create_date'},
+								{name:'syn_status',from: 'syn_status'},
+								{name:'syn_date',from: 'syn_date'},
+								{name:'syn_message',from: 'syn_message'},
+								{name:'self_comment',from: 'self_comment' }];
+				}
 				for (var i = 0; i < fields.length; i ++) {
 					var exist = false;
 					for (var j = 0; j < value.length; j ++) {
@@ -835,6 +882,9 @@
 				},{
 					text: 'save_or_update_ent',
 					value: 'save_or_update_ent'
+				},{
+					text: 'save_or_update_user',
+					value: 'save_or_update_user'
 				}]
 			}
 		};
@@ -869,7 +919,7 @@
 						value: 'hbjyweb_webservice_cc20_xml_task'
 					}],
 					onSelect: function(record){
-						if(record.value='hbjyweb_webservice_cb20_xml_task'){
+						if(record.value=='hbjyweb_webservice_cb20_xml_task'){
 							Designer.PropBox.updateValue(9, {
 								editor: 'text',
 								name: 'params',
@@ -906,11 +956,17 @@
 									options: ''
 								}]
 							}, true);
-						}else if(record.value='hbjyweb_webservice_cb21_xml_task'){
+						}else if(record.value=='hbjyweb_webservice_cb21_xml_task'){
 							Designer.PropBox.updateValue(9, {
 								editor: 'text',
 								name: 'params',
-								value: [ {
+								value: [ 
+								 {
+									name: 'ACB200',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
 									name: 'ACB217',
 									type: 'string',
 									editor: 'textbox',
@@ -938,12 +994,17 @@
 									options: ''
 								}]
 							}, true);
-						}else if(record.value='hbjyweb_webservice_cc20_xml_task'){
+						}else if(record.value=='hbjyweb_webservice_cc20_xml_task'){
 							Designer.PropBox.updateValue(9, {
 								editor: 'text',
 								name: 'params',
 								value: [ {
 									name: 'AAC002',
+									type: 'string',
+									editor: 'textbox',
+									options: ''
+								},{
+									name: 'AAC001',
 									type: 'string',
 									editor: 'textbox',
 									options: ''
@@ -967,6 +1028,10 @@
 				{
 					text: 'db_enterprise',
 					value: 'db_enterprise'
+				},
+				{
+					text: 'db_jobhunter',
+					value: 'db_jobhunter'
 				}]
 			}
 		};

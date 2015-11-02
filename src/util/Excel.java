@@ -48,6 +48,9 @@ public class Excel {
 			if (row != null) {
 				String code = getValue(row.getCell(0));
 				String keyWord = getValue(row.getCell(2));
+				if (keyWord == null || keyWord.length() == 0) {
+					continue;
+				}
 				for (String key : keyWord.split(",")) {
 					result.put(key, code);
 				}

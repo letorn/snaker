@@ -10,7 +10,7 @@
 </table>
 <div id="process-index-table-toolbar">
 	<a id="process-index-table-init" class="easyui-linkbutton">初始化</a>
-	<a id="process-index-table-designer" class="easyui-linkbutton">设计</a>
+	<a id="process-index-table-designer" class="easyui-linkbutton">新增</a>
 	<input id="process-index-table-search" class="easyui-searchbox" data-options="prompt:'流程名称'" style="width:200px"></input>
 </div>
 
@@ -79,7 +79,7 @@
 				params: $.encodeJson(params)
 			}, function(resp) {
 				if (resp.success) {
-					window.open('instance/all/' + data.instance);
+					window.open('instance/all/' + resp.instance);
 				} else {
 					$.messager.show({
 						title: '提示',

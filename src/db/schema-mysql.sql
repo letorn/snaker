@@ -43,7 +43,7 @@ create table if not exists db_enterprise(
 	scale_code varchar(255),
 	tag varchar(255),
 	establish datetime,
-	introduction varchar(255),
+	introduction text,
 	area varchar(255),
 	area_code varchar(255),
 	address varchar(255),
@@ -64,9 +64,11 @@ create table if not exists db_enterprise(
 	data_key varchar(255),
 	data_url varchar(255),
 	data_status tinyint,
-	update_date datetime,
-	create_date datetime,
-	syn_status tinyint,
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
 	unique index db_enterprise_unique_index(data_src, data_key)
 );
 
@@ -84,7 +86,7 @@ create table if not exists vi_enterprise(
 	scale_code varchar(255),
 	tag varchar(255),
 	establish datetime,
-	introduction varchar(255),
+	introduction text,
 	area varchar(255),
 	area_code varchar(255),
 	address varchar(255),
@@ -105,9 +107,11 @@ create table if not exists vi_enterprise(
 	data_key varchar(255),
 	data_url varchar(255),
 	data_status tinyint,
-	update_date datetime,
-	create_date datetime,
-	syn_status tinyint,
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
 	unique index vi_enterprise_unique_index(data_src, data_key)
 );
 
@@ -129,7 +133,7 @@ create table if not exists db_entpost(
 	education varchar(255),
 	education_code varchar(255),
 	tag varchar(255),
-	introduction varchar(255),
+	introduction text,
 	area varchar(255),
 	area_code varchar(255),
 	address varchar(255),
@@ -140,9 +144,11 @@ create table if not exists db_entpost(
 	data_ent_key varchar(255),
 	data_url varchar(255),
 	data_status tinyint,
-	update_date datetime,
-	create_date datetime,
-	syn_status tinyint,
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
 	unique index db_entpost_unique_index(data_src, data_key)
 );
 
@@ -164,7 +170,7 @@ create table if not exists vi_entpost(
 	education varchar(255),
 	education_code varchar(255),
 	tag varchar(255),
-	introduction varchar(255),
+	introduction text,
 	area varchar(255),
 	area_code varchar(255),
 	address varchar(255),
@@ -175,9 +181,11 @@ create table if not exists vi_entpost(
 	data_ent_key varchar(255),
 	data_url varchar(255),
 	data_status tinyint,
-	update_date datetime,
-	create_date datetime,
-	syn_status tinyint,
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
 	unique index vi_entpost_unique_index(data_src, data_key)
 );
 
@@ -219,13 +227,16 @@ create table if not exists db_jobhunter(
 	curr_ent_phone varchar(255),
 	curr_post varchar(255),
 	curr_post_code varchar(255),
+	self_comment text,
 	data_src varchar(255),
 	data_key varchar(255),
 	data_url varchar(255),
 	data_status tinyint,
-	update_date datetime,
-	create_date datetime,
-	syn_status tinyint,
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
 	unique index db_jobhunter_unique_index(data_src, data_key)
 );
 
@@ -267,13 +278,16 @@ create table if not exists vi_jobhunter(
 	curr_ent_phone varchar(255),
 	curr_post varchar(255),
 	curr_post_code varchar(255),
+	self_comment text,
 	data_src varchar(255),
 	data_key varchar(255),
 	data_url varchar(255),
 	data_status tinyint,
-	update_date datetime,
-	create_date datetime,
-	syn_status tinyint,
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
 	unique index vi_jobhunter_unique_index(data_src, data_key)
 );
 
