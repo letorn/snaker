@@ -2,11 +2,13 @@ package init;
 
 import model.SkFile;
 import model.UtDate;
+import model.UtGrowth;
 import model.UtIndustry;
 import model.UtPost;
 import model.ViEnterprise;
 import model.ViEntpost;
 import model.ViJobhunter;
+import model.ViTalk;
 import plugin.SQLPlugin;
 
 import com.jfinal.config.Constants;
@@ -23,6 +25,7 @@ import com.jfinal.plugin.c3p0.C3p0Plugin;
 import controller.DataEnterpriseController;
 import controller.DataFileController;
 import controller.DataJobhunterController;
+import controller.DataTalkController;
 import controller.IndexController;
 import controller.InstanceController;
 import controller.ModuleController;
@@ -30,6 +33,7 @@ import controller.ProcessController;
 import engine.model.DbEnterprise;
 import engine.model.DbEntpost;
 import engine.model.DbJobhunter;
+import engine.model.DbTalk;
 import engine.model.WfInstance;
 import engine.model.WfProcess;
 import engine.model.WfRecord;
@@ -91,16 +95,19 @@ public class AppConfig extends JFinalConfig {
 		c3p0Arp.addMapping("db_enterprise", DbEnterprise.class);
 		c3p0Arp.addMapping("db_entpost", DbEntpost.class);
 		c3p0Arp.addMapping("db_jobhunter", DbJobhunter.class);
+		c3p0Arp.addMapping("db_talk", DbTalk.class);
 		// 视图
 		c3p0Arp.addMapping("vi_enterprise", ViEnterprise.class);
 		c3p0Arp.addMapping("vi_entpost", ViEntpost.class);
 		c3p0Arp.addMapping("vi_jobhunter", ViJobhunter.class);
+		c3p0Arp.addMapping("vi_talk", ViTalk.class);
 		// 项目
 		c3p0Arp.addMapping("sk_file", SkFile.class);
 		// 工具
 		c3p0Arp.addMapping("ut_date", UtDate.class);
 		c3p0Arp.addMapping("ut_industry", UtIndustry.class);
 		c3p0Arp.addMapping("ut_post", UtPost.class);
+		c3p0Arp.addMapping("ut_growth", UtGrowth.class);
 		me.add(c3p0Arp);
 		
 		// 配置正式环境数据库连接池插件
@@ -121,6 +128,7 @@ public class AppConfig extends JFinalConfig {
 		me.add("/data/file", DataFileController.class);// 文件
 		me.add("/data/enterprise", DataEnterpriseController.class);// 企业信息
 		me.add("/data/jobhunter", DataJobhunterController.class);// 求职者信息
+		me.add("/data/talk", DataTalkController.class);// 宣讲会信息
 				
 		// snaker流程相关
 		me.add("/process", ProcessController.class);// 工作流程

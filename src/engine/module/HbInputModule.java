@@ -1,6 +1,6 @@
 package engine.module;
 
-import test.DuXMLDoc;
+import util.DuXMLDoc;
 import util.HbClient;
 import engine.ModuleData;
 
@@ -22,14 +22,8 @@ public class HbInputModule extends Module  {
 	String appName = "职场导航网络科技有限公司"; 
 	
 	private String ACB200; //经办机构区划代码
-	private String AAB004; //单位名称
-	private String AAB003; //组织机构代码
-	private String AAE022; //经办机构区划代码
-	private String AAF036_1;//最后一次修改经办日期起始
-	private String AAF036_2; //最后一次修改经办日期终止
-	private String ACB217; //职位名称
-	private String ACA111;	//职业（工种）
-	private String AAC002; //公民身份号码
+	private String AAF036_1="20150101";//最后一次修改经办日期起始
+	private String AAF036_2="20150101"; //最后一次修改经办日期终止
 	private String p=null;  // 参数 xml字符串
 	private String AAC001;  //AAC001
 	
@@ -49,9 +43,6 @@ public class HbInputModule extends Module  {
 			//用人单位信息查询
 			p = "<maps>"+
 				"<map><key><![CDATA[ACB200]]></key><value><![CDATA["+(ACB200==null||ACB200.equals("")?"%":ACB200)+"]]></value></map> "+
-				"<map><key><![CDATA[AAB004]]></key><value><![CDATA["+(AAB004==null||AAB004.equals("")?"%":AAB004)+"]]></value></map>"+
-				"<map><key><![CDATA[AAB003]]></key><value><![CDATA["+(AAB003==null||AAB003.equals("")?"%":AAB003)+"]]></value></map>"+ 
-				"<map><key><![CDATA[AAE022]]></key><value><![CDATA["+(AAE022==null||AAE022.equals("")?"%":AAE022)+"]]></value></map>"+
 				"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+(AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1)+"]]></value></map>"+
 				"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+(AAF036_2==null||AAF036_2.equals("")?"%":AAF036_2)+"]]></value></map>"+ 
 				"</maps>";
@@ -59,11 +50,8 @@ public class HbInputModule extends Module  {
 			//招聘岗位信息查询
 			p = "<maps>"+
 					"<map><key><![CDATA[ACB200]]></key><value><![CDATA["+(ACB200==null||ACB200.equals("")?"%":ACB200)+"]]></value></map> "+
-					"<map><key><![CDATA[ACB217]]></key><value><![CDATA["+(ACB217==null||ACB217.equals("")?"%":ACB217)+"]]></value></map> "+
-					"<map><key><![CDATA[ACA111]]></key><value><![CDATA["+(ACA111==null||ACA111.equals("")?"%":ACA111)+"]]></value></map>"+
 					"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+(AAF036_1==null||AAF036_1.equals("")?"%":AAF036_1)+"]]></value></map>"+
 					"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+(AAF036_2==null||AAF036_2.equals("")?"%":AAF036_2)+"]]></value></map>"+ 
-					"<map><key><![CDATA[AAE022]]></key><value><![CDATA["+(AAE022==null||AAE022.equals("")?"%":AAE022)+"]]></value></map>"+
 					"</maps>";
 		}else if(interfaceName.equals("hbjyweb_webservice_cc20_xml_task")){
 			//个人信息查询

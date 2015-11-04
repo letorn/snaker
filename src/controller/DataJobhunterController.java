@@ -2,14 +2,17 @@ package controller;
 
 import static util.Validator.blank;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import service.DataService;
 import model.UtPost;
 import model.ViJobhunter;
+import service.DataService;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -23,9 +26,10 @@ import com.jfinal.plugin.activerecord.Record;
 public class DataJobhunterController extends Controller {
 
 	/*
-	 * snaker工作流程服务类
+	 * 数据服务类
 	 */
 	private DataService dataService = enhance(DataService.class);
+	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	
 	/*
 	 * 返回到页面的json数据
@@ -84,11 +88,11 @@ public class DataJobhunterController extends Controller {
 				List<Map<String, Object>> children = (List<Map<String, Object>>) grandMap.get("children");
 				children.add(parentMap);
 			}
-			Map<String, Object> postMap = new HashMap<String, Object>();
-			postMap.put("text", post.getStr("name"));
-			postMap.put("code", post.getStr("code"));
+			Map<String, Object> nodeMap = new HashMap<String, Object>();
+			nodeMap.put("text", post.getStr("name"));
+			nodeMap.put("code", post.getStr("code"));
 			List<Map<String, Object>> children = (List<Map<String, Object>>) parentMap.get("children");
-			children.add(postMap);
+			children.add(nodeMap);
 		}
 		renderJson(dataList);
 	}
@@ -116,7 +120,15 @@ public class DataJobhunterController extends Controller {
 	 * 求职者数据汇总
 	 */
 	public void sum() {
-		List<Record> records = Db.find("select p.name, (select count(*) from db_jobhunter where curr_post_code=p.code) total, (select count(*) from db_jobhunter where curr_post_code=p.code and create_date between '2015-11-01 00:00:00' and '2015-11-01 23:59:59') day_new, (select count(*) from db_jobhunter where curr_post_code=p.code and syn_status=1) syn, (select count(*) from db_jobhunter where curr_post_code=p.code and syn_status=1 and create_date between '2015-11-01 00:00:00' and '2015-11-01 23:59:59') day_syn from ut_post p");
+		String date = dateFormat.format(new Date());
+		String beginTime = getPara("beginTime", date + " 00:00:00");
+		String endTime = getPara("endTime", date + " 23:59:59");
+		List<Record> records = Db.find("select p.name, "
+				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date<?) total, "
+				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date between ? and ?) day_new, "
+				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date<? and syn_status=1) syn, "
+				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date between ? and ? and syn_status=1) day_syn "
+				+ "from ut_post p", endTime, beginTime, endTime, endTime, beginTime, endTime);
 		renderJson(records);
 	}
 	

@@ -35,6 +35,7 @@ create table if not exists db_enterprise(
 	id bigint primary key auto_increment,
 	name varchar(255),
 	account	varchar(255),
+	role bigint default 2,
 	category varchar(255),
 	category_code varchar(255),
 	nature varchar(255),
@@ -62,14 +63,13 @@ create table if not exists db_enterprise(
 	visit_count int,
 	data_src varchar(255),
 	data_key varchar(255),
-	data_url varchar(255),
-	data_status tinyint,
 	update_date datetime default now(),
 	create_date datetime default now(),
 	syn_status tinyint default -1,
 	syn_date datetime,
 	syn_message text,
-	unique index db_enterprise_unique_index(data_src, data_key)
+	unique index db_enterprise_unique_index(data_src, data_key),
+	index db_enterprise_category_code_index(category_code)
 );
 
 -- 企业信息视图- 采集信息合并后存储
@@ -78,6 +78,7 @@ create table if not exists vi_enterprise(
 	id bigint primary key auto_increment,
 	name varchar(255),
 	account	varchar(255),
+	role bigint default 2,
 	category varchar(255),
 	category_code varchar(255),
 	nature varchar(255),
@@ -105,14 +106,13 @@ create table if not exists vi_enterprise(
 	visit_count int,
 	data_src varchar(255),
 	data_key varchar(255),
-	data_url varchar(255),
-	data_status tinyint,
 	update_date datetime default now(),
 	create_date datetime default now(),
 	syn_status tinyint default -1,
 	syn_date datetime,
 	syn_message text,
-	unique index vi_enterprise_unique_index(data_src, data_key)
+	unique index vi_enterprise_unique_index(data_src, data_key),
+	index vi_enterprise_category_code_index(category_code)
 );
 
 -- 岗位信息
@@ -142,8 +142,6 @@ create table if not exists db_entpost(
 	data_src varchar(255),
 	data_key varchar(255),
 	data_ent_key varchar(255),
-	data_url varchar(255),
-	data_status tinyint,
 	update_date datetime default now(),
 	create_date datetime default now(),
 	syn_status tinyint default -1,
@@ -179,8 +177,6 @@ create table if not exists vi_entpost(
 	data_src varchar(255),
 	data_key varchar(255),
 	data_ent_key varchar(255),
-	data_url varchar(255),
-	data_status tinyint,
 	update_date datetime default now(),
 	create_date datetime default now(),
 	syn_status tinyint default -1,
@@ -230,14 +226,13 @@ create table if not exists db_jobhunter(
 	self_comment text,
 	data_src varchar(255),
 	data_key varchar(255),
-	data_url varchar(255),
-	data_status tinyint,
 	update_date datetime default now(),
 	create_date datetime default now(),
 	syn_status tinyint default -1,
 	syn_date datetime,
 	syn_message text,
-	unique index db_jobhunter_unique_index(data_src, data_key)
+	unique index db_jobhunter_unique_index(data_src, data_key),
+	index db_jobhunter_curr_post_code_index(curr_post_code)
 );
 
 -- 求职者信息视图- 采集信息合并后存储
@@ -281,14 +276,49 @@ create table if not exists vi_jobhunter(
 	self_comment text,
 	data_src varchar(255),
 	data_key varchar(255),
-	data_url varchar(255),
-	data_status tinyint,
 	update_date datetime default now(),
 	create_date datetime default now(),
 	syn_status tinyint default -1,
 	syn_date datetime,
 	syn_message text,
-	unique index vi_jobhunter_unique_index(data_src, data_key)
+	unique index vi_jobhunter_unique_index(data_src, data_key),
+	index vi_jobhunter_curr_post_code_index(curr_post_code)
+);
+
+-- 宣讲会信息
+-- drop table if exists db_talk;
+create table if not exists db_talk(
+	id bigint primary key auto_increment,
+	title varchar(255),
+	content longtext,
+	source varchar(100),
+	data_src varchar(255),
+	data_key varchar(255),
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
+	unique index db_talk_unique_index(data_src, data_key),
+	index db_talk_source_index(source)
+);
+
+-- 宣讲会视图- 采集信息合并后存储
+-- drop table if exists vi_talk;
+create table if not exists vi_talk(
+	id bigint primary key auto_increment,
+	title varchar(255),
+	content longtext,
+	source varchar(100),
+	data_src varchar(255),
+	data_key varchar(255),
+	update_date datetime default now(),
+	create_date datetime default now(),
+	syn_status tinyint default -1,
+	syn_date datetime,
+	syn_message text,
+	unique index vi_talk_unique_index(data_src, data_key),
+	index vi_talk_source_index(source)
 );
 
 -- 文件
@@ -331,4 +361,13 @@ create table if not exists ut_industry(
 	name varchar(100),
 	code varchar(7),
 	parent varchar(3)
+);
+
+-- 工具 自添加
+-- drop table if exists ut_growth;
+create table if not exists ut_growth(
+	id bigint primary key auto_increment,
+	current bigint,
+	step tinyint,
+	pattern varchar(100)
 );

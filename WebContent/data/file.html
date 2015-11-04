@@ -39,21 +39,11 @@
 					},
 					onComplate: function(data) {
 						if (data.success) {
-							$.messager.show({
-								title: '提示',
-								msg: '上传成功！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+							$.messager.show({title: '提示', msg: '上传成功！', timeout: 1000, showType: 'slide'});
 							$file.textbox('setText', data.file);
 							$dataFileTable.datagrid('reload');
 						} else {
-							$.messager.show({
-								title: '提示',
-								msg: '上传失败！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+							$.messager.show({title: '提示', msg: '上传失败！', timeout: 1000, showType: 'slide'});
 						}
 					}
 				});
@@ -75,20 +65,10 @@
 				$('.data-file-table-delete').click(function() {
 					$.getJSON('data/file/delete/' + $(this).data('file'), function(data) {
 						if (data.success) {
-							$.messager.show({
-								title: '提示',
-								msg: '删除成功！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+							$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
 							$dataFileTable.datagrid('reload');
 						} else {
-							$.messager.show({
-								title: '提示',
-								msg: '删除失败！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+							$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});
 						}
 					});
 				});
@@ -103,20 +83,10 @@
 						},
 						onComplate: function(data) {
 							if (data.success) {
-								$.messager.show({
-									title: '提示',
-									msg: '上传成功！',
-									timeout: 1000,
-									showType: 'slide'
-								});
+								$.messager.show({title: '提示', msg: '上传成功！', timeout: 1000, showType: 'slide'});
 								$dataFileTable.datagrid('reload');
 							} else {
-								$.messager.show({
-									title: '提示',
-									msg: '上传失败！',
-									timeout: 1000,
-									showType: 'slide'
-								});
+								$.messager.show({title: '提示', msg: '上传失败！', timeout: 1000, showType: 'slide'});
 							}
 						}
 					});

@@ -243,24 +243,13 @@ Designer.init = function(tabsId, canvasId, contentId, btnAddId, moveableId, btnD
 			content: $.encodeJson(Designer.getData())
 		}, function(resp) {
 			if (resp.success) {
-				debugger;
 				if (process == undefined) {
 					process = resp.process;
 					history.replaceState({}, 'save', ctx + '/process/designer/' + process);
 				}
-				$.messager.show({
-					title: '提示',
-					msg: '保存成功！',
-					timeout: 1000,
-					showType: 'slide'
-				});
+				$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
 			} else {
-				$.messager.show({
-					title: '提示',
-					msg: '保存失败！',
-					timeout: 1000,
-					showType: 'slide'
-				});
+				$.messager.show({title: '提示', msg: '保存失败！', timeout: 1000, showType: 'slide'});
 			}
 		}, 'json');
 	});
@@ -287,6 +276,10 @@ Designer.init = function(tabsId, canvasId, contentId, btnAddId, moveableId, btnD
 			}
 		},
 		onEndEdit: function(index, row) {
+			if (row.editor.type == 'combobox' || row.editor.type == 'checkbox') {
+				if (row.value == 'true') row.value = true;
+				if (row.value == 'false') row.value = false;
+			}
 			Designer.PropBox.updateValue(index, row);
 		}
 	});

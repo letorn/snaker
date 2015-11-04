@@ -1,11 +1,11 @@
 package engine.module;
 
-import java.util.Date;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import engine.ModuleData;
-import engine.model.WfRecord;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -14,7 +14,6 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
-import util.Json;
 
 /*
  * 流程模型 - 页面爬取
@@ -51,7 +50,7 @@ public class WebInputModule extends Module {
 				spider.run();
 			}
 		}
-		if (spider.getStatus() == Spider.Status.Running) {
+		if (spider.getStatus() == Spider.Status.Running || spider.getStatus() == Spider.Status.Stopped) {
 			super.run();
 		}
 	}
@@ -63,12 +62,14 @@ public class WebInputModule extends Module {
 	 */
 	private class SnakerProcessor implements PageProcessor {
 
-		private Site site = Site.me().setRetryTimes(3).setTimeOut(5000);
+		private Site site = Site.me().setRetryTimes(3).setTimeOut(30000);
 
 		public void process(Page page) {
 			if (page.getUrl().toString().matches(targetUrl)) {
-				if (page.getHtml().xpath(skipJugment).toString() != null && page.getHtml().xpath(skipJugment).toString().length() > 0) {
-					page.setSkip(true);
+				if (skipJugment != null && skipJugment.length() > 0) {
+					if (page.getHtml().xpath(skipJugment).toString() != null && page.getHtml().xpath(skipJugment).toString().length() > 0) {
+						page.setSkip(true);
+					}
 				}
 				targetProcess(page);
 			} else if (page.getUrl().toString().equals(startUrl) || page.getUrl().toString().matches(helpUrl)) {
@@ -85,7 +86,10 @@ public class WebInputModule extends Module {
 				String regex = dataPath.get("regex");
 				String isAll = dataPath.get("isAll");
 				Selectable result = page.getHtml();
-				if ("url".equals(attr)) {
+				if (attr == null || attr.length() == 0) {
+					continue;
+				}
+				if ("url".equals(attr.toLowerCase())) {
 					result = page.getUrl();
 				}
 				if (xpath != null && xpath.length() > 0) {
@@ -94,7 +98,7 @@ public class WebInputModule extends Module {
 				if (regex != null && regex.length() > 0) {
 					result = result.regex(regex);
 				}
-				if ("true".equals(isAll) || "True".equals(isAll) || "TRUE".equals(isAll)) {
+				if (isAll != null && isAll.length() > 0 && "true".equals(isAll.toLowerCase())) {
 					page.putField(attr, result.all());
 				} else {
 					String out = result.toString();
@@ -127,11 +131,10 @@ public class WebInputModule extends Module {
 	 * @author wanghao
 	 *
 	 */
-	private class OutputPipeline implements Pipeline {
+	private class OutputPipeline implements Pipeline, Closeable {
 
 		private ModuleData inputs;
 		private Module module;
-		private boolean stop = false;
 		public OutputPipeline(ModuleData inputs, Module module){
 			this.inputs = inputs;
 			this.module = module;
@@ -141,14 +144,14 @@ public class WebInputModule extends Module {
 			if (resultItems.getRequest().getUrl().matches(targetUrl)){
 				inputs.add(resultItems.getAll());
 			}
-			if (inputs.getRows().size() >= 20) {
+			if (inputs.getRows().size() >= 30) {
 				output();
 				inputs = new ModuleData();
 			}
-			if ((!stop) && spider.getStatus() == Spider.Status.Stopped) {
-				output();
-				stop = true;
-			}
+		}
+
+		public void close() throws IOException {
+			output();
 		}
 		
 		private void output() {

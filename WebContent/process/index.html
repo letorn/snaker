@@ -34,20 +34,10 @@
 		$('#process-index-table-init').click(function() {
 			$.post('process/init', function(resp) {
 				if (resp.success) {
-					$.messager.show({
-						title: '提示',
-						msg: '初始化完成！',
-						timeout: 1000,
-						showType: 'slide'
-					});
+					$.messager.show({title: '提示', msg: '初始化完成！', timeout: 1000, showType: 'slide'});
 					$processIndexTable.datagrid('reload');
 				} else {
-					$.messager.show({
-						title: '提示',
-						msg: '初始化失败！',
-						timeout: 1000,
-						showType: 'slide'
-					});
+					$.messager.show({title: '提示', msg: '初始化失败！', timeout: 1000, showType: 'slide'});
 				}
 			}, 'json');
 		});
@@ -81,12 +71,7 @@
 				if (resp.success) {
 					window.open('instance/all/' + resp.instance);
 				} else {
-					$.messager.show({
-						title: '提示',
-						msg: '启动失败！',
-						timeout: 1000,
-						showType: 'slide'
-					});
+					$.messager.show({title: '提示', msg: '启动失败！', timeout: 1000, showType: 'slide'});
 				}
 				$processIndexParamsWindow.window('close');
 			}, 'json');
@@ -109,12 +94,7 @@
 								if (resp.success) {
 									window.open('instance/all/' + resp.instance);
 								} else {
-									$.messager.show({
-										title: '提示',
-										msg: '启动失败！',
-										timeout: 1000,
-										showType: 'slide'
-									});
+									$.messager.show({title: '提示', msg: '启动失败！', timeout: 1000, showType: 'slide'});
 								}
 							}, 'json');
 						} else {
@@ -170,20 +150,10 @@
 				$('.process-index-table-delete').click(function() {
 					$.post('process/delete/' + $(this).data('process'), function(resp) {
 						if (resp.success) {
-							$.messager.show({
-								title: '提示',
-								msg: '删除成功！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+							$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
 							$processIndexTable.datagrid('reload');
 						} else {
-							$.messager.show({
-								title: '提示',
-								msg: '删除失败！',
-								timeout: 1000,
-								showType: 'slide'
-							});
+							$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});
 						}
 					}, 'json');
 				});
