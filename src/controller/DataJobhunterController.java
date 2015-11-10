@@ -66,6 +66,60 @@ public class DataJobhunterController extends Controller {
 	}
 	
 	/**
+	 * 展示指定的求职者列表
+	 * categoryName 页面传入的岗位类别
+	 * field 当日新增、已上传、当日上传、所有
+	 * beginTime 选定的开始时间
+	 * endTime 选定的结束时间
+	 */
+	public void display() {
+		String date = dateFormat.format(new Date());
+		String categoryName = getPara("category");
+		String field = getPara("field");
+		String beginTime = getPara("beginTime", date + " 00:00:00");
+		String endTime = getPara("endTime", date + " 23:59:59");
+
+		List<ViJobhunter> jobhunters = null;
+		if ("day_new".equals(field)) {
+			if ("全部".equals(categoryName)) {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date between ? and ?", beginTime, endTime);
+			} else {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date between ? and ?", getCategoryCode(categoryName), beginTime, endTime);
+			}
+		} else if("syn".equals(field)) {
+			if ("全部".equals(categoryName)) {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date<? and syn_status=1", endTime);
+			} else {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date<? and syn_status=1", getCategoryCode(categoryName), endTime);
+			}
+		} else if("day_syn".equals(field)) {
+			if ("全部".equals(categoryName)) {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date between ? and ? and syn_status=1", beginTime, endTime);
+			} else {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date between ? and ? and syn_status=1", getCategoryCode(categoryName), beginTime, endTime);
+			}
+		} else {
+			if ("全部".equals(categoryName)) {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date<?", endTime);
+			} else {
+				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date<?", getCategoryCode(categoryName), endTime);
+			}
+		}
+		dataMap.put("total", jobhunters.size());
+		dataMap.put("rows", jobhunters);
+		renderJson(dataMap);
+	}
+	
+	/**
+	 * 根据岗位类别获取岗位类别编码
+	 * @param categoryName
+	 * @return
+	 */
+	private String getCategoryCode(String categoryName) {
+		return UtPost.dao.findFirst("select code from ut_post where name=?", categoryName).getStr("code");
+	}
+	
+	/**
 	 * 获取所有岗位类别
 	 */
 	public void categories() {
@@ -124,10 +178,10 @@ public class DataJobhunterController extends Controller {
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 		List<Record> records = Db.find("select p.name, "
-				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date<?) total, "
-				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date between ? and ?) day_new, "
-				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date<? and syn_status=1) syn, "
-				+ "(select count(*) from db_jobhunter where curr_post_code=p.code and create_date between ? and ? and syn_status=1) day_syn "
+				+ "(select count(*) from vi_jobhunter where curr_post_code=p.code and create_date<?) total, "
+				+ "(select count(*) from vi_jobhunter where curr_post_code=p.code and create_date between ? and ?) day_new, "
+				+ "(select count(*) from vi_jobhunter where curr_post_code=p.code and create_date<? and syn_status=1) syn, "
+				+ "(select count(*) from vi_jobhunter where curr_post_code=p.code and create_date between ? and ? and syn_status=1) day_syn "
 				+ "from ut_post p", endTime, beginTime, endTime, endTime, beginTime, endTime);
 		renderJson(records);
 	}

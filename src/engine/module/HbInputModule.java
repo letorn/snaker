@@ -59,11 +59,16 @@ public class HbInputModule extends Module  {
 					"<map><key><![CDATA[AAC001]]></key><value><![CDATA["+(AAC001==null||AAC001.equals("")?"%":AAC001)+"]]></value></map>" +
 				"</maps>";
 		} 
-		HbClient client = new HbClient(dxUrl, dxUser, dxPwd, "get");
-		Object[] resps = client.execute(appName, interfaceName, p);
-		System.out.println(resps[1]);
-		DuXMLDoc doc = new DuXMLDoc();
-		inputs= doc.xmlElements(resps[1].toString());
+		try {
+			HbClient client = new HbClient(dxUrl, dxUser, dxPwd, "get");
+			Object[] resps = client.execute(appName, interfaceName, p);
+			//System.out.println(resps[1]);
+			DuXMLDoc doc = new DuXMLDoc();
+			inputs= doc.xmlElements(resps[1].toString());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
 		return inputs;
 	}
 	

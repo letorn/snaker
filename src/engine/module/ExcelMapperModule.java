@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.io.FilenameUtils;
 
 import engine.ModuleData;
@@ -68,13 +70,13 @@ public class ExcelMapperModule extends Module {
 					excelMaps.put(excelFile, Excel.exportFromExcel(bais, FilenameUtils.getExtension(excelFile), inputs));
 					mapUpdateTime.put(excelFile, updateTime);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			} finally {
 				try {
 					if (bais != null)
 						bais.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		}

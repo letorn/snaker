@@ -9,7 +9,6 @@ import java.util.Map;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import engine.ModuleData;
 
@@ -17,7 +16,6 @@ import engine.ModuleData;
  * 流程模型 - 输出到数据库
  * 数据库存储过程
  */
-@SuppressWarnings("serial")
 public class DbTableOutputModule extends Module {
 
 	private String tableName;
@@ -61,25 +59,31 @@ public class DbTableOutputModule extends Module {
 						PreparedStatement ps = conn.prepareStatement(sql.toString());
 						for (int j = 0; j < finalInputs.getRows().size(); j++) {
 							Map<String, Object> map = finalInputs.getRows().get(j);
+							boolean notnull=false;
 							for (int i = 0; i < num; i++) {
 								Object col = map.get(tableFields.get(i).get("from"));
 								if (col instanceof String && col.toString().equals("")) {
 									col = null;
 								}
+								if(col == null && tableFields.get(i).get("notnull").toString().equals("true")){
+									notnull=true;
+									break;
+								}
 								ps.setObject(i + 1, col);
 							}
-							ps.addBatch();
+							if(!notnull){
+								ps.addBatch();
+							}
 						}
 						ps.executeBatch();
 					}
 				} catch (BatchUpdateException e) {
 					if (!e.getMessage().startsWith("Duplicate entry")) {
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
-				conn.close();
 				return null;
 			}
 		});

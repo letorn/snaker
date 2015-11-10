@@ -34,6 +34,7 @@ create table if not exists wf_record(
 create table if not exists db_enterprise(
 	id bigint primary key auto_increment,
 	name varchar(255),
+	legalize tinyint,
 	account	varchar(255),
 	role bigint default 2,
 	category varchar(255),
@@ -77,6 +78,7 @@ create table if not exists db_enterprise(
 create table if not exists vi_enterprise(
 	id bigint primary key auto_increment,
 	name varchar(255),
+	legalize tinyint,
 	account	varchar(255),
 	role bigint default 2,
 	category varchar(255),
@@ -369,5 +371,6 @@ create table if not exists ut_growth(
 	id bigint primary key auto_increment,
 	current bigint,
 	step tinyint,
-	pattern varchar(100)
+	prefix varchar(100),
+	len tinyint
 );

@@ -27,7 +27,145 @@
 
 		$.parser.auto = false;
 
-		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts');
+		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts'), editor = {};
+		
+		editor.Enterprise = {
+				$window: $('#enterprise-list-window'),
+				$table: $('#enterprise-list-table'),
+				$btnConfirm: $('#enterprise-list-confirm'),
+				endEditing: function() {
+					var _this = editor.Enterprise;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				show: function() {
+					editor.Enterprise.$window.window('open', true);
+				},
+				setValue: function(value) {
+					editor.Enterprise.$table.datagrid('loadData', value);
+				},
+				init: function(category, field) {
+					var _this = editor.Enterprise;
+					var date = $('#index-content-enterprise-date').val();
+					var beginTime = date + ' 00:00:00';
+					var endTime = date + ' 23:59:59';
+					$.post('data/enterprise/display', {
+						category: category,
+						field: field,
+						beginTime: beginTime,
+						endTime: endTime
+					}, function(resp) {
+						if (resp.total == 0) {
+							$.messager.show({title: '提示', msg: '您所查询的企业个数为0！', timeout: 1000, showType: 'slide'});
+						} else {							
+							_this.$table.datagrid({
+								data: resp.rows
+							});
+							_this.show();
+						}
+					}, 'json');
+					_this.$btnConfirm.click(function() {
+						_this.$window.window('close', true);
+					})
+				}
+		}
+		
+		editor.Jobhunter = {
+				$window: $('#jobhunter-list-window'),
+				$table: $('#jobhunter-list-table'),
+				$btnConfirm: $('#jobhunter-list-confirm'),
+				endEditing: function() {
+					var _this = editor.Jobhunter;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				show: function() {
+					editor.Jobhunter.$window.window('open', true);
+				},
+				setValue: function(value) {
+					editor.Jobhunter.$table.datagrid('loadData', value);
+				},
+				init: function(category, field) {
+					var _this = editor.Jobhunter;
+					var date = $('#index-content-jobhunter-date').val();
+					var beginTime = date + ' 00:00:00';
+					var endTime = date + ' 23:59:59';
+					$.post('data/jobhunter/display', {
+						category: category,
+						field: field,
+						beginTime: beginTime,
+						endTime: endTime
+					}, function(resp) {
+						if (resp.total == 0) {
+							$.messager.show({title: '提示', msg: '您所查询的求职者人数为0！', timeout: 1000, showType: 'slide'});
+						} else {							
+							_this.$table.datagrid({
+								data: resp.rows
+							});
+							_this.show();
+						}
+					}, 'json');
+					_this.$btnConfirm.click(function() {
+						_this.$window.window('close', true);
+					})
+				}
+		}
+		
+		editor.Talk = {
+				$window: $('#talk-list-window'),
+				$table: $('#talk-list-table'),
+				$btnConfirm: $('#talk-list-confirm'),
+				endEditing: function() {
+					var _this = editor.Talk;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				show: function() {
+					editor.Talk.$window.window('open', true);
+				},
+				setValue: function(value) {
+					editor.Talk.$table.datagrid('loadData', value);
+				},
+				init: function(source, field) {
+					var _this = editor.Talk;
+					var date = $('#index-content-talk-date').val();
+					var beginTime = date + ' 00:00:00';
+					var endTime = date + ' 23:59:59';
+					$.post('data/talk/display', {
+						source: source,
+						field: field,
+						beginTime: beginTime,
+						endTime: endTime
+					}, function(resp) {
+						if (resp.total == 0) {
+							$.messager.show({title: '提示', msg: '您所查询的宣讲会数量为0！', timeout: 1000, showType: 'slide'});
+						} else {							
+							_this.$table.datagrid({
+								data: resp.rows
+							});
+							_this.show();
+						}
+					}, 'json');
+					_this.$btnConfirm.click(function() {
+						_this.$window.window('close', true);
+					})
+				}
+		}
 		
 		window.Content = {
 				$indexContent: $indexContent,
@@ -101,6 +239,11 @@
 				}
 				$(this).datagrid('insertRow', {index: 0, row: row});
 				$(this).datagrid('freezeRow', 0);
+			},
+			onClickCell: function(index, field, value) {
+				$('#index-content-enterprise-table').datagrid('selectRow', index);
+				var row = $('#index-content-enterprise-table').datagrid('getSelected');
+				editor.Enterprise.init(row.name, field);
 			}
 		});
 		
@@ -121,6 +264,11 @@
 				}
 				$(this).datagrid('insertRow', {index: 0, row: row});
 				$(this).datagrid('freezeRow', 0);
+			},
+			onClickCell: function(index, field, value) {
+				$('#index-content-jobhunter-table').datagrid('selectRow', index);
+				var row = $('#index-content-jobhunter-table').datagrid('getSelected');
+				editor.Jobhunter.init(row.name, field);
 			}
 		});
 		
@@ -141,6 +289,11 @@
 				}
 				$(this).datagrid('insertRow', {index: 0, row: row});
 				$(this).datagrid('freezeRow', 0);
+			},
+			onClickCell: function(index, field, value) {
+				$('#index-content-talk-table').datagrid('selectRow', index);
+				var row = $('#index-content-talk-table').datagrid('getSelected');
+				editor.Talk.init(row.name, field);
 			}
 		});
 	});
@@ -165,6 +318,7 @@
 			<p data-location="data/enterprise.html" style="cursor:pointer;color:blue">所有企业</p>
 			<p data-location="data/jobhunter.html" style="cursor:pointer;color:blue">所有求职者</p>
 			<p data-location="data/talk.html" style="cursor:pointer;color:blue">所有宣讲会</p>
+			<p data-location="process/task.html" style="cursor:pointer;color:blue">任务管理</p>
 		</div>
 	</div>
 	<div id="index-content" class="easyui-tabs" data-options="region:'center'">
@@ -218,6 +372,52 @@
 				当日：<input id="index-content-talk-date" class="easyui-datebox" data-options="value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()},onSelect:onIndexContentTalkTableRefresh" style="width:100px" />
 				<a id="index-content-talk-refresh" class="easyui-linkbutton" data-options="onClick:onIndexContentTalkTableRefresh" style="width:80px">刷新</a>
 			</div>
+		</div>
+	</div>
+	<div id="enterprise-list-window" class="easyui-window" data-options="title:'企业列表',modal:true,closed:true,footer:'#enterprise-list-footer'" style="width:1000px;height:600px">
+		<table id="enterprise-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
+			<thead>
+				<tr>
+					<th data-options="field:'id'" style="width:60px">ID</th>
+					<th data-options="field:'name'" style="width:240px">企业名称</th>
+					<th data-options="field:'account'" style="width:100px">企业账号</th>
+					<th data-options="field:'data_src'" style="width:80px">数据源</th>
+					<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+				</tr>
+			</thead>
+		</table>
+		<div id="enterprise-list-footer" style="padding:5px;">
+			<a id="enterprise-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
+		</div>
+	</div>
+	<div id="jobhunter-list-window" class="easyui-window" data-options="title:'求职者列表',modal:true,closed:true,footer:'#jobhunter-list-footer'" style="width:1000px;height:600px">
+		<table id="jobhunter-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
+			<thead>
+				<tr>
+					<th data-options="field:'id'" style="width:60px">ID</th>
+					<th data-options="field:'name'" style="width:240px">求职者名称</th>
+					<th data-options="field:'data_src'" style="width:80px">数据源</th>
+					<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+				</tr>
+			</thead>
+		</table>
+		<div id="jobhunter-list-footer" style="padding:5px;">
+			<a id="jobhunter-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
+		</div>
+	</div>
+	<div id="talk-list-window" class="easyui-window" data-options="title:'宣讲会列表',modal:true,closed:true,footer:'#talk-list-footer'" style="width:1000px;height:600px">
+		<table id="talk-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
+			<thead>
+				<tr>
+					<th data-options="field:'id'" style="width:60px">ID</th>
+					<th data-options="field:'title'" style="width:300px">宣讲会名称</th>
+					<th data-options="field:'data_src'" style="width:80px">数据源</th>
+					<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+				</tr>
+			</thead>
+		</table>
+		<div id="talk-list-footer" style="padding:5px;">
+			<a id="talk-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
 		</div>
 	</div>
 </body>

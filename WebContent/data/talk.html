@@ -22,15 +22,65 @@
 	<a id="data-talk-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="data-talk-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
+<div id="data-talk-update-window" class="easyui-window" style="width:375px;height:345px" data-options="title:'修改',modal:true,closed:true,footer:'#data-talk-update-footer'" data-options="iconCls:'icon-save',modal:true;">
+ <form id="data-talk-update-form" method="post">
+ 	<input style="display:none" type="text" id = "id" name="id" value=""></input>
+ 	   <table style="margin:10px">
+                <tr>
+                    <td>标题:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" id = "title" name="title" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>来源:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="source" id="source" data-options="required:true"></input></td>
+                </tr>
+                
+                <tr>
+                    <td>data_src:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_src" id="data_src" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>data_key:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="data_key" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>修改时间:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px"  type="text" name="update_time" id="update_time" data-options=""></input>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>创建时间:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="create_time" id="create_time" data-options=""></input>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>内容:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text"  name="content" id ="content" data-options="multiline:true,required:true" style="width:250px; height:80px"></input>
+                    </td>
+                </tr>
+            </table>
+</form>
+</div>
+<div id="data-talk-update-footer" style="padding:5px;">
+	<a id="data-talk-update-confirm" class="easyui-linkbutton" onclick="submitForm()"  style="width:80px">确定</a>
+	<a id="data-talk-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px">取消</a>
+</div>
+
+
 <script type="text/javascript">
 	function dataTalkTableActionFormatter(value, row) {
-		return '<a class="data-talk-table-look" data-talk="' + row.id + '" style="cursor:pointer;color:blue">查看</a>';
+		return '<a class="data-talk-table-look" onclick="openUpdateWindow('+ row.id +')"  data-talk="' + row.id + '" style="cursor:pointer;color:blue">查看</a>'+
+		' <a class="data-talk-table-delete" onclick="deleteData('+ row.id +')"  data-talk="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
 	}
 
 	$.render(function() {
 		var $dataTalkTable = $('#data-talk-table'), $dataTalkTableSource = $('#data-talk-table-source'), $dataTalkTableSearch = $('#data-talk-table-search');
 		var $dataTalkUploadWindow = $('#data-talk-upload-window'), $dataTalkUploadTree = $('#data-talk-upload-tree');
-		
+		var $dataTalkUpdateWindow = $('#data-talk-update-window');
+		var $dataTalkFromConfirmBtn = $('#data-talk-update-confirm'),$dataTalkFromCancelBtn = $('#data-talk-update-confirm');
 		$('#data-talk-table-upload').click(function() {
 			$dataTalkUploadWindow.window('open');
 		});
@@ -94,5 +144,68 @@
 		$('#data-talk-upload-cancel').click(function() {
 			$dataTalkUploadWindow.window('close');
 		});
+		
+	
+		
+		
 	});
+	//打开form窗口 加载数据
+	function openUpdateWindow(id) {
+		var $dataTalkUpdateWindow = $('#data-talk-update-window');
+		
+		$.post('data/talk/getTalk', {
+			id: id
+		}, function(resp) {
+				
+				$('#data-talk-update-form').form('load',{
+					id:resp[0].id,
+					title:resp[0].title,
+					content:resp[0].content,
+					source:resp[0].source,
+					data_src:resp[0].data_src,
+					data_key:resp[0].data_key,
+					update_time:resp[0].update_time,
+					create_time:resp[0].create_time
+				});
+				$dataTalkUpdateWindow.window('open');
+			
+		}, 'json'); 
+	}; 
+	//提交表单  刷新数据
+	function submitForm(){
+		var $dataTalkUpdateWindow = $('#data-talk-update-window');
+		$('#data-talk-update-form').form('submit', {
+			url: 'data/talk/saveTalk',
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');
+				}
+				return isValid;
+			},
+			success: function(){
+				$('#data-talk-table').datagrid('reload'); 
+				$dataTalkUpdateWindow.window('close');
+				$.messager.show({title: '提示', msg: '修改成功！', timeout: 1000, showType: 'slide'});
+			}
+		});
+	}
+	//关闭form窗口
+	function closeWindow(){
+		$('#data-talk-update-window').window('close');
+	}
+	//删除数据
+	function deleteData(id){
+		$.post('data/talk/deleteTalk', {
+			id: id
+		}, function(resp) {
+			if(resp.success){
+				$('#data-talk-table').datagrid('reload'); 
+				$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
+			}else{
+				$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});
+			}
+			
+		}, 'json'); 
+	}
 </script>

@@ -14,18 +14,17 @@ import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
  */
 public class Growth {
 	static String result="";
-	public static String get(final Long id) {
+	public static String get(final String prifix) {
 		Db.execute(new ICallback() {
 			public Object call(Connection conn) throws SQLException {
 				try {
 					StringBuffer sql = new StringBuffer("call growth_proc(?,?)");
 					NewProxyCallableStatement proc = null;
 					proc = (NewProxyCallableStatement) conn.prepareCall(sql.toString());
-					proc.setObject(1, id);
+					proc.setObject(1, prifix);
 					proc.registerOutParameter(2, java.sql.Types.VARCHAR);// 设置返回值类型
 					proc.execute();
 					result = proc.getString(2);// 得到返回值
-					System.out.println(result);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

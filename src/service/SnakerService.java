@@ -87,7 +87,12 @@ public class SnakerService {
 	 * @return 是否运行成功
 	 */
 	public Workflow startProcess(Long processId, String params, boolean daemon) {
-		return engine.startProcess(processId, params, daemon);
+		try {
+			return engine.startProcess(processId, params, daemon);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

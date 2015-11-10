@@ -11,11 +11,7 @@ import java.util.Map.Entry;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.xmlbeans.impl.regex.REUtil;
-
-import com.jfinal.kit.Prop;
 import com.jfinal.kit.PropKit;
 
 import util.Baidu;
@@ -33,7 +29,12 @@ public class AddFieldModule extends Module {
 		ScriptEngineManager manager = new ScriptEngineManager();
 		List<DataHeader> header= inputs.getHeaders();
 		for (int j = 0; j < fieldTable.size(); j++) {
-			header.add(new DataHeader((String) fieldTable.get(j).get("name"), "string", ""));
+			String[] name = fieldTable.get(j).get("name").toString().split(",");
+			if (name.length == 2) {
+				header.add(new DataHeader(name[0], "string", ""));
+				header.add(new DataHeader(name[1], "string", ""));
+			} else if (name.length == 1)
+				header.add(new DataHeader((String) fieldTable.get(j).get("name"), "string", ""));
 		}
 		
 		for (int i = 0; i < inputs.getRows().size(); i++) {
@@ -51,7 +52,9 @@ public class AddFieldModule extends Module {
 					map.put((String) fieldTable.get(j).get("name") , fieldTable.get(j).get("value"));
 				}else if (fieldTable.get(j).get("type").equals("currentdate")){
 					//当前时间
-					map.put((String) fieldTable.get(j).get("name") , new Date());
+					Date date =new Date();
+					SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd KK:mm:ss");
+					map.put((String) fieldTable.get(j).get("name") , sdf.format(date));
 				}else if (fieldTable.get(j).get("type").equals("coordinate") ){
 					//坐标
 					try {
@@ -60,29 +63,23 @@ public class AddFieldModule extends Module {
 						if (address.length == 2) {
 							Object area = inputs.getRows().get(i).get(address[0]);
 							Object addr = inputs.getRows().get(i).get(address[1]);
-							if (area == null || area.toString().length() == 0)
-								area = "";
-							else if (addr == null || addr.toString().length() == 0)
-								addr = "";
-							coordinate = Baidu.getPoint(addr.toString(), area.toString());
+							coordinate = Baidu.getPoint((String)addr, (String)area);
 						} else if (address.length == 1){
 							Object addr = inputs.getRows().get(i).get(address[0]);
-							if (addr == null || addr.toString().length() == 0)
-								addr = "";
-							coordinate = Baidu.getPoint(addr.toString(), null);
+							coordinate = Baidu.getPoint((String)addr, null);
 						}
 						String[] name=fieldTable.get(j).get("name").toString().split(",");
 						map.put(name[0],coordinate[0]);    //x
 						map.put(name[1],coordinate[1]);	   //y
 					} catch (Exception e) {
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
 				}else if(fieldTable.get(j).get("type").equals("entaccount")){
-					String account= Growth.get(1L);
+					String account= Growth.get(fieldTable.get(j).get("value").toString());
 					map.put(fieldTable.get(j).get("name").toString(),account);
 					//企业账号
 				}else if(fieldTable.get(j).get("type").equals("useraccount")){
-					String account= Growth.get(2L);
+					String account= Growth.get(fieldTable.get(j).get("value").toString());
 					map.put(fieldTable.get(j).get("name").toString(),account);
 					//求职者账号
 				}else if(fieldTable.get(j).get("type").equals("script")){
@@ -100,41 +97,32 @@ public class AddFieldModule extends Module {
 						Object o=engine.get(fieldTable.get(j).get("name").toString());
 						map.put(fieldTable.get(j).get("name").toString(), o);
 					} catch (ScriptException e) {
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
 				}else if(fieldTable.get(j).get("type").equals("createhtmlpage")){
 					
-					String create_time=inputs.getRows().get(i).get("create_time").toString();
+					String create_time= inputs.getRows().get(i).get("create_time").toString();
 					String title =inputs.getRows().get(i).get("title").toString();
 					String source=inputs.getRows().get(i).get("source").toString();
 					String html_content=inputs.getRows().get(i).get("html_content").toString();
-					//String path=fieldTable.get(j).get("value").toString();
-					PropKit.get("path");
+					String path=PropKit.get("fileserver.path");
 					 
-					String path="";
 					
 					//生成html文件
-					Date date = new Date();
-					String time="";
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					if(create_time!=null && !"".equals(create_time)){
-						time = sdf.format(create_time);
-					}else{
-						time = sdf.format(date);
-					}
 					String fileName = "";
 					Map<String, Object> paramMap = new HashMap<String, Object>();
 					paramMap.put("title", title);
-					paramMap.put("date", time);
+					paramMap.put("date", create_time);
 					paramMap.put("source", source);
 					paramMap.put("content", html_content);
 			
 					String htmlName="";
 					try {
 						htmlName = CreateHtml.create(fileName ,paramMap ,path);
+						map.put(fieldTable.get(j).get("name").toString(), htmlName);
 						//information.setHtml_name(htmlName);
 					} catch (Exception e) {
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
 				}
 			}

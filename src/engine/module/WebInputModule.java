@@ -103,9 +103,9 @@ public class WebInputModule extends Module {
 				} else {
 					String out = result.toString();
 					if (out == null || out.length() == 0) {
-						page.putField(attr, result.toString());
+						page.putField(attr, out);
 					} else {
-						page.putField(attr, result.toString().trim());
+						page.putField(attr, out.trim());
 					}
 				}
 			}

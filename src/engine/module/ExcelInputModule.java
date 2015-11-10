@@ -43,13 +43,13 @@ public class ExcelInputModule extends Module {
 			is = new FileInputStream(excelFile);
 			inputs.addAll(excelParser(is, suffix));
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} finally {
 			try {
 				if (is != null)
 					is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 		return inputs;

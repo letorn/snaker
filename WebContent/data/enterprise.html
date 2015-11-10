@@ -22,15 +22,182 @@
 	<a id="data-enterprise-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="data-enterprise-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
+
+<div id="data-enterprise-update-window" class="easyui-window" style="width:375px;height:345px" data-options="title:'修改',modal:true,closed:true,footer:'#data-enterprise-update-footer'" data-options="iconCls:'icon-save',modal:true;">
+ <form id="data-enterprise-update-form" method="post">
+ 	<input style="display:none" type="text" id = "id" name="id" value=""></input>
+ 	   <table style="margin:10px">
+                <tr>
+                    <td>企业名称:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>账号:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="account" id="account" data-options="required:true"></input></td>
+                </tr>
+                
+                <tr>
+                    <td>行业:</td>
+                    <td>
+                    <input class="" style="width:250px;display:none;" type="text" id='category' name="category" data-options="required:true"></input>
+                    <input class="easyui-combobox" name="category_code" id="category_code" data-options="valueField:'value',textField:'text',url:'json/industry.json',
+                    onSelect:function(newValue){$('#category').textbox('setValue', newValue.text);}" /> </td>
+                </tr>
+                <tr>
+                    <td>性质:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='nature' name="nature" data-options="required:true"></input>
+                    <input class="easyui-combobox" name="nature_code" id="nature_code" data-options="valueField:'value',textField:'text',url:'json/nature.json',
+                    onSelect:function(newValue){$('#nature').textbox('setValue', newValue.text);}" /> </td>
+					</td>
+                </tr>
+                <tr>
+                    <td>规模:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='scale' name="scale" data-options="required:true"></input>
+                    <input class="easyui-combobox" name="scale_code" id="scale_code" data-options="valueField:'value',textField:'text',url:'json/scale.json',
+                    onSelect:function(newValue){$('#scale').textbox('setValue', newValue.text);}" /> </td>
+					</td>
+                </tr>
+                 <tr>
+                    <td>标签:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="tag" id="tag" data-options=""></input>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>简介:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text"  name="introduction" id ="introduction" data-options="multiline:true,required:true" style="width:250px; height:80px"></input>
+                    </td>
+                </tr>
+                  <tr>
+                    <td>区域:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='area' name="area" data-options="required:true"></input>
+                    <input class="easyui-combobox" name="area_code" id="area_code" data-options="valueField:'value',textField:'text',url:'json/area.json',
+                    onSelect:function(newValue){$('#area').textbox('setValue', newValue.text);}" /> </td>
+					</td>
+                </tr>
+                  <tr>
+                    <td>地址:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="address" id="address" data-options=""></input>
+                    </td>
+                </tr>
+                  <tr>
+                    <td>网址:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="website" id="website" data-options=""></input>
+                    </td>
+                </tr>
+                  <tr>
+                    <td>组织机构代码:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="orgains" id="orgains" data-options=""></input>
+                    </td>
+                </tr>
+                  <tr>
+                    <td>工商营业执照编号:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="license" id="license" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>联系人:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="contacter" id="contacter" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否公开联系方式:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="public_contact" id="public_contact" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>电话:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="phone" id="phone" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>传真:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="fax" id="fax" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>手机:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="mobile" id="mobile" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>邮箱:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="email" id="email" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>QQ号码:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="qq" id="qq" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>data_src:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="data_src" id="data_src" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>data_key:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="data_key" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>更新时间:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="update_date" id="update_date" data-options=""></input>
+                    </td>
+                </tr>
+                  <tr>
+                    <td>创建时间:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="create_date" id="create_date" data-options=""></input>
+                    </td>
+                </tr>
+                   <tr>
+                    <td>角色id:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="role" id="role" data-options=""></input>
+                    </td>
+                </tr>
+                   <tr>
+                    <td>是否认证:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="legalize" id="legalize" data-options=""></input>
+                    </td>
+                </tr>
+                
+            </table>
+</form>
+</div>
+<div id="data-enterprise-update-footer" style="padding:5px;">
+	<a id="data-enterprise-update-confirm" class="easyui-linkbutton" onclick="submitFrom()"  style="width:80px">确定</a>
+	<a id="data-enterprise-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px">取消</a>
+</div>
+
+
 <script type="text/javascript">
 	function dataEnterpriseTableActionFormatter(value, row) {
-		return '<a class="data-enterprise-table-look" data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">查看</a>';
+		return '<a class="data-enterprise-table-look" onclick="openFromWindow('+row.id+')" data-enterprise="'  + row.id + '" style="cursor:pointer;color:blue">查看</a>'+
+		' <a class="data-talk-enterprise-delete" onclick="deleteData('+ row.id +')"  data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
 	}
 
 	$.render(function() {
 		var $dataEnterpriseTable = $('#data-enterprise-table'), $dataEnterpriseTableSource = $('#data-enterprise-table-source'), $dataEnterpriseTableSearch = $('#data-enterprise-table-search');
 		var $dataEnterpriseUploadWindow = $('#data-enterprise-upload-window'), $dataEnterpriseUploadTree = $('#data-enterprise-upload-tree');
-
+		var $dataEnterpriseUpdateWindow=$('#data-enterprise-update-window');
 		$('#data-enterprise-table-upload').click(function() {
 			$dataEnterpriseUploadWindow.window('open');
 		});
@@ -94,5 +261,48 @@
 		$('#data-enterprise-upload-cancel').click(function() {
 			$dataEnterpriseUploadWindow.window('close');
 		});
+		
+		
 	});
+	function openFromWindow(id){
+		$('#data-enterprise-update-window').window("open");
+		//debugger;
+		$('#data-enterprise-update-form').form('load','data/enterprise/getEnt?id='+id);
+	}
+	
+	function submitFrom(){
+		var $dataEnterpriseUpdateWindow = $('#data-enterprise-upload-window');
+		$('#data-enterprise-update-form').form('submit', {
+			url: 'data/enterprise/saveEnt',
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');
+				}
+				return isValid;
+			},
+			success: function(){
+				$('#data-enterprise-table').datagrid('reload'); 
+				$('#data-enterprise-update-window').window('close');
+				$.messager.show({title: '提示', msg: '修改成功！', timeout: 1000, showType: 'slide'});
+			}
+		});
+	}
+	//关闭form窗口
+	function closeWindow(){
+		$('#data-enterprise-update-window').window('close');
+	}
+	//删除数据
+	function deleteData(id){
+		$.post('data/enterprise/deleteEnt', {
+			id: id
+		}, function(resp) {
+			if(resp.success){
+				$('#data-enterprise-table').datagrid('reload'); 
+				$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
+			}else{
+				$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});
+			}
+		}, 'json'); 
+	}
 </script>

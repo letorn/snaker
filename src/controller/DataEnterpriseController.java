@@ -57,6 +57,60 @@ public class DataEnterpriseController extends Controller {
 	}
 	
 	/**
+	 * 展示指定的企业列表
+	 * categoryName 页面传入的行业名称
+	 * field 当日新增、已上传、当日上传、所有
+	 * beginTime 选定的开始时间
+	 * endTime 选定的结束时间
+	 */
+	public void display() {
+		String date = dateFormat.format(new Date());
+		String categoryName = getPara("category");
+		String field = getPara("field");
+		String beginTime = getPara("beginTime", date + " 00:00:00");
+		String endTime = getPara("endTime", date + " 23:59:59");
+
+		List<ViEnterprise> ents = null;
+		if ("day_new".equals(field)) {
+			if ("全部".equals(categoryName)) {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date between ? and ?", beginTime, endTime);
+			} else {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date between ? and ?", getCategoryCode(categoryName), beginTime, endTime);
+			}
+		} else if("syn".equals(field)) {
+			if ("全部".equals(categoryName)) {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date<? and syn_status=1", endTime);
+			} else {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date<? and syn_status=1", getCategoryCode(categoryName), endTime);
+			}
+		} else if("day_syn".equals(field)) {
+			if ("全部".equals(categoryName)) {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date between ? and ? and syn_status=1", beginTime, endTime);
+			} else {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date between ? and ? and syn_status=1", getCategoryCode(categoryName), beginTime, endTime);
+			}
+		} else {
+			if ("全部".equals(categoryName)) {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date<?", endTime);
+			} else {
+				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date<?", getCategoryCode(categoryName), endTime);
+			}
+		}
+		dataMap.put("total", ents.size());
+		dataMap.put("rows", ents);
+		renderJson(dataMap);
+	}
+	
+	/**
+	 * 根据企业行业获取行业编码
+	 * @param categoryName
+	 * @return code
+	 */
+	private String getCategoryCode(String categoryName) {
+		return UtIndustry.dao.findFirst("select code from ut_industry where name=?", categoryName).getStr("code");
+	}
+	
+	/**
 	 * 获取数据来源
 	 */
 	public void sources() {
@@ -118,12 +172,105 @@ public class DataEnterpriseController extends Controller {
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 		List<Record> records = Db.find("select i.name, "
-				+ "(select count(*) from db_enterprise where category_code=i.code and create_date<?) total, "
-				+ "(select count(*) from db_enterprise where category_code=i.code and create_date between ? and ?) day_new, "
-				+ "(select count(*) from db_enterprise where category_code=i.code and create_date<? and syn_status=1) syn, "
-				+ "(select count(*) from db_enterprise where category_code=i.code and create_date between ? and ? and syn_status=1) day_syn "
+				+ "(select count(*) from vi_enterprise where category_code=i.code and create_date<?) total, "
+				+ "(select count(*) from vi_enterprise where category_code=i.code and create_date between ? and ?) day_new, "
+				+ "(select count(*) from vi_enterprise where category_code=i.code and create_date<? and syn_status=1) syn, "
+				+ "(select count(*) from vi_enterprise where category_code=i.code and create_date between ? and ? and syn_status=1) day_syn "
 				+ "from ut_industry i", endTime, beginTime, endTime, endTime, beginTime, endTime);
 		renderJson(records);
 	}
+	public void getEnt(){
+		String id = getPara("id");
+		Record record = Db.findFirst("SELECT id,name ,account ,category ,category_code ,nature ,nature_code  ,scale  ,scale_code  ,tag  ,establish "
+				+ ",introduction ,area ,area_code  ,address  ,lbs_lon  ,lbs_lat,website ,orgains ,license ,contacter ,public_contact ,phone ,"
+				+ "fax  ,mobile ,email  ,qq  ,visit_count ,data_src ,data_key  ,update_date ,create_date ,syn_status ,syn_date  ,syn_message "
+				+ " ,role  ,legalize FROM vi_enterprise  WHERE id ="+id);
+		renderJson(record);
+	}
+	public void saveEnt(){
+		String id =getPara("id");
+		String name =getPara("name");
+		String account =getPara("account");
+		String category =getPara("category");
+		String category_code =getPara("category_code");
+		String nature =getPara("nature");
+		String nature_code =getPara("nature_code");
+		String scale =getPara("scale");
+		String scale_code =getPara("scale_code");
+		String tag =getPara("tag");
+		Date establish =getParaToDate("establish")==null?new Date():getParaToDate("establish");
+		String introduction =getPara("introduction");
+		String area =getPara("area");
+		String area_code =getPara("area_code");
+		String address =getPara("address");
+		String lons=getPara("lbs_lon");
+		String lats=getPara("lbs_lat");
+		Object lbs_lon=null;
+		Object lbs_lat=null;
+		if(lons!=null && lats!=null){
+		lbs_lon =Double.parseDouble(getPara("lbs_lon"));
+		lbs_lat =Double.parseDouble(getPara("lbs_lat"));
+		}
+		String website =getPara("website");
+		String orgains =getPara("orgains");
+		String license =getPara("license");
+		String contacter =getPara("contacter");
+		int public_contact =getParaToInt("public_contact") ==null?0:getParaToInt("public_contact");
+		String phone =getPara("phone");
+		String fax =getPara("fax");
+		String mobile =getPara("mobile");
+		String email =getPara("email");
+		String qq =getPara("qq");
+		String data_src =getPara("data_src");
+		String data_key =getPara("data_key");
+		String update_date =getPara("update_date");
+		String create_date =getPara("create_date");
 	
+		String role =getPara("role");
+		String legalize =getPara("legalize"); 
+		boolean isSuccess=ViEnterprise.dao.findById(id).set("name",name)
+				.set("account",account)
+				.set("category",category)
+				.set("category_code",category_code)
+				.set("nature",nature)
+				.set("nature_code",nature_code)
+				.set("scale",scale)
+				.set("scale_code",scale_code)
+				.set("tag",tag)
+				.set("establish",establish)
+				.set("introduction",introduction)
+				.set("area",area)
+				.set("area_code",area_code)
+				.set("address",address)
+				.set("lbs_lon",lbs_lon)
+				.set("lbs_lat",lbs_lat)
+				.set("website",website)
+				.set("orgains",orgains)
+				.set("license",license)
+				.set("contacter",contacter)
+				.set("public_contact",public_contact)
+				.set("phone",phone)
+				.set("fax",fax)
+				.set("mobile",mobile)
+				.set("email",email)
+				.set("qq",qq)
+				.set("data_src",data_src)
+				.set("data_key",data_key)
+				.set("update_date",update_date)
+				.set("create_date",create_date)
+				.set("role",role)
+				.set("legalize",legalize).update();
+		
+		dataMap.put("success", isSuccess);
+		renderJson(dataMap);
+	}
+	/**
+	 * 删除企业
+	 */
+	public void deleteEnt(){
+		String id=getPara("id");
+		boolean isSuccess=ViEnterprise.dao.findById(id).delete();
+		dataMap.put("success", isSuccess);
+		renderJson(dataMap);
+	}
 }

@@ -1,7 +1,5 @@
 package test;
 
-import java.util.HashMap;
-import java.util.Map;
 
 
 
@@ -11,33 +9,20 @@ public class MyTest {
 		Thread thread = new Thread(new Runnable(){
 			public void run() {
 				try {
-					System.out.println("thread sleep 3000");
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String str = null;
+					System.out.println(str.toString());
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
-				System.out.println("thread do something");
 				
 			}
 		});
-		Thread thread2 = new Thread(new Runnable(){
-			public void run() {
-				try {
-					System.out.println("thread2 sleep 3000");
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("thread2 do something");
-				
-			}
-		});
-		thread.setDaemon(false);
-		thread.start();
-		// thread2.start();
-		
+		try {
+			thread.run();
+		} catch (Exception e) {
+			System.out.println("catch...");
+			// e.printStackTrace();
+		}
 		System.out.println("main do something");
 	}
 	

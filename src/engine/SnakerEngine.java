@@ -176,7 +176,7 @@ public class SnakerEngine {
 		List<Workflow> list = new ArrayList<Workflow>(instanceWorkflowIdMap.values());
 		Collections.sort(list, new Comparator<Workflow>() {
 			public int compare(Workflow wf1, Workflow wf2) {
-				return wf1.getProcessId() > wf2.getProcessId() ? 1 : -1;
+				return wf1.getInstanceId() > wf2.getInstanceId() ? -1 : 1;
 			}
 		});
 		return list;

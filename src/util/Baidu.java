@@ -27,23 +27,26 @@ public class Baidu {
 	 */
 	public static Double[] getPoint(String address, String city) {
 		if (blank(address))
-			address = "";
+			return new Double[2];
 		if (blank(city))
 			city = "";
 		try {
 			address = URLEncoder.encode(address, "utf-8");
 			city = URLEncoder.encode(city, "utf-8");
-			HttpGet httpGet = new HttpGet(String.format("%s&address=%s&area=%s", url, address, city));
+			HttpGet httpGet = new HttpGet(String.format("%s&address=%s&city=%s", url, address, city));
 			CloseableHttpResponse httpResponse = httpclient.execute(httpGet);
 			JSONObject contentObject = JSONObject.fromObject(EntityUtils.toString(httpResponse.getEntity(), "UTF-8"));
-			JSONObject locationObject = contentObject.getJSONObject("result").getJSONObject("location");
+			JSONObject resultObject = contentObject.getJSONObject("result");
+			if (resultObject.isNullObject()) {
+				return new Double[2];
+			}
+			JSONObject locationObject = resultObject.getJSONObject("location");
 			Double lon = locationObject.getDouble("lng");
 			Double lat = locationObject.getDouble("lat");
 			return new Double[] { lon, lat };
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return new Double[2];
 	}
-	
 }

@@ -1,0 +1,118 @@
+<table id="process-task-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#process-task-table-toolbar'">
+	<thead>
+		<tr>
+			<th data-options="field:'id'" style="width:60px">编号</th>
+			<th data-options="field:'name'" style="width:150px">流程名称</th>
+			<th data-options="field:'scheduler',formatter:$.encodeHtml" style="width:680px">Scheduler</th>
+			<th data-options="field:'action',formatter:processTaskTableActionFormatter" style="width:130px">操作</th>
+		</tr>
+	</thead>
+</table>
+<div id="process-task-table-toolbar">
+	<a id="process-task-table-designer" class="easyui-linkbutton">新增</a>
+	<input id="process-task-table-search" class="easyui-searchbox" data-options="prompt:'流程名称'" style="width:200px"></input>
+</div>
+<div id="process-task-choose-window" class="easyui-window" data-options="title:'流程定义',modal:true,closed:true,footer:'#process-task-choose-footer'" style="width:550px;height:400px">
+	<table id="process-task-choose-table" class="easyui-datagrid" data-options="border:false,fit:true">
+		<thead>
+			<tr>
+				<th data-options="field:'check',checkbox:true"></th>
+				<th data-options="field:'id'" style="width:60px">编号</th>
+				<th data-options="field:'name'" style="width:200px">流程名称</th>
+				<th data-options="field:'content',formatter:$.encodeHtml" style="width:210px">流程内容</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="process-task-choose-footer" style="padding:5px;">
+		<span style="font-size:13px;font-family:GB2313">定时启动时间:</span><input id="process-task-choose-scheduler" class="easyui-textbox" data-options="prompt:'请输入启动时间，如不输入，则默认为：02:00:00'" style="width:300px"></input>
+		<a id="process-task-choose-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
+	</div>
+</div>
+<script type="text/javascript">
+	function processTaskTableActionFormatter(value, row) {
+		return '<a class="process-task-table-delete" data-task="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
+	}
+	
+	$.render(function() {
+		var $processTaskTable = $('#process-task-table');
+		var editor = {};
+		editor.taskChoose = {
+			$window: $('#process-task-choose-window'),
+			$table: $('#process-task-choose-table'),
+			$scheduler: $('#process-task-choose-scheduler'),
+			$btnConfirm: $('#process-task-choose-confirm'),
+			endEditing: function() {
+				var _this = editor.taskChoose;
+				if (_this.lastEditingIndex == null) return true;
+				if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+					_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+					_this.lastEditingIndex = null;
+					return true;
+				}
+				return false;
+			},
+			init: function(index, row) {
+				var _this = editor.taskChoose;
+				_this.show();
+				if (!_this._initEvent) {
+					_this.$table.datagrid({
+						url: 'process',
+						method: 'get',
+						singleSelect: 0,
+						checkOnSelect: true
+					});
+					_this.$btnConfirm.click(function() {
+						var rows = _this.$table.datagrid('getChecked');
+						var s = '';
+						for(i in rows) {
+							s = s + 'id=' + rows[i].id + '&';
+						}
+						$.post('process/timerStart?' + s.substring(0, s.length - 1) + '&runtime=' + _this.$scheduler.textbox('getText'), function(resp) {
+							$processTaskTable.datagrid('load', {
+								data: resp
+							});
+						}, 'json');
+						_this.$window.window('close', true);
+						_this.$table.datagrid('clearChecked');
+						_this.$scheduler.textbox('clear');
+					});
+					_this._initEvent = true;
+				}
+			},
+			setValue: function(value) {
+				editor.taskChoose.$table.datagrid('loadData', value);
+			},
+			show: function() {
+				editor.taskChoose.$window.window('open', true);
+			}
+		};
+		
+		$('#process-task-table-designer').click(function() {
+			editor.taskChoose.init();
+		});
+		
+		$('#process-task-table-search').searchbox({
+			searcher: function(value) {
+				$processTaskTable.datagrid('load', {
+					name: value
+				});
+			}
+		});
+		
+		$processTaskTable.datagrid({
+			url:'process/task',
+			method:'get',
+			onLoadSuccess: function() {
+				$('.process-task-table-delete').click(function() {
+					$.post('process/timerStop/' + $(this).data('task'), function(resp) {
+						$processTaskTable.datagrid('load', {
+							data: resp
+						});
+					}, 'json');
+				});
+			}
+		});
+	});
+	
+	
+</script>

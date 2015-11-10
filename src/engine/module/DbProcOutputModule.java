@@ -2,6 +2,7 @@ package engine.module;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
+import com.mysql.fabric.xmlrpc.base.Data;
 
 import engine.ModuleData;
 
@@ -55,9 +57,10 @@ public class DbProcOutputModule extends Module {
 						NewProxyCallableStatement proc = null;
 						proc = (NewProxyCallableStatement) conn.prepareCall(sql.toString());
 						for (int k = 0; k < num; k++) {
-							String param = (String) map.get(procFields.get(k).get("from"));
-							if(param==null||param.equals("")){
-								param=procFields.get(k).get("default").toString();
+							Object o=procFields.get(k).get("from");
+							Object param = (Object) map.get(o);
+							if(param==null||param.toString().equals("")){
+								param=procFields.get(k).get("default");
 							}
 							proc.setObject((k + 1), param);
 						}
@@ -68,16 +71,11 @@ public class DbProcOutputModule extends Module {
 						proc.execute();
 						String result = proc.getString(num + 1);// 得到返回值
 						Integer isSuccess = proc.getInt(num + 2);
-
-						System.out.println(result);
-						System.out.println(isSuccess);
-						
 					}
 					
 					} catch (Exception e) {
-						e.printStackTrace();
+						throw new RuntimeException(e);
 					}
-					conn.close();
 					return null;
 				}
 				
