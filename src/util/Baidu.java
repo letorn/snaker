@@ -2,9 +2,12 @@ package util;
 import static util.Validator.blank;
 
 import java.net.URLEncoder;
+import java.util.Arrays;
 
 import net.sf.json.JSONObject;
 
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -17,8 +20,8 @@ import org.apache.http.util.EntityUtils;
 public class Baidu {
 	
 	private static String url = "http://api.map.baidu.com/geocoder/v2/?ak=YcnpFYovxoDCqPvnsL89VD8U&output=json";
-	private static CloseableHttpClient httpclient = HttpClients.createDefault();
-	
+	private static CloseableHttpClient httpClient = HttpClients.createDefault();
+	private static RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
 	/**
 	 * 根据地址获取坐标点
 	 * @param address 详细地址
@@ -34,7 +37,8 @@ public class Baidu {
 			address = URLEncoder.encode(address, "utf-8");
 			city = URLEncoder.encode(city, "utf-8");
 			HttpGet httpGet = new HttpGet(String.format("%s&address=%s&city=%s", url, address, city));
-			CloseableHttpResponse httpResponse = httpclient.execute(httpGet);
+			httpGet.setConfig(requestConfig);
+			CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
 			JSONObject contentObject = JSONObject.fromObject(EntityUtils.toString(httpResponse.getEntity(), "UTF-8"));
 			JSONObject resultObject = contentObject.getJSONObject("result");
 			if (resultObject.isNullObject()) {
@@ -49,4 +53,10 @@ public class Baidu {
 		}
 		return new Double[2];
 	}
+	
+	public static void main(String[] args) {
+		Double[] lbs = getPoint("珠海", null);
+		System.out.println(Arrays.toString(lbs));
+	}
+	
 }

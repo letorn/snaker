@@ -25,7 +25,7 @@ create table if not exists wf_record(
 	instance_id bigint,
 	module varchar(50),
 	headers text,
-	rows text,
+	rows mediumtext,
 	create_date datetime
 );
 
@@ -373,4 +373,13 @@ create table if not exists ut_growth(
 	step tinyint,
 	prefix varchar(100),
 	len tinyint
+);
+
+-- 工具 地区
+-- drop table if exists ut_area;
+create table if not exists ut_area(
+	id bigint primary key auto_increment,
+	name varchar(100),
+	code varchar(11),
+	parent varchar(11)
 );

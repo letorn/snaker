@@ -22,8 +22,7 @@
 	<a id="data-enterprise-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="data-enterprise-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
-
-<div id="data-enterprise-update-window" class="easyui-window" style="width:375px;height:345px" data-options="title:'修改',modal:true,closed:true,footer:'#data-enterprise-update-footer'" data-options="iconCls:'icon-save',modal:true;">
+<div id="data-enterprise-update-window" class="easyui-window" style="width:405px;height:375px" data-options="title:'修改',modal:true,closed:true,footer:'#data-enterprise-update-footer'" data-options="iconCls:'icon-save',modal:true;">
  <form id="data-enterprise-update-form" method="post">
  	<input style="display:none" type="text" id = "id" name="id" value=""></input>
  	   <table style="margin:10px">
@@ -39,28 +38,28 @@
                 <tr>
                     <td>行业:</td>
                     <td>
-                    <input class="" style="width:250px;display:none;" type="text" id='category' name="category" data-options="required:true"></input>
-                    <input class="easyui-combobox" name="category_code" id="category_code" data-options="valueField:'value',textField:'text',url:'json/industry.json',
-                    onSelect:function(newValue){$('#category').textbox('setValue', newValue.text);}" /> </td>
+                    <input class="" style="width:250px;display:none;" type="text" id='ent_category' name="category" data-options="required:true"></input>
+                    <input class="easyui-combobox" name="category_code" id="ent_category_code" data-options="valueField:'value',textField:'text',url:'json/industry.json',
+                    onHidePanel:function(){$('#ent_category').val( $('#ent_category_code').textbox('getText'));}" /> </td>
                 </tr>
                 <tr>
                     <td>性质:</td>
-                    <td><input class="" style="width:250px;display:none;" type="text" id='nature' name="nature" data-options="required:true"></input>
-                    <input class="easyui-combobox" name="nature_code" id="nature_code" data-options="valueField:'value',textField:'text',url:'json/nature.json',
-                    onSelect:function(newValue){$('#nature').textbox('setValue', newValue.text);}" /> </td>
-					</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='ent_nature' name="nature" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="nature_code" id="ent_nature_code" data-options="valueField:'value',textField:'text',url:'json/nature.json',
+                    onHidePanel:function(){$('#ent_nature').val( $('#ent_nature_code').textbox('getText'));}" /> </td>
+				
                 </tr>
                 <tr>
                     <td>规模:</td>
-                    <td><input class="" style="width:250px;display:none;" type="text" id='scale' name="scale" data-options="required:true"></input>
-                    <input class="easyui-combobox" name="scale_code" id="scale_code" data-options="valueField:'value',textField:'text',url:'json/scale.json',
-                    onSelect:function(newValue){$('#scale').textbox('setValue', newValue.text);}" /> </td>
-					</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='ent_scale' name="scale" data-options="required:true"></input>
+                    <input class="easyui-combobox" name="scale_code" id="ent_scale_code" data-options="valueField:'value',textField:'text',url:'json/scale.json',
+                    onHidePanel:function(){$('#ent_scale').val( $('#ent_scale_code').textbox('getText'));}" /> </td>
+					
                 </tr>
                  <tr>
                     <td>标签:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="tag" id="tag" data-options=""></input>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="tag" id="tag" ></input>
                     </td>
                 </tr>
                  <tr>
@@ -71,21 +70,28 @@
                 </tr>
                   <tr>
                     <td>区域:</td>
-                    <td><input class="" style="width:250px;display:none;" type="text" id='area' name="area" data-options="required:true"></input>
-                    <input class="easyui-combobox" name="area_code" id="area_code" data-options="valueField:'value',textField:'text',url:'json/area.json',
-                    onSelect:function(newValue){$('#area').textbox('setValue', newValue.text);}" /> </td>
-					</td>
+                    <td>
+                   <input id="area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
+        data-options="url:'json/area.json',required:true"></input> 
+					
                 </tr>
                   <tr>
                     <td>地址:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="address" id="address" data-options=""></input>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="address" id="ent_address" data-options=""></input>
                     </td>
                 </tr>
                   <tr>
-                    <td>网址:</td>
+                    <td>坐标点:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="website" id="website" data-options=""></input>
+                    	<input style="width:122px;" class="easyui-textbox" type="text" id = "ent_lbs_lon" name="lbs_lon" value=""data-options="readonly:true"></input>
+                    	<input style="width:122px;" class="easyui-textbox"  type="text" id = "ent_lbs_lat" name="lbs_lat" value="" data-options="readonly:true"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>地图:</td>
+                    <td>
+                    	<div id ="baiduentmap" style="width:250px;height:250px"></div>
                     </td>
                 </tr>
                   <tr>
@@ -181,10 +187,13 @@
                 
             </table>
 </form>
+
 </div>
+
 <div id="data-enterprise-update-footer" style="padding:5px;">
 	<a id="data-enterprise-update-confirm" class="easyui-linkbutton" onclick="submitFrom()"  style="width:80px">确定</a>
 	<a id="data-enterprise-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px">取消</a>
+	<a id="data-enterprise-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px;float:right;">查看岗位</a>
 </div>
 
 
@@ -198,6 +207,8 @@
 		var $dataEnterpriseTable = $('#data-enterprise-table'), $dataEnterpriseTableSource = $('#data-enterprise-table-source'), $dataEnterpriseTableSearch = $('#data-enterprise-table-search');
 		var $dataEnterpriseUploadWindow = $('#data-enterprise-upload-window'), $dataEnterpriseUploadTree = $('#data-enterprise-upload-tree');
 		var $dataEnterpriseUpdateWindow=$('#data-enterprise-update-window');
+		var $address=$('#ent_address');
+		
 		$('#data-enterprise-table-upload').click(function() {
 			$dataEnterpriseUploadWindow.window('open');
 		});
@@ -211,7 +222,12 @@
 				});
 			}
 		});
-		
+		$address.textbox({
+			onSelect: function(addr){
+				alert(addr)
+				baiduMap(addr)
+			}
+		});
 		$dataEnterpriseTableSearch.searchbox({
 			searcher: function(value) {
 				$dataEnterpriseTable.datagrid('load', {
@@ -220,7 +236,8 @@
 				});
 			}
 		});
-		
+
+
 		$dataEnterpriseTable.datagrid({
 			url:'data/enterprise',
 			method:'get',
@@ -266,8 +283,37 @@
 	});
 	function openFromWindow(id){
 		$('#data-enterprise-update-window').window("open");
-		//debugger;
 		$('#data-enterprise-update-form').form('load','data/enterprise/getEnt?id='+id);
+		// 百度地图API功能
+		baiduMap("");
+	}
+	function baiduMap(addr)
+	{
+		if (addr=="") addr="北京";
+		var map = new BMap.Map("baiduentmap");  
+		map.centerAndZoom(addr,12);    
+		map.setDefaultCursor("crosshair");
+		
+		//单击获取点击的经纬度
+		map.addEventListener("click",function(e){
+			$('#ent_lbs_lat').textbox("setValue",e.point.lat);
+			$('#ent_lbs_lon').textbox("setValue",e.point.lng);
+	        map.clearOverlays();  
+	        var new_point = new BMap.Point(e.point.lng,e.point.lat);
+	        // 创建标注  
+	        var marker = new BMap.Marker(new_point);  
+	        // 将标注添加到地图中  
+	        map.addOverlay(marker);  
+	        map.panTo(new_point);  
+	        var geoc = new BMap.Geocoder(); 
+	        var pt = e.point;
+			geoc.getLocation(pt, function(rs){
+				var addComp = rs.addressComponents;
+				//alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+				$('#ent_address').textbox("setValue",addComp.province+addComp.city+addComp.district+addComp.street+addComp.streetNumber);
+			});        
+	        
+		});
 	}
 	
 	function submitFrom(){
@@ -287,6 +333,9 @@
 				$.messager.show({title: '提示', msg: '修改成功！', timeout: 1000, showType: 'slide'});
 			}
 		});
+		
+	
+		
 	}
 	//关闭form窗口
 	function closeWindow(){
@@ -305,4 +354,5 @@
 			}
 		}, 'json'); 
 	}
+	
 </script>

@@ -1,6 +1,7 @@
 package init;
 
 import model.SkFile;
+import model.UtArea;
 import model.UtDate;
 import model.UtGrowth;
 import model.UtIndustry;
@@ -108,6 +109,7 @@ public class AppConfig extends JFinalConfig {
 		c3p0Arp.addMapping("ut_industry", UtIndustry.class);
 		c3p0Arp.addMapping("ut_post", UtPost.class);
 		c3p0Arp.addMapping("ut_growth", UtGrowth.class);
+		c3p0Arp.addMapping("ut_area", UtArea.class);
 		me.add(c3p0Arp);
 		
 		// 配置正式环境数据库连接池插件

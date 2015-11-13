@@ -2,6 +2,7 @@ package engine.module;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,13 +22,14 @@ import us.codecraft.webmagic.selector.Selectable;
  */
 public class WebInputModule extends Module {
 
-	private String startUrl;
+	private List<Map<String, String>> startUrls;
+	private String threadNum;
 	private String helpRegion;
 	private String helpUrl;
 	private String targetUrl;
 	private String skipJugment;
 	private List<Map<String, String>> dataPaths;
-	private Spider spider = Spider.create(new SnakerProcessor()).thread(16);
+	private Spider spider = Spider.create(new SnakerProcessor());
 	
 	/**
 	 * 模型执行方法体
@@ -42,7 +44,12 @@ public class WebInputModule extends Module {
 	@Override
 	public void run() {
 		if (spider.getStatus() == Spider.Status.Init) {
-			spider = spider.addUrl(startUrl);
+			List<String> urls = new ArrayList<String>();
+			for (Map<String, String> url : startUrls) {
+				urls.add(url.get("startUrl"));
+			}
+			spider = spider.startUrls(urls);
+			spider = spider.thread(Integer.parseInt(threadNum));
 			spider = spider.addPipeline(new OutputPipeline(inputs, this));
 			if (workflow.isDaemon()) {
 				spider.start();
@@ -72,7 +79,7 @@ public class WebInputModule extends Module {
 					}
 				}
 				targetProcess(page);
-			} else if (page.getUrl().toString().equals(startUrl) || page.getUrl().toString().matches(helpUrl)) {
+			} else if (page.getUrl().toString().matches(helpUrl)) {
 				helpProcess(page);
 			} else {
 				page.setSkip(true);

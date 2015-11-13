@@ -74,6 +74,13 @@ public class SnakerEngine {
 		return null;
 	}
 	
+	public boolean stopProcess(Long processId) {
+		Workflow workflow = instanceWorkflowIdMap.get(processId);
+		if (notBlank(workflow))
+			return workflow.stop();
+		return false;
+	}
+	
 	/**
 	 * 新增工作流程
 	 * @param content 工作流程内容

@@ -111,6 +111,23 @@
 	<a id="module-editor-data-mappers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
+<div id="module-editor-start-urls" class="easyui-window" data-options="title:'开始链接',modal:true,closed:true,footer:'#module-editor-start-urls-footer'" style="width:700px;height:400px">
+	<table id="module-editor-start-urls-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-start-urls-toolbar',rownumbers:true">
+		<thead>
+			<tr>
+				<th data-options="field:'startUrl',width:600,editor:{type:'textbox'}">startUrl</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="module-editor-start-urls-toolbar">
+		<a id="module-editor-start-urls-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-start-urls-remove" class="easyui-linkbutton">删除</a>
+	</div>
+</div>
+<div id="module-editor-start-urls-footer" style="padding:5px;">
+	<a id="module-editor-start-urls-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-start-urls-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
 
 <div id="module-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-editor-data-paths-footer'" style="width:1500px;height:700px">
 	<table id="module-editor-data-paths-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-data-paths-toolbar'">
@@ -475,6 +492,69 @@
 			show: function() {
 				editor.dataMappers.$window.window('open', true);
 			}
+		}
+		
+		editor.startUrls = {
+				$window: $('#module-editor-start-urls'),
+				$table: $('#module-editor-start-urls-table'),
+				$btnAdd: $('#module-editor-start-urls-add'),
+				$btnRemove: $('#module-editor-start-urls-remove'),
+				$btnConfirm: $('#module-editor-start-urls-confirm'),
+				$btnCancel: $('#module-editor-start-urls-cancel'),
+				endEditing: function() {
+					var _this = editor.startUrls;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				init : function(index, row) {
+					var _this = editor.startUrls;
+					if(!_this.initEvent) {
+						_this.$table.datagrid({
+							onClickCell: function(index, field) {
+								if (index != _this.lastEditingIndex) {
+									if (_this.endEditing()) {
+										_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+										var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+										if (editor) {
+											($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+										}
+										_this.lastEditingIndex = index;
+									} else {
+										_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+									}
+								}
+							}
+						});
+						_this.$btnAdd.click(function() {
+							_this.$table.datagrid('appendRow', {startUrl: ''});
+						});
+						_this.$btnRemove.click(function() {
+							_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
+						});
+						_this.$btnConfirm.click(function() {
+							if (_this.endEditing()) {
+								row.value = _this.$table.datagrid('getRows');
+								Designer.PropBox.updateValue(index, row, true);
+								_this.$window.window('close', true);
+							}
+						});
+						_this.$btnCancel.click(function() {
+							_this.$window.window('close', true);
+						});
+						_this.initEvent = true;
+					}
+				},
+				setValue: function(value) {
+					editor.startUrls.$table.datagrid('loadData', value);
+				},
+				show: function() {
+					editor.startUrls.$window.window('open', true);
+				}
 		}
 		
 		editor.dataPaths = {

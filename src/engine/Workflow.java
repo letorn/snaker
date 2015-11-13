@@ -96,7 +96,9 @@ public class Workflow {
 	 * @return 是否停止成功
 	 */
 	public boolean stop() {
-		return false;
+		for (Module module : modules)
+			module.stop();
+		return true;
 	}
 	
 	/**

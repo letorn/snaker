@@ -33,21 +33,8 @@
 				$window: $('#enterprise-list-window'),
 				$table: $('#enterprise-list-table'),
 				$btnConfirm: $('#enterprise-list-confirm'),
-				endEditing: function() {
-					var _this = editor.Enterprise;
-					if (_this.lastEditingIndex == null) return true;
-					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
-						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
-						_this.lastEditingIndex = null;
-						return true;
-					}
-					return false;
-				},
 				show: function() {
 					editor.Enterprise.$window.window('open', true);
-				},
-				setValue: function(value) {
-					editor.Enterprise.$table.datagrid('loadData', value);
 				},
 				init: function(category, field) {
 					var _this = editor.Enterprise;
@@ -79,21 +66,8 @@
 				$window: $('#jobhunter-list-window'),
 				$table: $('#jobhunter-list-table'),
 				$btnConfirm: $('#jobhunter-list-confirm'),
-				endEditing: function() {
-					var _this = editor.Jobhunter;
-					if (_this.lastEditingIndex == null) return true;
-					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
-						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
-						_this.lastEditingIndex = null;
-						return true;
-					}
-					return false;
-				},
 				show: function() {
 					editor.Jobhunter.$window.window('open', true);
-				},
-				setValue: function(value) {
-					editor.Jobhunter.$table.datagrid('loadData', value);
 				},
 				init: function(category, field) {
 					var _this = editor.Jobhunter;
@@ -125,21 +99,8 @@
 				$window: $('#talk-list-window'),
 				$table: $('#talk-list-table'),
 				$btnConfirm: $('#talk-list-confirm'),
-				endEditing: function() {
-					var _this = editor.Talk;
-					if (_this.lastEditingIndex == null) return true;
-					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
-						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
-						_this.lastEditingIndex = null;
-						return true;
-					}
-					return false;
-				},
 				show: function() {
 					editor.Talk.$window.window('open', true);
-				},
-				setValue: function(value) {
-					editor.Talk.$table.datagrid('loadData', value);
 				},
 				init: function(source, field) {
 					var _this = editor.Talk;
@@ -241,8 +202,7 @@
 				$(this).datagrid('freezeRow', 0);
 			},
 			onClickCell: function(index, field, value) {
-				$('#index-content-enterprise-table').datagrid('selectRow', index);
-				var row = $('#index-content-enterprise-table').datagrid('getSelected');
+				var row = $('#index-content-enterprise-table').datagrid('selectRow', index).datagrid('getSelected');
 				editor.Enterprise.init(row.name, field);
 			}
 		});
@@ -266,8 +226,7 @@
 				$(this).datagrid('freezeRow', 0);
 			},
 			onClickCell: function(index, field, value) {
-				$('#index-content-jobhunter-table').datagrid('selectRow', index);
-				var row = $('#index-content-jobhunter-table').datagrid('getSelected');
+				var row = $('#index-content-jobhunter-table').datagrid('selectRow', index).datagrid('getSelected');
 				editor.Jobhunter.init(row.name, field);
 			}
 		});
@@ -291,8 +250,7 @@
 				$(this).datagrid('freezeRow', 0);
 			},
 			onClickCell: function(index, field, value) {
-				$('#index-content-talk-table').datagrid('selectRow', index);
-				var row = $('#index-content-talk-table').datagrid('getSelected');
+				var row = $('#index-content-talk-table').datagrid('selectRow', index).datagrid('getSelected');
 				editor.Talk.init(row.name, field);
 			}
 		});

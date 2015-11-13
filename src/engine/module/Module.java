@@ -45,9 +45,17 @@ public abstract class Module implements Runnable {
 		run(inputs);
 	}
 	
+	/**
+	 * 运行模型，后台线程
+	 */
 	public void start() {
 		new Thread(this).start();
 	}
+	
+	/**
+	 * 停止运行
+	 */
+	public void stop() {}
 	
 	/**
 	 * 运行模型
