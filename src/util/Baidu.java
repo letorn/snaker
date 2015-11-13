@@ -30,28 +30,24 @@ public class Baidu {
 	 */
 	public static Double[] getPoint(String address, String city) {
 		if (blank(address))
-			return new Double[2];
+			return null;
 		if (blank(city))
 			city = "";
 		try {
-			address = URLEncoder.encode(address, "utf-8");
-			city = URLEncoder.encode(city, "utf-8");
-			HttpGet httpGet = new HttpGet(String.format("%s&address=%s&city=%s", url, address, city));
+			HttpGet httpGet = new HttpGet(String.format("%s&address=%s&city=%s", url, URLEncoder.encode(address, "UTF-8"), URLEncoder.encode(city, "UTF-8")));
 			httpGet.setConfig(requestConfig);
 			CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
-			JSONObject contentObject = JSONObject.fromObject(EntityUtils.toString(httpResponse.getEntity(), "UTF-8"));
-			JSONObject resultObject = contentObject.getJSONObject("result");
-			if (resultObject.isNullObject()) {
-				return new Double[2];
+			String content = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+			if (content.contains("location")) {
+				JSONObject location = JSONObject.fromObject(content).getJSONObject("result").getJSONObject("location");
+				Double lon = location.getDouble("lng");
+				Double lat = location.getDouble("lat");
+				return new Double[] { lon, lat };
 			}
-			JSONObject locationObject = resultObject.getJSONObject("location");
-			Double lon = locationObject.getDouble("lng");
-			Double lat = locationObject.getDouble("lat");
-			return new Double[] { lon, lat };
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new Double[2];
+		return null;
 	}
 	
 	public static void main(String[] args) {

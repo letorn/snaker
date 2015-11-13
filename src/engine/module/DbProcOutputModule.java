@@ -78,11 +78,7 @@ public class DbProcOutputModule extends Module {
 					}
 					return null;
 				}
-				
 			});
-			
-		
-		
 		return inputs;
 	}
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>登录</title>
+</head>
+<body>
+	<form action="login">
+		<p>用户：<input type="text" name="account" /></p>
+		<p>密码：<input type="text" name="password" /></p>
+		<input type="submit" value="登录" />&nbsp;&nbsp;<span id="error"></span>
+	</form>
+	<script type="text/javascript">
+		var error = '${error}';
+		if (!error.startsWith('$')) {
+			var ele = document.getElementById('error');
+			ele.innerHTML = error;
+		}
+	</script>
+</body>
+</html>

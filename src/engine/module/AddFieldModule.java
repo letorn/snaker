@@ -69,8 +69,8 @@ public class AddFieldModule extends Module {
 							coordinate = Baidu.getPoint((String)addr, null);
 						}
 						String[] name=fieldTable.get(j).get("name").toString().split(",");
-						map.put(name[0],coordinate[0]);    //x
-						map.put(name[1],coordinate[1]);	   //y
+						map.put(name[0],coordinate != null ? coordinate[0] : null);    //x
+						map.put(name[1],coordinate != null ? coordinate[1] : null);	   //y
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}

@@ -2,20 +2,21 @@ package engine.module;
 
 import static util.Validator.blank;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import util.Json;
+import com.jfinal.log.Logger;
+
 import engine.ModuleData;
 import engine.Workflow;
-import engine.model.WfRecord;
 
 /*
  * 流程模型
  */
 public abstract class Module implements Runnable {
 
+	protected static final Logger logger = Logger.getLogger(Module.class);
+	
 	protected Workflow workflow;// 工作流
 	protected List<Module> prevModules;// 前一步的流程模型
 	protected List<Module> nextModules;// 后一步的流程模型
@@ -26,6 +27,7 @@ public abstract class Module implements Runnable {
 	protected String name;// 模型名称
 	protected String controller;// 模型界面
 	protected boolean doRecord = false;
+	protected ModuleData records = new ModuleData();
 	protected String recordView;// 模型视图
 	protected List<Map<String, Object>> params;
 
@@ -63,13 +65,14 @@ public abstract class Module implements Runnable {
 	public void run(ModuleData inputs) {
 		outputs = execute(inputs);
 		if (doRecord) {
-			new WfRecord().set("process_id", workflow.getProcessId())
+			records.addAll(inputs.getRows());
+			/*new WfRecord().set("process_id", workflow.getProcessId())
 							.set("instance_id", workflow.getInstanceId())
 							.set("module", name)
 							.set("headers", Json.toString(outputs.getHeaders()))
 							.set("rows", Json.toString(outputs.getRows()))
 							.set("create_date", new Date())
-							.save();
+							.save();*/
 		}
 		for (Module module : nextModules) {
 			module.setInputs(outputs);
@@ -151,6 +154,10 @@ public abstract class Module implements Runnable {
 
 	public void setDoRecord(boolean doRecord) {
 		this.doRecord = doRecord;
+	}
+
+	public ModuleData getRecords() {
+		return records;
 	}
 
 	public String getRecordView() {

@@ -14,7 +14,7 @@ public class EndModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-		System.out.println("stop...");
+		logger.info("工作流程执行完毕：" + name);
 		return inputs;
 	}
 

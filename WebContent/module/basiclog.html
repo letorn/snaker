@@ -12,13 +12,10 @@
 </head>
 <body>
 <table id="module-basiclog-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,footer:'#module-basiclog-table-pager'"></table>
-<div id="module-basiclog-table-pager" class="easyui-pagination"></div>
+<div id="module-basiclog-table-pager" class="easyui-pagination" data-options="pageSize:30,pageList:[30,60,90]"></div>
 <script type="text/javascript">
 	$(function() {
 		$('#module-basiclog-table-pager').pagination({
-			showPageList: false,
-			displayMsg: '',
-			total: 0,
 			onBeforeRefresh: function(page, pageSize) {
 				$(this).data("refresh", true);
 			},
@@ -29,6 +26,7 @@
 					instance: '${instance}',
 					module: '${module}',
 					page: page,
+					rows: pageSize,
 					refresh: refresh
 				}, function(resp) {
 					if (refresh) {
@@ -37,7 +35,8 @@
 							data: resp.rows
 						});
 						$this.pagination('refresh', {
-							total: resp.pageTotal * 10
+							// total: resp.pageTotal * 10
+							total: resp.total
 						})
 						$this.data('refresh', false);
 					} else {

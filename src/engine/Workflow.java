@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class Workflow {
 	private WfInstance instance;// 流程实例
 	private Long instanceId;// 实例主键
 	private String instanceParams;// 实例参数
+	private Date instanceCreateDate;// 实例参数
 
 	private Module beginModule;// 开始模型
 	private List<Module> modules;// 所有模型
@@ -234,6 +236,7 @@ public class Workflow {
 		this.instance = instance;
 		instanceId = instance.getLong("id");
 		instanceParams = instance.getStr("params");
+		instanceCreateDate = instance.getDate("create_date");
 	}
 
 	public WfInstance getInstance() {
@@ -246,6 +249,10 @@ public class Workflow {
 
 	public String getInstanceParams() {
 		return instanceParams;
+	}
+
+	public Date getInstanceCreateDate() {
+		return instanceCreateDate;
 	}
 
 	public void setBeginModule(Module beginModule) {

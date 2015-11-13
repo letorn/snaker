@@ -323,6 +323,14 @@ create table if not exists vi_talk(
 	index vi_talk_source_index(source)
 );
 
+-- 管理员
+-- drop table if exists sk_admin;
+create table if not exists sk_admin(
+	id bigint primary key auto_increment,
+	account varchar(30),
+	password varchar(20)
+);
+
 -- 文件
 -- drop table if exists sk_file;
 create table if not exists sk_file(

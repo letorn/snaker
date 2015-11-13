@@ -38,14 +38,14 @@ public class SnakerEngine {
 			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
 		}
 		
-		List<WfInstance> instances = WfInstance.dao.find("select id,process_id,params from wf_instance");
+		/*List<WfInstance> instances = WfInstance.dao.find("select id,process_id,params from wf_instance");
 		for (WfInstance instance : instances) {
 			Workflow prototype = processWorkflowIdMap.get(instance.getLong("process_id"));
 			Workflow workflow = Workflow.create(prototype.getProcessContent());
 			workflow.setProcess(prototype.getProcess());
 			workflow.setInstance(instance);
 			instanceWorkflowIdMap.put(workflow.getInstanceId(), workflow);
-		}
+		}*/
 	}
 	
 	/**
@@ -57,10 +57,8 @@ public class SnakerEngine {
 	 */
 	public Workflow startProcess(Long processId, String params, boolean daemon) {
 		WfInstance instance = new WfInstance();
-		instance.set("process_id", processId)
-				.set("params", params)
-				.set("create_date", new Date());
-		if (instance.save()) {
+		instance.set("id", new Long(instanceWorkflowIdMap.size())).set("process_id", processId).set("params", params).set("create_date", new Date());
+		if (true || instance.save()) {
 			Workflow prototype = processWorkflowIdMap.get(processId);
 			Workflow workflow = Workflow.create(prototype.getProcessContent());
 			workflow.setProcess(prototype.getProcess());

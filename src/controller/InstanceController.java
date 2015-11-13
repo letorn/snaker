@@ -2,6 +2,8 @@ package controller;
 
 import static util.Validator.notBlank;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +13,10 @@ import service.SnakerService;
 import util.Json;
 
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 
+import engine.ModuleData;
 import engine.Workflow;
-import engine.model.WfRecord;
 import engine.module.Module;
 
 /*
@@ -24,11 +25,13 @@ import engine.module.Module;
 @SuppressWarnings("unchecked")
 public class InstanceController extends Controller {
 
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	/*
 	 * snaker工作流程服务类
 	 */
 	private SnakerService snakerService = enhance(SnakerService.class);
-
+	
 	/*
 	 * 返回到页面的json数据
 	 */
@@ -52,6 +55,8 @@ public class InstanceController extends Controller {
 			row.put("processId", instance.getProcessId());
 			row.put("processName", instance.getProcessName());
 			row.put("instanceId", instance.getInstanceId());
+			row.put("instanceParams", instance.getInstanceParams());
+			row.put("instanceCreateDate", dateFormat.format(instance.getInstanceCreateDate()));
 			dataList.add(row);
 		}
 		dataMap.put("total", pager.getTotalRow());
@@ -106,12 +111,13 @@ public class InstanceController extends Controller {
 		Long instanceId = getParaToLong("instance");
 		String module = getPara("module");
 		Integer page = getParaToInt("page", 1);
+		Integer rows = getParaToInt("rows", 30);
 		Boolean refresh = getParaToBoolean("refresh", true);
 		
 		if (notBlank(instanceId) && notBlank(module)) {
 			if (page <= 0)
 				page = 1;
-			WfRecord record = WfRecord.dao.findFirst("select * from wf_record where instance_id=? and module=? limit ?,1", instanceId, module, page - 1);
+			/*WfRecord record = WfRecord.dao.findFirst("select * from wf_record where instance_id=? and module=? limit ?,1", instanceId, module, page - 1);
 			if (notBlank(record)) {
 				List<Map<String, Object>> rows = Json.parseToList(record.getStr("rows"));
 				for (Map<String, Object> row : rows) {
@@ -130,6 +136,30 @@ public class InstanceController extends Controller {
 					dataMap.put("headers", Json.parseToList(record.getStr("headers")));
 					dataMap.put("pageTotal", Db.queryLong("select count(*) from wf_record where instance_id=? and module=?", instanceId, module));
 				}
+			}*/
+			ModuleData records = snakerService.getRecords(instanceId, module);
+			int fromIndex = (page - 1) * rows;
+			int toIndex = page * rows;
+			if (fromIndex < 0)
+				fromIndex = 0 ;
+			if (toIndex > records.getRows().size())
+				toIndex = records.getRows().size();
+			List<Map<String, Object>> data = records.getRows().subList(fromIndex, toIndex);
+			for (Map<String, Object> d : data) {
+				for (String key : d.keySet()) {
+					Object value = d.get(key);
+					if (notBlank(value) && value instanceof String) {
+						String str = (String) value;
+						if (str.length() > 1000) {
+							d.put(key, str.substring(1000) + "...");
+						}
+					}
+				}
+			}
+			dataMap.put("rows", data);
+			if (refresh) {
+				dataMap.put("headers", records.getHeaders());
+				dataMap.put("total", records.getRows().size());
 			}
 		}
 

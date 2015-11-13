@@ -1,5 +1,6 @@
 package init;
 
+import model.SkAdmin;
 import model.SkFile;
 import model.UtArea;
 import model.UtDate;
@@ -24,6 +25,7 @@ import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 
 import controller.DataEnterpriseController;
+import controller.DataEntpostController;
 import controller.DataFileController;
 import controller.DataJobhunterController;
 import controller.DataTalkController;
@@ -52,7 +54,8 @@ public class AppConfig extends JFinalConfig {
 		PropKit.use("jfinal.properties");
 
 		// 开发模式
-		me.setDevMode(PropKit.getBoolean("devMode"));
+		// me.setDevMode(PropKit.getBoolean("devMode"));
+		me.setDevMode(true);
 		// 文件保存目录
 		me.setUploadedFileSaveDirectory("temp");
 	}
@@ -69,7 +72,8 @@ public class AppConfig extends JFinalConfig {
 	 * 配置拦截器
 	 */
 	public void configInterceptor(Interceptors me) {
-
+		// 拦截器
+		me.addGlobalActionInterceptor(new WebInterceptor());
 	}
 
 	/**
@@ -103,6 +107,7 @@ public class AppConfig extends JFinalConfig {
 		c3p0Arp.addMapping("vi_jobhunter", ViJobhunter.class);
 		c3p0Arp.addMapping("vi_talk", ViTalk.class);
 		// 项目
+		c3p0Arp.addMapping("sk_admin", SkAdmin.class);
 		c3p0Arp.addMapping("sk_file", SkFile.class);
 		// 工具
 		c3p0Arp.addMapping("ut_date", UtDate.class);
@@ -129,6 +134,7 @@ public class AppConfig extends JFinalConfig {
 		// 数据相关
 		me.add("/data/file", DataFileController.class);// 文件
 		me.add("/data/enterprise", DataEnterpriseController.class);// 企业信息
+		me.add("/data/entpost", DataEntpostController.class);// 岗位信息
 		me.add("/data/jobhunter", DataJobhunterController.class);// 求职者信息
 		me.add("/data/talk", DataTalkController.class);// 宣讲会信息
 				

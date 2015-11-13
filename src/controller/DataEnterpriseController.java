@@ -3,6 +3,7 @@ package controller;
 import static util.Validator.blank;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,10 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.UtArea;
 import model.UtIndustry;
 import model.ViEnterprise;
 import service.DataService;
+import test.Area;
 
+import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -35,6 +39,7 @@ public class DataEnterpriseController extends Controller {
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	private List<Object> dataList = new ArrayList<Object>();
+	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**
 	 * 列表
@@ -223,12 +228,24 @@ public class DataEnterpriseController extends Controller {
 		String qq =getPara("qq");
 		String data_src =getPara("data_src");
 		String data_key =getPara("data_key");
-		String update_date =getPara("update_date");
-		String create_date =getPara("create_date");
-	
-		String role =getPara("role");
-		String legalize =getPara("legalize"); 
-		boolean isSuccess=ViEnterprise.dao.findById(id).set("name",name)
+		
+		
+		Date update_date = null;
+		Date create_date = null;
+		try {
+			update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():sdf.parse(getPara("update_date"));
+			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String role =getPara("role").equals("")?"1":getPara("role");
+		String legalize =getPara("legalize").equals("")?"1":getPara("legalize"); 
+		boolean isSuccess=true;
+		if(id!=null && !id.equals("")){
+			isSuccess=ViEnterprise.dao.findById(id).set("name",name)
 				.set("account",account)
 				.set("category",category)
 				.set("category_code",category_code)
@@ -260,7 +277,40 @@ public class DataEnterpriseController extends Controller {
 				.set("create_date",create_date)
 				.set("role",role)
 				.set("legalize",legalize).update();
-		
+		}else{
+			isSuccess=new ViEnterprise().set("name",name)
+					.set("account",account)
+					.set("category",category)
+					.set("category_code",category_code)
+					.set("nature",nature)
+					.set("nature_code",nature_code)
+					.set("scale",scale)
+					.set("scale_code",scale_code)
+					.set("tag",tag)
+					.set("establish",establish)
+					.set("introduction",introduction)
+					.set("area",area)
+					.set("area_code",area_code)
+					.set("address",address)
+					.set("lbs_lon",lbs_lon)
+					.set("lbs_lat",lbs_lat)
+					.set("website",website)
+					.set("orgains",orgains)
+					.set("license",license)
+					.set("contacter",contacter)
+					.set("public_contact",public_contact)
+					.set("phone",phone)
+					.set("fax",fax)
+					.set("mobile",mobile)
+					.set("email",email)
+					.set("qq",qq)
+					.set("data_src",data_src)
+					.set("data_key",data_key)
+					.set("update_date",update_date)
+					.set("create_date",create_date)
+					.set("role",role)
+					.set("legalize",legalize).save();
+		}
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}
@@ -272,5 +322,39 @@ public class DataEnterpriseController extends Controller {
 		boolean isSuccess=ViEnterprise.dao.findById(id).delete();
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
+	}
+	
+	public List<Area> area(){
+		
+		List<UtArea> list =UtArea.dao.find("SELECT * FROM ut_area ");
+		List<Area> areas=new ArrayList<Area>();
+		
+		List<Area> out= new ArrayList<Area>();
+		for(int i=0;i<list.size();i++){
+			Area area=new Area();
+			area.setId(list.get(i).getStr("code"));
+			area.setText(list.get(i).getStr("name"));
+			areas.add(area);
+		}
+		for(int i=0;i<areas.size();i++){
+			List<Area> children =new ArrayList<Area>();
+			for (int j = 0; j < list.size(); j++) {
+				if(areas.get(i).getId().equals(list.get(j).get("parent"))){
+					children.add(areas.get(j));
+				}
+			}
+			areas.get(i).setChildren(children);
+			
+		}
+		for(int i=0;i<areas.size();i++){
+			if(areas.get(i).getId().length()==3){
+				out.add(areas.get(i));
+			}
+		}
+		System.out.println(out);
+		//renderJson(out);
+		dataMap.put("success", out);
+		renderJson(JSON.toJSON(dataMap));
+		return areas;
 	}
 }

@@ -14,7 +14,7 @@ public class BeginModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-		System.out.println("begin...");
+		logger.info("开始执行工作流程：" + name);
 		return inputs;
 	}
 	

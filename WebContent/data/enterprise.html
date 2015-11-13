@@ -14,6 +14,7 @@
 	数据源：<input id="data-enterprise-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text'" style="width:120px" />
 	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'企业名称'" style="width:200px" />
 	<a id="data-enterprise-table-upload" class="easyui-linkbutton">上传</a>
+	<a id="data-enterprise-table-add" class="easyui-linkbutton">新增</a>
 </div>
 <div id="data-enterprise-upload-window" class="easyui-window" data-options="title:'上传',modal:true,closed:true,footer:'#data-enterprise-upload-footer'" style="width:320px;height:400px">
     <ul id="data-enterprise-upload-tree" class="easyui-tree" data-options="checkbox:true,url:'data/enterprise/categories'" style="width:100%;height:100%"></ul>
@@ -22,12 +23,16 @@
 	<a id="data-enterprise-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="data-enterprise-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
-<div id="data-enterprise-update-window" class="easyui-window" style="width:405px;height:375px" data-options="title:'修改',modal:true,closed:true,footer:'#data-enterprise-update-footer'" data-options="iconCls:'icon-save',modal:true;">
- <form id="data-enterprise-update-form" method="post">
- 	<input style="display:none" type="text" id = "id" name="id" value=""></input>
+<div id="data-enterprise-update-window" class="easyui-window " style="" data-options="maximizable:false,resizable:false,title:'修改',modal:true,closed:true,footer:'#data-enterprise-update-footer'" data-options="iconCls:'icon-save',modal:true;">
+ 
+<div class="easyui-panel"  style="width:805px;height:600px;border:none;">
+		<div class="easyui-layout" data-options="fit:true">
+			 <div data-options="region:'west',iconCls:'icon-reload'" style="width:390px;height:600px;border:none;">
+			 	<form id="data-enterprise-update-form" method="post">
+ 			<input style="display:none" type="text" id = "id" name="id" value=""></input>
  	   <table style="margin:10px">
                 <tr>
-                    <td>企业名称:</td>
+                    <td style="width:130px">企业名称:</td>
                     <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input></td>
                 </tr>
                 <tr>
@@ -71,7 +76,7 @@
                   <tr>
                     <td>区域:</td>
                     <td>
-                   <input id="area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
+                   <input id="ent_area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
         data-options="url:'json/area.json',required:true"></input> 
 					
                 </tr>
@@ -91,7 +96,7 @@
                 <tr>
                     <td>地图:</td>
                     <td>
-                    	<div id ="baiduentmap" style="width:250px;height:250px"></div>
+                    	<div id ="entMap" style="width:250px;height:250px"></div>
                     </td>
                 </tr>
                   <tr>
@@ -149,13 +154,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>data_src:</td>
+                    <td>数据源:</td>
                     <td>
                         <input class="easyui-textbox" style="width:250px" type="text" name="data_src" id="data_src" data-options=""></input>
                     </td>
                 </tr>
                 <tr>
-                    <td>data_key:</td>
+                    <td>唯一标识:</td>
                     <td>
                         <input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="data_key" data-options=""></input>
                     </td>
@@ -163,13 +168,16 @@
                 <tr>
                     <td>更新时间:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="update_date" id="update_date" data-options=""></input>
+                    <input class="easyui-datetimebox" name="update_date"     
+        data-options="required:true,showSeconds:false" value="" style="width:150px"/>  
+                        
                     </td>
                 </tr>
                   <tr>
                     <td>创建时间:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="create_date" id="create_date" data-options=""></input>
+                     <input class="easyui-datetimebox" name="create_date"     
+        data-options="required:true,showSeconds:false" value="" style="width:150px"/> 
                     </td>
                 </tr>
                    <tr>
@@ -187,8 +195,124 @@
                 
             </table>
 </form>
-
-</div>
+			 </div>   
+    		<div data-options="region:'center',width:'390px'" class="easyui-layout" style="height:600px;width:390px;border:none;">
+    		
+	    		<div data-options="region:'north',iconCls:'icon-reload',width:'390px'" style="height:150px;width:390px;border:none;">
+	    			<table class="easyui-datagrid" id ="data-post-table">   
+					    <thead >   
+					        <tr>   
+					            <th data-options="field:'name'"  style="width:100px">岗位名称</th>   
+					            <th data-options="field:'address'"  style="width:180px">工作地点</th>   
+					            <th data-options="field:'headcount'"  style="width:40px">人数</th>
+					            <th data-options="field:'nature'"  style="width:40px">性质</th>   
+					            <th data-options="field:'education'"  style="width:40px">学历</th>   
+					        </tr>   
+					    </thead>   
+					</table>  
+	    		</div>   
+	    		<div data-options="region:'center'" style="width:390px;border:none;">
+	    			<form id="data-post-form" method="post">   
+	    			<input class="" style="width:250px;display:none;" type="text"  name="id" ></input>
+					     <table style="margin:10px">
+                <tr>
+                    <td style="width:130px">岗位名称:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>岗位类别:</td>
+                    <td><input id="post_category_code" name="category_code" class="easyui-combotree" style="width:200px;"   
+        data-options="url:'json/category.json',required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>求职类型:</td>
+                   <td><input class="" style="width:250px;display:none;" type="text" id='post_nature' name="nature" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="nature_code" id="post_nature_code" data-options="valueField:'value',textField:'text',url:'json/post_nature.json',
+                    onHidePanel:function(){$('#post_nature').val( $('#post_nature_code').textbox('getText'));}" /> </td>
+                </tr>
+               
+                 <tr>
+                    <td>招聘人数:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="headcount" id="post_headcount" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>年龄段:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="age" id="post_age" data-options=""></input></td>
+                </tr>
+                
+                <tr>
+                    <td>性别:</td>
+                    <td><input class="easyui-combobox" style="" type="text" name="gender" id="post_gender" data-options="data:[{'id':'1','text':'男'},{'id':'0','text':'女'},{'id':'-1','text':'不限'}]"></input></td>
+                </tr>
+                <tr>
+                    <td>薪资:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="salary" id="post_salary" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>工作经验:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='post_experience' name="experience_code" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="experience_code" id="post_experience_code" data-options="valueField:'value',textField:'text',url:'json/experience.json',
+                    onHidePanel:function(){$('#post_experience').val( $('#post_experience_code').textbox('getText'));}" /> </td>
+                </tr>
+                <tr>
+                    <td>最低学历:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='post_education' name="education_code" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="education_code" id="post_education_code" data-options="valueField:'value',textField:'text',url:'json/education.json',
+                    onHidePanel:function(){$('#post_education').val( $('#post_education_code').textbox('getText'));}" /> </td>
+                </tr>
+                 <tr>
+                    <td>标签:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="tag" id="post_tag" data-options="required:true"></input></td>
+                </tr>
+                 <tr>
+                    <td>岗位介绍:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="introduction" id="post_introduction" data-options="required:true"></input></td>
+                </tr>
+                 <tr>
+                    <td>区域:</td>
+                    <td><input id="post_area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
+        data-options="url:'json/area.json',required:true"></input> </td>
+                </tr>
+                 <tr>
+                    <td>工作地点:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="address" id="post_address" data-options="required:true"></input></td>
+                </tr>
+                 <tr>
+                    <td>坐标:</td>
+                    <td><input style="width:122px;" class="easyui-textbox" type="text" id = "post_lbs_lon" name="lbs_lon" value=""data-options="readonly:true"></input>
+                    	<input style="width:122px;" class="easyui-textbox"  type="text" id = "post_lbs_lat" name="lbs_lat" value="" data-options="readonly:true"></input></td>
+                </tr>
+                 <tr>
+                    <td>地图:</td>
+                    <td><div id ="postMap" style="width:250px;height:250px"></div></td>
+                </tr>
+                 <tr>
+                    <td>数据源:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_src" id="post_data_src" data-options="required:true"></input></td>
+                </tr>
+                 <tr>
+                    <td>唯一标识:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="post_data_key" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>企业唯一标识:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_ent_key" id="post_data_ent_key" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td>更新时间:</td>
+                    <td><input class="easyui-datetimebox" name="update_date"     
+        data-options="required:true,showSeconds:false" value="" style="width:150px"/> </td>
+                </tr>
+                <tr>
+                    <td>创建时间:</td>
+                    <td><input class="easyui-datetimebox" name="create_date"     
+        data-options="required:true,showSeconds:false" value="" style="width:150px"/> </td>
+                </tr>
+                </table>
+					</form>  
+	    		</div>
+		</div>
+	</div>
 
 <div id="data-enterprise-update-footer" style="padding:5px;">
 	<a id="data-enterprise-update-confirm" class="easyui-linkbutton" onclick="submitFrom()"  style="width:80px">确定</a>
@@ -196,10 +320,11 @@
 	<a id="data-enterprise-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px;float:right;">查看岗位</a>
 </div>
 
-
+</div>
+</div>
 <script type="text/javascript">
 	function dataEnterpriseTableActionFormatter(value, row) {
-		return '<a class="data-enterprise-table-look" onclick="openFromWindow('+row.id+')" data-enterprise="'  + row.id + '" style="cursor:pointer;color:blue">查看</a>'+
+		return '<a class="data-enterprise-table-look" onclick="openFromWindow('+row.id+',\''+row.data_key+'\')" data-enterprise="'  + row.id + '" style="cursor:pointer;color:blue">查看</a>'+
 		' <a class="data-talk-enterprise-delete" onclick="deleteData('+ row.id +')"  data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
 	}
 
@@ -207,10 +332,29 @@
 		var $dataEnterpriseTable = $('#data-enterprise-table'), $dataEnterpriseTableSource = $('#data-enterprise-table-source'), $dataEnterpriseTableSearch = $('#data-enterprise-table-search');
 		var $dataEnterpriseUploadWindow = $('#data-enterprise-upload-window'), $dataEnterpriseUploadTree = $('#data-enterprise-upload-tree');
 		var $dataEnterpriseUpdateWindow=$('#data-enterprise-update-window');
-		var $address=$('#ent_address');
+		var $entaddress=$('#ent_address');
+		var $postaddress=$('#post_address');
+		var $dataPostTable=$('#data-post-table');
+		
+		$entaddress.textbox({
+			onChange: function(addr){
+				BaiduMap("entMap", addr)
+			}
+		});
+		$postaddress.textbox({
+			onChange: function(addr){
+				BaiduMap("postMap", addr)
+			}
+		});
 		
 		$('#data-enterprise-table-upload').click(function() {
 			$dataEnterpriseUploadWindow.window('open');
+		});
+		$('#data-enterprise-table-add').click(function() {
+			$dataEnterpriseUpdateWindow.window({title:"新增"});
+			$('#data-enterprise-update-form').form("clear");
+			$dataEnterpriseUpdateWindow.window("open");
+			
 		});
 		
 		$dataEnterpriseTableSource.combobox({
@@ -222,12 +366,7 @@
 				});
 			}
 		});
-		$address.textbox({
-			onSelect: function(addr){
-				alert(addr)
-				baiduMap(addr)
-			}
-		});
+	
 		$dataEnterpriseTableSearch.searchbox({
 			searcher: function(value) {
 				$dataEnterpriseTable.datagrid('load', {
@@ -236,17 +375,66 @@
 				});
 			}
 		});
-
-
+		//不能选择子节点
+		$('#ent_area_code').combotree({
+			onBeforeSelect: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					return false;
+				}
+			},
+			onClick: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					$('#ent_area_code').combo('showPanel');
+				}
+			}
+		});
+		//不能选择子节点
+		$('#post_area_code').combotree({
+			onBeforeSelect: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					return false;
+				}
+			},
+			onClick: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					$('#post_area_code').combo('showPanel');
+				}
+			}
+		});
+		
+		//不能选择子节点
+		$('#post_category_code').combotree({
+			onBeforeSelect: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					return false;
+				}
+			},
+			onClick: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					$('#post_category_code').combo('showPanel');
+				}
+			}
+		});
+		
 		$dataEnterpriseTable.datagrid({
 			url:'data/enterprise',
 			method:'get',
 			onLoadSuccess: function() {
 				$('.data-enterprise-table-look').click(function() {
 					console.log('look...');
-				});
+				})
 			}
 		});
+		$dataPostTable.datagrid ({
+			striped:true,
+			singleSelect:true,
+			onClickRow:function(rowIndex,rowData){
+				$('#data-post-form').form("clear");
+				$('#data-post-form').form('load','data/entpost/getEntpost?id='+rowData.id);
+				console.log($('#post_address').textbox('getValue'))
+				BaiduMap("postMap","");
+			}
+		})
 		
 		$('#data-enterprise-upload-confirm').click(function() {
 			var rows = $dataEnterpriseTable.datagrid('getChecked'), ids = [];
@@ -281,23 +469,50 @@
 		
 		
 	});
-	function openFromWindow(id){
+	//点击修改
+	function openFromWindow(id,data_key){
+		$('#data-enterprise-update-window').window({title:"修改"});
 		$('#data-enterprise-update-window').window("open");
+		$('#data-enterprise-update-form').form("clear");
+		$('#data-post-form').form("clear");
 		$('#data-enterprise-update-form').form('load','data/enterprise/getEnt?id='+id);
-		// 百度地图API功能
-		baiduMap("");
+		$('#data-post-table').datagrid({
+			url:'data/entpost/list?data_key='+data_key,
+			method:'get'
+		})
 	}
-	function baiduMap(addr)
+	
+	function BaiduMap(id,addr)
 	{
 		if (addr=="") addr="北京";
-		var map = new BMap.Map("baiduentmap");  
+		var map = new BMap.Map(id);  
 		map.centerAndZoom(addr,12);    
 		map.setDefaultCursor("crosshair");
+		var $lat=null;
+		var $lon=null;
+		var $address=null;
+		if(id=="entMap"){
+			$lat=$('#ent_lbs_lat');
+			$lon=$('#ent_lbs_lon');
+			$address=$('#ent_address');
+		}else{
+			$lat=$('#post_lbs_lat');
+			$lon=$('#post_lbs_lon');
+			$address=$('#post_address');
+		}
 		
+		map.clearOverlays();  
+        var new_point = new BMap.Point($lon.textbox('getValue'),$lat.textbox('getValue'));
+        // 创建标注  
+        var marker = new BMap.Marker(new_point);  
+        // 将标注添加到地图中  
+        map.addOverlay(marker);  
+        map.panTo(new_point);  
+        
 		//单击获取点击的经纬度
 		map.addEventListener("click",function(e){
-			$('#ent_lbs_lat').textbox("setValue",e.point.lat);
-			$('#ent_lbs_lon').textbox("setValue",e.point.lng);
+			$lat.textbox("setValue",e.point.lat);
+			$lon.textbox("setValue",e.point.lng);
 	        map.clearOverlays();  
 	        var new_point = new BMap.Point(e.point.lng,e.point.lat);
 	        // 创建标注  
@@ -310,14 +525,16 @@
 			geoc.getLocation(pt, function(rs){
 				var addComp = rs.addressComponents;
 				//alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
-				$('#ent_address').textbox("setValue",addComp.province+addComp.city+addComp.district+addComp.street+addComp.streetNumber);
+				$address.textbox("setValue",addComp.province+addComp.city+addComp.district+addComp.street+addComp.streetNumber);
 			});        
 	        
 		});
 	}
 	
+	//提交表单
 	function submitFrom(){
 		var $dataEnterpriseUpdateWindow = $('#data-enterprise-upload-window');
+		//ent
 		$('#data-enterprise-update-form').form('submit', {
 			url: 'data/enterprise/saveEnt',
 			onSubmit: function(){
@@ -329,8 +546,25 @@
 			},
 			success: function(){
 				$('#data-enterprise-table').datagrid('reload'); 
-				$('#data-enterprise-update-window').window('close');
-				$.messager.show({title: '提示', msg: '修改成功！', timeout: 1000, showType: 'slide'});
+				//$('#data-enterprise-update-window').window('close');
+				$.messager.show({title: '提示', msg: '执行成功！', timeout: 1000, showType: 'slide'});
+			}
+		});
+		
+		//post
+		$('#data-post-form').form('submit', {
+			url: 'data/entpost/saveEntpost',
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');
+				}
+				return isValid;
+			},
+			success: function(){
+				$('#data-post-table').datagrid('reload'); 
+				//$('#data-enterprise-update-window').window('close');
+				$.messager.show({title: '提示', msg: '执行成功！', timeout: 1000, showType: 'slide'});
 			}
 		});
 		

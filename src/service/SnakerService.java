@@ -10,8 +10,10 @@ import util.File;
 
 import com.jfinal.plugin.activerecord.Page;
 
+import engine.ModuleData;
 import engine.SnakerEngine;
 import engine.Workflow;
+import engine.module.Module;
 
 /*
  * 服务类 - 工作流程相关
@@ -102,6 +104,14 @@ public class SnakerService {
 	 */
 	public Workflow getInstance(Long instanceId) {
 		return engine.getInstance(instanceId);
+	}
+	
+	public ModuleData getRecords(Long instanceId, String moduleName) {
+		Workflow workflow = engine.getInstance(instanceId);
+		for (Module module : workflow.getModules())
+			if (module.getName().equals(moduleName))
+				return module.getRecords();
+		return null;
 	}
 	
 	/**
