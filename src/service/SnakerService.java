@@ -23,8 +23,8 @@ public class SnakerService {
 	private SnakerEngine engine = enhance(SnakerEngine.class);;
 	
 	/**
-	 * 工作流程初始化
-	 * @return 初始化是否成功
+	 * 添加指定工作流程
+	 * @return 添加是否成功
 	 */
 	public boolean initFlows() {
 		try {
@@ -34,6 +34,15 @@ public class SnakerService {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	/**
+	 * 工作流程初始化
+	 * @return 初始化是否成功
+	 */
+	@SuppressWarnings("static-access")
+	public boolean initProcesses() {
+		return engine.initProcesses();
 	}
 	
 	/**
@@ -50,16 +59,21 @@ public class SnakerService {
 	 * @param name 流程名称
 	 * @return 工作流程列表
 	 */
-	public List<Workflow> findProcess(String name) {
-		List<Workflow> processes = engine.findProcess();
-		if (blank(name))
-			return processes;
+	public Page<Workflow> findProcess(int page, int limit, String name) {
+		List<Workflow> processes = engine.getProcesses();
 		List<Workflow> list = new ArrayList<Workflow>();
-		for (Workflow process : processes) {
-			if (process.getProcessName().contains(name))
-				list.add(process);
+		if (blank(name)) {
+			list = processes;
+		} else {
+			for (Workflow process : processes)
+				if (process.getProcessName().contains(name))
+					list.add(process);
 		}
-		return list;
+		int total = list.size();
+		int fromIndex = (page - 1) * limit;
+		int toIndex = fromIndex + limit;
+		if (toIndex > total) toIndex = total;
+		return new Page<Workflow>(list.subList(fromIndex, toIndex), page, limit, total % limit == 0 ? total / limit : total / limit + 1, total);
 	}
 	
 	/**
@@ -122,7 +136,7 @@ public class SnakerService {
 	 * @return 工作流实例列表
 	 */
 	public Page<Workflow> findInstance(int page, int limit, String name) {
-		List<Workflow> instances = engine.findInstance();
+		List<Workflow> instances = engine.getInstances();
 		List<Workflow> list = new ArrayList<Workflow>();
 		if (blank(name)) {
 			list = instances;
@@ -134,8 +148,7 @@ public class SnakerService {
 		int total = list.size();
 		int fromIndex = (page - 1) * limit;
 		int toIndex = fromIndex + limit;
-		if (toIndex > total)
-			toIndex = total;
+		if (toIndex > total) toIndex = total;
 		return new Page<Workflow>(list.subList(fromIndex, toIndex), page, limit, total % limit == 0 ? total / limit : total / limit + 1, total);
 	}
 	

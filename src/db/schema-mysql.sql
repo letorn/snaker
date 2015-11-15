@@ -10,24 +10,24 @@ create table if not exists wf_process(
 
 -- 流程实例
 -- drop table if exists wf_instance;
-create table if not exists wf_instance(
-	id bigint primary key auto_increment,
-	process_id bigint,
-	params text,
-	create_date datetime
-);
+-- create table if not exists wf_instance(
+-- 	id bigint primary key auto_increment,
+-- 	process_id bigint,
+-- 	params text,
+-- 	create_date datetime
+-- );
 
 -- 实例记录
 -- drop table if exists wf_record;
-create table if not exists wf_record(
-	id bigint primary key auto_increment,
-	process_id bigint,
-	instance_id bigint,
-	module varchar(50),
-	headers text,
-	rows mediumtext,
-	create_date datetime
-);
+-- create table if not exists wf_record(
+-- 	id bigint primary key auto_increment,
+-- 	process_id bigint,
+-- 	instance_id bigint,
+-- 	module varchar(50),
+-- 	headers text,
+-- 	rows mediumtext,
+-- 	create_date datetime
+-- );
 
 -- 企业信息
 -- drop table if exists db_enterprise;

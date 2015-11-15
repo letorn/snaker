@@ -22,7 +22,6 @@ import engine.module.Module;
 /*
  * 控制类 - 流程实例相关
  */
-@SuppressWarnings("unchecked")
 public class InstanceController extends Controller {
 
 	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -48,16 +47,18 @@ public class InstanceController extends Controller {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
 		String name = getPara("name", "");
-		
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
+
 		Page<Workflow> pager = snakerService.findInstance(page, rows, name);
 		for (Workflow instance : pager.getList()) {
-			Map<String, Object> row = new HashMap<String, Object>();
-			row.put("processId", instance.getProcessId());
-			row.put("processName", instance.getProcessName());
-			row.put("instanceId", instance.getInstanceId());
-			row.put("instanceParams", instance.getInstanceParams());
-			row.put("instanceCreateDate", dateFormat.format(instance.getInstanceCreateDate()));
-			dataList.add(row);
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("processId", instance.getProcessId());
+			data.put("processName", instance.getProcessName());
+			data.put("instanceId", instance.getInstanceId());
+			data.put("instanceParams", instance.getInstanceParams());
+			data.put("instanceCreateDate", dateFormat.format(instance.getInstanceCreateDate()));
+			dataList.add(data);
 		}
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", dataList);
@@ -73,28 +74,30 @@ public class InstanceController extends Controller {
 
 		if (notBlank(instanceId)) {
 			Workflow instance = snakerService.getInstance(instanceId);
-			setAttr("process", instance.getProcessId());
-			setAttr("processName", instance.getProcessName());
-			setAttr("instance", instance.getInstanceId());
-			setAttr("instanceParams", instance.getInstanceParams());
-			List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
-			for (Module module : instance.getModules()) {
-				if (notBlank(module.getController())) {
-					Map<String, Object> view = new HashMap<String, Object>();
-					view.put("mtype", module.getMtype());
-					view.put("name", module.getName());
-					view.put("form", module.getController());
-					views.add(view);
+			if (notBlank(instance)) {
+				setAttr("process", instance.getProcessId());
+				setAttr("processName", instance.getProcessName());
+				setAttr("instance", instance.getInstanceId());
+				setAttr("instanceParams", instance.getInstanceParams());
+				List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
+				for (Module module : instance.getModules()) {
+					if (notBlank(module.getController())) {
+						Map<String, Object> view = new HashMap<String, Object>();
+						view.put("mtype", module.getMtype());
+						view.put("name", module.getName());
+						view.put("form", module.getController());
+						views.add(view);
+					}
+					if (module.isDoRecord() && notBlank(module.getRecordView())) {
+						Map<String, Object> view = new HashMap<String, Object>();
+						view.put("mtype", module.getMtype());
+						view.put("name", module.getName());
+						view.put("form", module.getRecordView());
+						views.add(view);
+					}
 				}
-				if (module.isDoRecord() && notBlank(module.getRecordView())) {
-					Map<String, Object> view = new HashMap<String, Object>();
-					view.put("mtype", module.getMtype());
-					view.put("name", module.getName());
-					view.put("form", module.getRecordView());
-					views.add(view);
-				}
+				setAttr("views", Json.toString(views));
 			}
-			setAttr("views", Json.toString(views));
 		}
 
 		render("/instance/all.html");
@@ -113,53 +116,32 @@ public class InstanceController extends Controller {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
 		Boolean refresh = getParaToBoolean("refresh", true);
-		
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
+
 		if (notBlank(instanceId) && notBlank(module)) {
-			if (page <= 0)
-				page = 1;
-			/*WfRecord record = WfRecord.dao.findFirst("select * from wf_record where instance_id=? and module=? limit ?,1", instanceId, module, page - 1);
-			if (notBlank(record)) {
-				List<Map<String, Object>> rows = Json.parseToList(record.getStr("rows"));
-				for (Map<String, Object> row : rows) {
-					for (String key : row.keySet()) {
-						Object value = row.get(key);
+			ModuleData records = snakerService.getRecords(instanceId, module);
+			if (notBlank(records)) {
+				int fromIndex = (page - 1) * rows;
+				int toIndex = fromIndex + rows;
+				if (toIndex > records.getRows().size()) toIndex = records.getRows().size();
+
+				List<Map<String, Object>> data = records.getRows().subList(fromIndex, toIndex);
+				for (Map<String, Object> d : data) {
+					for (String key : d.keySet()) {
+						Object value = d.get(key);
 						if (notBlank(value) && value instanceof String) {
 							String str = (String) value;
-							if (str.length() > 1000) {
-								row.put(key, str.substring(1000) + "...");
-							}
+							if (str.length() > 1000)
+								d.put(key, str.substring(1000) + "...");
 						}
 					}
 				}
-				dataMap.put("rows", Json.parseToList(record.getStr("rows")));
+				dataMap.put("rows", data);
 				if (refresh) {
-					dataMap.put("headers", Json.parseToList(record.getStr("headers")));
-					dataMap.put("pageTotal", Db.queryLong("select count(*) from wf_record where instance_id=? and module=?", instanceId, module));
+					dataMap.put("headers", records.getHeaders());
+					dataMap.put("total", records.getRows().size());
 				}
-			}*/
-			ModuleData records = snakerService.getRecords(instanceId, module);
-			int fromIndex = (page - 1) * rows;
-			int toIndex = page * rows;
-			if (fromIndex < 0)
-				fromIndex = 0 ;
-			if (toIndex > records.getRows().size())
-				toIndex = records.getRows().size();
-			List<Map<String, Object>> data = records.getRows().subList(fromIndex, toIndex);
-			for (Map<String, Object> d : data) {
-				for (String key : d.keySet()) {
-					Object value = d.get(key);
-					if (notBlank(value) && value instanceof String) {
-						String str = (String) value;
-						if (str.length() > 1000) {
-							d.put(key, str.substring(1000) + "...");
-						}
-					}
-				}
-			}
-			dataMap.put("rows", data);
-			if (refresh) {
-				dataMap.put("headers", records.getHeaders());
-				dataMap.put("total", records.getRows().size());
 			}
 		}
 

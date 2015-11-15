@@ -13,12 +13,15 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import service.SnakerService;
+
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.upload.UploadFile;
 
 import engine.Workflow;
 import engine.module.Module;
-import service.SnakerService;
 
 /*
  * 控制类 - 工作流程相关
@@ -43,25 +46,42 @@ public class ProcessController extends Controller{
 	 * name 流程名称
 	 */
 	public void index() {
-		String name = getPara("name");
+		Integer page = getParaToInt("page", 1);
+		Integer rows = getParaToInt("rows", 30);
+		String name = getPara("name", "");
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
 
-		for (Workflow workflow : snakerService.findProcess(name)) {
-			Map<String, Object> m = new HashMap<String, Object>();
-			m.put("id", workflow.getProcessId());
-			m.put("name", workflow.getProcessName());
-			m.put("content", workflow.getProcessContent());
-			dataList.add(m);
+		Page<Workflow> pager = snakerService.findProcess(page, rows, name);
+		for (Workflow workflow : pager.getList()) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("id", workflow.getProcessId());
+			data.put("name", workflow.getProcessName());
+			data.put("content", workflow.getProcessContent());
+			data.put("update_date", workflow.getProcessUpdateDate());
+			dataList.add(data);
 		}
 		
-		renderJson(dataList);
+		dataMap.put("total", pager.getTotalRow());
+		dataMap.put("rows", dataList);
+		renderJson(dataMap);
 	}
 	
 	/**
 	 * 导入默认的工作流程
 	 * 目录：/src/flows
 	 */
-	public void init() {
+	public void install() {
 		dataMap.put("success", snakerService.initFlows());
+
+		renderJson(dataMap);
+	}
+	
+	/**
+	 * 工作流程初始化
+	 */
+	public void init() {
+		dataMap.put("success", snakerService.initProcesses());
 
 		renderJson(dataMap);
 	}
@@ -140,6 +160,7 @@ public class ProcessController extends Controller{
 	 * daemon 后台运行
 	 * params 实例参数
 	 */
+	@Clear
 	public void start() {
 		Long processId = getParaToLong();
 		Boolean daemon = getParaToBoolean("daemon", true);

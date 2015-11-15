@@ -41,7 +41,9 @@ public class DataFileController extends Controller {
 		Integer rows = getParaToInt("rows", 30);
 		String name = getPara("name", "");
 		String ftype = getPara("ftype", "");
-		
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
+
 		Page<SkFile> pager = SkFile.dao.paginate(page, rows, "select id,name,suffix,ftype,update_date", "from sk_file where name like ? and ftype like ?", "%" + name + "%", "%" + ftype + "%");
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());

@@ -63,7 +63,7 @@
 		<thead>
 			<tr>
 				<th data-options="field:'name',width:100,editor:{type:'textbox'}">名称</th>
-				<th data-options="field:'type',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'字符串',value:'string'},{name:'整形',value:'integer'},{name:'长整形',value:'long'},{name:'小数',value:'double'},{name:'日期',value:'date'}]}}">类型</th>
+				<th data-options="field:'type',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'字符串',value:'string'},{name:'整形',value:'integer'},{name:'长整形',value:'long'},{name:'小数',value:'double'},{name:'年月日',value:'date'},{name:'年月日时分秒',value:'time'}]}}">类型</th>
 				<th data-options="field:'format',width:100,editor:{type:'textbox'}">格式</th>
 			</tr>
 		</thead>
@@ -289,7 +289,7 @@
 				}
 				return false;
 			},
-			_editor: {string: 'textbox', integer: 'numberspinner', long: 'numberspinner', double: 'numberspinner', date: 'datetimebox'},
+			_editor: {string: 'textbox', integer: 'numberspinner', long: 'numberspinner', double: 'numberspinner', date: 'datebox', time: 'datetimebox'},
 			init: function(index, row) {
 				var _this = editor.dataRows;
 				var headers = Designer.PropBox.current.data('dataHeaders');

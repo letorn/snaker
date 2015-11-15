@@ -17,7 +17,6 @@ import net.sf.json.JSONNull;
 import org.apache.commons.lang.ArrayUtils;
 
 import util.Json;
-import engine.model.WfInstance;
 import engine.model.WfProcess;
 import engine.module.BeginModule;
 import engine.module.Module;
@@ -34,11 +33,11 @@ public class Workflow {
 	private Long processId;// 流程主键
 	private String processName;// 流程名称
 	private String processContent;// 流程内容
+	private Date processUpdateDate;// 流程更新时间
 
-	private WfInstance instance;// 流程实例
 	private Long instanceId;// 实例主键
 	private String instanceParams;// 实例参数
-	private Date instanceCreateDate;// 实例参数
+	private Date instanceCreateDate;// 实例创建时间
 
 	private Module beginModule;// 开始模型
 	private List<Module> modules;// 所有模型
@@ -214,6 +213,7 @@ public class Workflow {
 		processId = process.getLong("id");
 		processName = process.getStr("name");
 		processContent = process.getStr("content");
+		processUpdateDate = process.getDate("update_date");
 	}
 
 	public WfProcess getProcess() {
@@ -232,27 +232,32 @@ public class Workflow {
 		return processContent;
 	}
 
-	public void setInstance(WfInstance instance) {
-		this.instance = instance;
-		instanceId = instance.getLong("id");
-		instanceParams = instance.getStr("params");
-		instanceCreateDate = instance.getDate("create_date");
+	public Date getProcessUpdateDate() {
+		return processUpdateDate;
 	}
 
-	public WfInstance getInstance() {
-		return instance;
-	}
-	
 	public Long getInstanceId() {
 		return instanceId;
+	}
+
+	public void setInstanceId(Long instanceId) {
+		this.instanceId = instanceId;
 	}
 
 	public String getInstanceParams() {
 		return instanceParams;
 	}
 
+	public void setInstanceParams(String instanceParams) {
+		this.instanceParams = instanceParams;
+	}
+
 	public Date getInstanceCreateDate() {
 		return instanceCreateDate;
+	}
+
+	public void setInstanceCreateDate(Date instanceCreateDate) {
+		this.instanceCreateDate = instanceCreateDate;
 	}
 
 	public void setBeginModule(Module beginModule) {

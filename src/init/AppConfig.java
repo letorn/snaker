@@ -37,9 +37,7 @@ import engine.model.DbEnterprise;
 import engine.model.DbEntpost;
 import engine.model.DbJobhunter;
 import engine.model.DbTalk;
-import engine.model.WfInstance;
 import engine.model.WfProcess;
-import engine.model.WfRecord;
 
 /*
  * jfinal配置类
@@ -94,8 +92,6 @@ public class AppConfig extends JFinalConfig {
 		ActiveRecordPlugin c3p0Arp = new ActiveRecordPlugin(c3p0Plugin);
 		// 工作流
 		c3p0Arp.addMapping("wf_process", WfProcess.class);
-		c3p0Arp.addMapping("wf_instance", WfInstance.class);
-		c3p0Arp.addMapping("wf_record", WfRecord.class);
 		// 自动采集
 		c3p0Arp.addMapping("db_enterprise", DbEnterprise.class);
 		c3p0Arp.addMapping("db_entpost", DbEntpost.class);

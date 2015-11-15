@@ -50,6 +50,9 @@ public class DataEntpostController extends Controller {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
 		String data_key = getPara("data_key");
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
+		
 		//String name = getPara("name", "");
 				Page<ViEntpost> pager =ViEntpost.dao.paginate(page, rows, "select id,name,headcount,nature,address,education", "from vi_entpost where data_ent_key ='"+data_key+"'") ; 
 									

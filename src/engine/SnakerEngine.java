@@ -13,10 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.json.JSONObject;
-
-import com.jfinal.plugin.activerecord.Db;
-
-import engine.model.WfInstance;
 import engine.model.WfProcess;
 
 /*
@@ -28,24 +24,23 @@ public class SnakerEngine {
 	private static Map<Long, Workflow> instanceWorkflowIdMap = new HashMap<Long, Workflow>();
 	
 	static {
-		/*
-		 * 加载已经存在的流程实例
-		 */
-		List<WfProcess> processes = WfProcess.dao.find("select id,name,content from wf_process");
+		initProcesses();
+	}
+	
+	/**
+	 * 加载已经存在的工作流程
+	 * @return 是否加载成功
+	 */
+	public static boolean initProcesses() {
+		List<WfProcess> processes = WfProcess.dao.find("select id,name,content,update_date from wf_process");
 		for (WfProcess process : processes) {
 			Workflow workflow = Workflow.create(process.getStr("content"));
-			workflow.setProcess(process);
-			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
+			if (notBlank(workflow)) {
+				workflow.setProcess(process);
+				processWorkflowIdMap.put(workflow.getProcessId(), workflow);
+			}
 		}
-		
-		/*List<WfInstance> instances = WfInstance.dao.find("select id,process_id,params from wf_instance");
-		for (WfInstance instance : instances) {
-			Workflow prototype = processWorkflowIdMap.get(instance.getLong("process_id"));
-			Workflow workflow = Workflow.create(prototype.getProcessContent());
-			workflow.setProcess(prototype.getProcess());
-			workflow.setInstance(instance);
-			instanceWorkflowIdMap.put(workflow.getInstanceId(), workflow);
-		}*/
+		return true;
 	}
 	
 	/**
@@ -56,13 +51,13 @@ public class SnakerEngine {
 	 * @return 流程实例
 	 */
 	public Workflow startProcess(Long processId, String params, boolean daemon) {
-		WfInstance instance = new WfInstance();
-		instance.set("id", new Long(instanceWorkflowIdMap.size())).set("process_id", processId).set("params", params).set("create_date", new Date());
-		if (true || instance.save()) {
-			Workflow prototype = processWorkflowIdMap.get(processId);
+		Workflow prototype = processWorkflowIdMap.get(processId);
+		if (notBlank(prototype)) {
 			Workflow workflow = Workflow.create(prototype.getProcessContent());
 			workflow.setProcess(prototype.getProcess());
-			workflow.setInstance(instance);
+			workflow.setInstanceId(System.currentTimeMillis());
+			workflow.setInstanceParams(params);
+			workflow.setInstanceCreateDate(new Date());
 			workflow.setDaemon(daemon);
 			if (workflow.start(params)) {
 				instanceWorkflowIdMap.put(workflow.getInstanceId(), workflow);
@@ -72,8 +67,13 @@ public class SnakerEngine {
 		return null;
 	}
 	
-	public boolean stopProcess(Long processId) {
-		Workflow workflow = instanceWorkflowIdMap.get(processId);
+	/**
+	 * 停止工作流程
+	 * @param instanceId 实例主键
+	 * @return 停止是否成功
+	 */
+	public boolean stopProcess(Long instanceId) {
+		Workflow workflow = instanceWorkflowIdMap.get(instanceId);
 		if (notBlank(workflow))
 			return workflow.stop();
 		return false;
@@ -87,11 +87,12 @@ public class SnakerEngine {
 	public Workflow addProcess(String content) {
 		Workflow workflow = Workflow.create(content);
 		String name = JSONObject.fromObject(content).getString("name");
-		WfProcess process = new WfProcess();
-		process.set("name", name)
-				.set("content", content)
-				.set("update_date", new Date())
-				.set("create_date", new Date());
+		Date current = new Date();
+		WfProcess process = new WfProcess()
+							.set("name", name)
+							.set("content", content)
+							.set("update_date", current)
+							.set("create_date", current);
 		if (notBlank(workflow) && process.save()) {
 			workflow.setProcess(process);
 			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
@@ -109,11 +110,11 @@ public class SnakerEngine {
 	public Workflow updateProcess(Long processId, String content) {
 		Workflow workflow = Workflow.create(content);
 		String name = JSONObject.fromObject(content).getString("name");
-		WfProcess process = new WfProcess();
-		process.set("id", processId)
-				.set("name", name)
-				.set("content", content)
-				.set("update_date", new Date());
+		WfProcess process = new WfProcess()
+							.set("id", processId)
+							.set("name", name)
+							.set("content", content)
+							.set("update_date", new Date());
 		if(notBlank(workflow) && process.update()) {
 			workflow.setProcess(process);
 			processWorkflowIdMap.put(workflow.getProcessId(), workflow);
@@ -129,8 +130,6 @@ public class SnakerEngine {
 	 */
 	public boolean deleteProcess(Long processId) {
 		if (WfProcess.dao.deleteById(processId)) {
-			Db.deleteById("wf_instance", "process_id", processId);
-			Db.deleteById("wf_record", "process_id", processId);
 			processWorkflowIdMap.remove(processId);
 			Iterator<Entry<Long, Workflow>> iterator = instanceWorkflowIdMap.entrySet().iterator(); 
 			while (iterator.hasNext())
@@ -151,10 +150,10 @@ public class SnakerEngine {
 	}
 	
 	/**
-	 * 查询工作流程
+	 * 获取所有工作流程
 	 * @return 工作流程列表
 	 */
-	public List<Workflow> findProcess() {
+	public List<Workflow> getProcesses() {
 		List<Workflow> list = new ArrayList<Workflow>(processWorkflowIdMap.values());
 		Collections.sort(list, new Comparator<Workflow>() {
 			public int compare(Workflow wf1, Workflow wf2) {
@@ -172,12 +171,12 @@ public class SnakerEngine {
 	public Workflow getInstance(Long instanceId) {
 		return instanceWorkflowIdMap.get(instanceId);
 	}
-	
+
 	/**
-	 * 查询流程实例
+	 * 获取所有流程实例
 	 * @return 流程实例列表
 	 */
-	public List<Workflow> findInstance() {
+	public List<Workflow> getInstances() {
 		List<Workflow> list = new ArrayList<Workflow>(instanceWorkflowIdMap.values());
 		Collections.sort(list, new Comparator<Workflow>() {
 			public int compare(Workflow wf1, Workflow wf2) {
@@ -186,5 +185,5 @@ public class SnakerEngine {
 		});
 		return list;
 	}
-	
+
 }

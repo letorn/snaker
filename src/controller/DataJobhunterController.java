@@ -47,6 +47,8 @@ public class DataJobhunterController extends Controller {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
 		String name = getPara("name", "");
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
 
 		Page<ViJobhunter> pager = ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key", "from vi_jobhunter where name like ?", "%" + name + "%");
 		dataMap.put("total", pager.getTotalRow());

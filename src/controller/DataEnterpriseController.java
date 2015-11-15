@@ -52,7 +52,9 @@ public class DataEnterpriseController extends Controller {
 		Integer rows = getParaToInt("rows", 30);
 		String source = getPara("source", "");
 		String name = getPara("name", "");
-		
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
+
 		Page<ViEnterprise> pager = blank(source) ?
 									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key", "from vi_enterprise where name like ?", "%" + name + "%") : 
 									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%");

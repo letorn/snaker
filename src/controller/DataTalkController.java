@@ -10,14 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.ViTalk;
+import service.DataService;
+
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-
-import engine.model.DbTalk;
-import model.ViTalk;
-import service.DataService;
 
 /*
  * 控制类 - 宣讲会信息相关
@@ -46,8 +45,10 @@ public class DataTalkController extends Controller {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
 		String title = getPara("title", "");
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
 
-		Page<DbTalk> pager = DbTalk.dao.paginate(page, rows, "select id,title,data_src,data_key", "from vi_talk where title like ?", "%" + title + "%");
+		Page<ViTalk> pager = ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key", "from vi_talk where title like ?", "%" + title + "%");
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -113,8 +114,8 @@ public class DataTalkController extends Controller {
 	 * 获取所有岗位类别
 	 */
 	public void categories() {
-		List<DbTalk> talks = DbTalk.dao.find("select distinct source from vi_talk");
-		for (DbTalk talk : talks) {
+		List<ViTalk> talks = ViTalk.dao.find("select distinct source from vi_talk");
+		for (ViTalk talk : talks) {
 			Map<String, Object> nodeMap = new HashMap<String, Object>();
 			nodeMap.put("text", talk.getStr("source"));
 			nodeMap.put("code", talk.getStr("source"));
@@ -175,7 +176,7 @@ public class DataTalkController extends Controller {
 		String data_key=getPara("data_key");
 		Date update_time=getParaToDate("update_time");
 		Date create_time=getParaToDate("create_time");
-		boolean isSuccess=DbTalk.dao.findById(id).set("title", title).set("content", content).set("source", source).set("data_src", data_src).set("data_key", data_key).set("update_date", update_time).set("create_date", create_time).update();
+		boolean isSuccess=ViTalk.dao.findById(id).set("title", title).set("content", content).set("source", source).set("data_src", data_src).set("data_key", data_key).set("update_date", update_time).set("create_date", create_time).update();
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}
@@ -185,7 +186,7 @@ public class DataTalkController extends Controller {
 	 */
 	public void deleteTalk(){
 		String id=getPara("id");
-		boolean isSuccess=DbTalk.dao.findById(id).delete();
+		boolean isSuccess=ViTalk.dao.findById(id).delete();
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}
