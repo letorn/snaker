@@ -27,6 +27,7 @@
 			<div data-options="title:'输入',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
 				<p class="precess-designer-toolbox-citem" data-mtype="tableinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格输入</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="webinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">页面输入</p>
+				<p class="precess-designer-toolbox-citem" data-mtype="postwebinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">POST页面输入</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="excelinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">Excel输入</p>
 				<p class="precess-designer-toolbox-citem" data-mtype="hbinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">湖北输入</p>
 			</div>
@@ -127,6 +128,63 @@
 <div id="module-editor-start-urls-footer" style="padding:5px;">
 	<a id="module-editor-start-urls-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="module-editor-start-urls-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+
+<div id="module-editor-headers" class="easyui-window" data-options="title:'Headers',modal:true,closed:true,footer:'#module-editor-headers-footer'" style="width:700px;height:400px">
+	<table id="module-editor-headers-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-headers-toolbar'">
+		<thead>
+			<tr>
+				<th data-options="field:'headerName',width:150,editor:{type:'textbox'}">headerName</th>
+				<th data-options="field:'headerValue', width:450, editor:{type:'textbox'}">headerValue</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="module-editor-headers-toolbar">
+		<a id="module-editor-headers-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-headers-remove" class="easyui-linkbutton">删除</a>
+	</div>
+</div>
+<div id="module-editor-headers-footer" style="padding:5px;">
+	<a id="module-editor-headers-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-headers-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+
+<div id="module-editor-cookies" class="easyui-window" data-options="title:'Cookie',modal:true,closed:true,footer:'#module-editor-cookies-footer'" style="width:700px;height:400px">
+	<table id="module-editor-cookies-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-cookies-toolbar'">
+		<thead>
+			<tr>
+				<th data-options="field:'cookieName',width:150,editor:{type:'textbox'}">cookieName</th>
+				<th data-options="field:'cookieValue', width:450, editor:{type:'textbox'}">cookieValue</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="module-editor-cookies-toolbar">
+		<a id="module-editor-cookies-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-cookies-remove" class="easyui-linkbutton">删除</a>
+	</div>
+</div>
+<div id="module-editor-cookies-footer" style="padding:5px;">
+	<a id="module-editor-cookies-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-cookies-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+
+<div id="module-editor-form-datas" class="easyui-window" data-options="title:'Form-Data',modal:true,closed:true,footer:'#module-editor-form-datas-footer'" style="width:700px;height:400px">
+	<table id="module-editor-form-datas-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-form-datas-toolbar'">
+		<thead>
+			<tr>
+				<th data-options="field:'name',width:150,editor:{type:'textbox'}">name</th>
+				<th data-options="field:'value', width:450, editor:{type:'textbox'}">value</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="module-editor-form-datas-toolbar">
+		<a id="module-editor-form-datas-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-form-datas-remove" class="easyui-linkbutton">删除</a>
+	</div>
+</div>
+<div id="module-editor-form-datas-footer" style="padding:5px;">
+	<a id="module-editor-form-datas-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-form-datas-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 <div id="module-editor-data-paths" class="easyui-window" data-options="title:'头定义',modal:true,closed:true,footer:'#module-editor-data-paths-footer'" style="width:1500px;height:700px">
@@ -554,6 +612,195 @@
 				},
 				show: function() {
 					editor.startUrls.$window.window('open', true);
+				}
+		}
+		
+		editor.headers = {
+				$window: $('#module-editor-headers'),
+				$table: $('#module-editor-headers-table'),
+				$btnAdd: $('#module-editor-headers-add'),
+				$btnRemove: $('#module-editor-headers-remove'),
+				$btnConfirm: $('#module-editor-headers-confirm'),
+				$btnCancel: $('#module-editor-headers-cancel'),
+				endEditing: function() {
+					var _this = editor.headers;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				init : function(index, row) {
+					var _this = editor.headers;
+					if(!_this.initEvent) {
+						_this.$table.datagrid({
+							onClickCell: function(index, field) {
+								if (index != _this.lastEditingIndex) {
+									if (_this.endEditing()) {
+										_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+										var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+										if (editor) {
+											($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+										}
+										_this.lastEditingIndex = index;
+									} else {
+										_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+									}
+								}
+							}
+						});
+						_this.$btnAdd.click(function() {
+							_this.$table.datagrid('appendRow', {headerName: '', headerValue: ''});
+						});
+						_this.$btnRemove.click(function() {
+							_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
+						});
+						_this.$btnConfirm.click(function() {
+							if (_this.endEditing()) {
+								row.value = _this.$table.datagrid('getRows');
+								Designer.PropBox.updateValue(index, row, true);
+								_this.$window.window('close', true);
+							}
+						});
+						_this.$btnCancel.click(function() {
+							_this.$window.window('close', true);
+						});
+						_this.initEvent = true;
+					}
+				},
+				setValue: function(value) {
+					editor.headers.$table.datagrid('loadData', value);
+				},
+				show: function() {
+					editor.headers.$window.window('open', true);
+				}
+		}
+		
+		editor.cookies = {
+				$window: $('#module-editor-cookies'),
+				$table: $('#module-editor-cookies-table'),
+				$btnAdd: $('#module-editor-cookies-add'),
+				$btnRemove: $('#module-editor-cookies-remove'),
+				$btnConfirm: $('#module-editor-cookies-confirm'),
+				$btnCancel: $('#module-editor-cookies-cancel'),
+				endEditing: function() {
+					var _this = editor.cookies;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				init : function(index, row) {
+					var _this = editor.cookies;
+					if(!_this.initEvent) {
+						_this.$table.datagrid({
+							onClickCell: function(index, field) {
+								if (index != _this.lastEditingIndex) {
+									if (_this.endEditing()) {
+										_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+										var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+										if (editor) {
+											($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+										}
+										_this.lastEditingIndex = index;
+									} else {
+										_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+									}
+								}
+							}
+						});
+						_this.$btnAdd.click(function() {
+							_this.$table.datagrid('appendRow', {cookieName: '', cookieValue: ''});
+						});
+						_this.$btnRemove.click(function() {
+							_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
+						});
+						_this.$btnConfirm.click(function() {
+							if (_this.endEditing()) {
+								row.value = _this.$table.datagrid('getRows');
+								Designer.PropBox.updateValue(index, row, true);
+								_this.$window.window('close', true);
+							}
+						});
+						_this.$btnCancel.click(function() {
+							_this.$window.window('close', true);
+						});
+						_this.initEvent = true;
+					}
+				},
+				setValue: function(value) {
+					editor.cookies.$table.datagrid('loadData', value);
+				},
+				show: function() {
+					editor.cookies.$window.window('open', true);
+				}
+		}
+		
+		editor.formDatas = {
+				$window: $('#module-editor-form-datas'),
+				$table: $('#module-editor-form-datas-table'),
+				$btnAdd: $('#module-editor-form-datas-add'),
+				$btnRemove: $('#module-editor-form-datas-remove'),
+				$btnConfirm: $('#module-editor-form-datas-confirm'),
+				$btnCancel: $('#module-editor-form-datas-cancel'),
+				endEditing: function() {
+					var _this = editor.formDatas;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				init : function(index, row) {
+					var _this = editor.formDatas;
+					if(!_this.initEvent) {
+						_this.$table.datagrid({
+							onClickCell: function(index, field) {
+								if (index != _this.lastEditingIndex) {
+									if (_this.endEditing()) {
+										_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+										var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+										if (editor) {
+											($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+										}
+										_this.lastEditingIndex = index;
+									} else {
+										_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+									}
+								}
+							}
+						});
+						_this.$btnAdd.click(function() {
+							_this.$table.datagrid('appendRow', {name: '', value: ''});
+						});
+						_this.$btnRemove.click(function() {
+							_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
+						});
+						_this.$btnConfirm.click(function() {
+							if (_this.endEditing()) {
+								row.value = _this.$table.datagrid('getRows');
+								Designer.PropBox.updateValue(index, row, true);
+								_this.$window.window('close', true);
+							}
+						});
+						_this.$btnCancel.click(function() {
+							_this.$window.window('close', true);
+						});
+						_this.initEvent = true;
+					}
+				},
+				setValue: function(value) {
+					editor.formDatas.$table.datagrid('loadData', value);
+				},
+				show: function() {
+					editor.formDatas.$window.window('open', true);
 				}
 		}
 		

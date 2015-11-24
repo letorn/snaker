@@ -65,6 +65,13 @@ public class ExcelInputModule extends Module {
 		return exportFromExcel(workbook);
 	}
 	
+	
+	/**
+	 * 将数据从Excel表中导出
+	 * @param workbook
+	 * @return
+	 * @throws IOException
+	 */
 	private List<Map<String, Object>> exportFromExcel(Workbook workbook) throws IOException {
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		Sheet sheet = workbook.getSheetAt(0);
@@ -79,6 +86,11 @@ public class ExcelInputModule extends Module {
 		return result;
 	}
 	
+	/**
+	 * 从Cell中获取值
+	 * @param cell
+	 * @return
+	 */
 	private static String getValue(Cell cell) {
 		if(cell == null){
 			return null;

@@ -2,6 +2,8 @@ package controller;
 
 import static util.Validator.notBlank;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,15 +11,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import service.SnakerService;
-import util.Json;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Page;
 
 import engine.ModuleData;
+import engine.ModuleData.DataHeader;
 import engine.Workflow;
 import engine.module.Module;
+import service.SnakerService;
+import util.Json;
 
 /*
  * 控制类 - 流程实例相关
@@ -36,6 +44,11 @@ public class InstanceController extends Controller {
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	private List<Object> dataList = new ArrayList<Object>();
+	
+	/*
+	 * 下载Excel时使用的映射Map
+	 */
+	private Map<String, Integer> colNameMapper = new HashMap<String, Integer>();
 	
 	/**
 	 * 列表
@@ -146,6 +159,72 @@ public class InstanceController extends Controller {
 		}
 
 		renderJson(Json.toString(dataMap));
+	}
+	
+	/**
+	 * 下载数据到Excel表格
+	 * instance 实例参数
+	 * module 模型名称
+	 * refresh 是否刷新表头
+	 */
+	public void download() {
+		Long instanceId = getParaToLong("instance");
+		String module = getPara("module");
+
+		if (notBlank(instanceId) && notBlank(module)) {
+			ModuleData records = snakerService.getRecords(instanceId, module);
+			Workflow instance = snakerService.getInstance(instanceId);
+			if (notBlank(records) && notBlank(instance)) {
+				List<DataHeader> headers = records.getHeaders();
+				List<Map<String, Object>> datas = records.getRows();
+				Workbook workbook = new XSSFWorkbook();
+				Sheet sheet = exportHeaders(workbook, headers);
+				exportDatas(sheet, datas);
+				File file = new File(instance.getProcessName() + "-" + module + ".xlsx");
+				FileOutputStream fos = null;
+				try {
+					fos = new FileOutputStream(file);
+					workbook.write(fos);
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					if (fos != null) {
+						try {
+							fos.close();
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				renderFile(file);
+			}
+		}
+	}
+	
+	private Sheet exportHeaders(Workbook workbook, List<DataHeader> headers) {
+		Sheet sheet = workbook.createSheet();
+		Row row = sheet.createRow(0);
+		int colIndex = 0;
+		for (DataHeader header : headers) {
+			createCell(row, colIndex, header.getName());
+			colNameMapper.put(header.getName(), colIndex++);
+		}
+		return sheet;
+	}
+	
+	private void exportDatas(Sheet sheet, List<Map<String, Object>> datas) {
+		int rowIndex = 1;
+		for (Map<String, Object> data : datas) {
+			Row dataRow = sheet.createRow(rowIndex++);
+			for (String key : data.keySet()) {
+				createCell(dataRow, colNameMapper.get(key), data.get(key));
+			}
+		}
+	}
+	
+	private void createCell(Row row, int column, Object value) {
+		Cell cell = row.createCell(column);
+		cell.setCellValue((String)value);
 	}
 	
 }

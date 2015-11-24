@@ -61,9 +61,38 @@ var Designer = {
 				recordView: 'module/basiclog',
 				name: '页面输入',
 				startUrls: [],
+				headers: [],
+				cookies: [],
 				threadNum: '1',
 				helpRegion: '',
 				helpUrl: '',
+				targetUrl: '',
+				skipJugment: '',
+				dataPaths: []
+			}
+		},
+		postwebinput: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.PostWebInputModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: 'POST页面输入',
+				startUrl: '',
+				headers: [],
+				cookies: [],
+				formDatas: [],
+				method: 'POST',
+				threadNum: '1',
+				helpUrl: '',
+				pageFlag: '',
+				cursorXpath: '',
 				targetUrl: '',
 				skipJugment: '',
 				dataPaths: []

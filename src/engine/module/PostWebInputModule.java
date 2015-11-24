@@ -2,11 +2,17 @@ package engine.module;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import engine.ModuleData;
 import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -14,19 +20,19 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
+import util.File;
 
-/*
- * 流程模型 - 页面爬取
- * 爬虫
- */
-public class WebInputModule extends Module {
+public class PostWebInputModule extends Module {
 
-	private List<Map<String, String>> startUrls;
+	private String startUrl;
 	private List<Map<String, String>> headers;
 	private List<Map<String, String>> cookies;
+	private List<Map<String, String>> formDatas;
+	private String method;
 	private String threadNum;
-	private String helpRegion;
 	private String helpUrl;
+	private String pageFlag;
+	private String cursorXpath;
 	private String targetUrl;
 	private String skipJugment;
 	private List<Map<String, String>> dataPaths;
@@ -51,9 +57,22 @@ public class WebInputModule extends Module {
 			if (cookies != null && cookies.size() > 0) {
 				snakerProcessor.initCookies(cookies);
 			}
-			for (Map<String, String> url : startUrls) {
-				spider = spider.addUrl(url.get("startUrl"));
+			Map<String, Object> params = new HashMap<String, Object>();
+			if (formDatas != null && formDatas.size() > 0) {
+				int length = formDatas.size();
+				int count = 0;
+				NameValuePair[] nameValuePair = new NameValuePair[length];
+				for (Map<String, String> formData : formDatas) {
+					nameValuePair[count] = new BasicNameValuePair(formData.get("name"), formData.get("value"));
+					count++;
+				}
+				params.put("nameValuePair", nameValuePair);
 			}
+			Request request = new Request();
+			request.setMethod(method);
+			request.setExtras(params);
+			request.setUrl(startUrl);
+			spider = spider.addRequest(request);
 			spider = spider.thread(Integer.parseInt(threadNum));
 			spider = spider.addPipeline(new OutputPipeline(inputs, this));
 			if (workflow.isDaemon()) {
@@ -66,7 +85,7 @@ public class WebInputModule extends Module {
 			super.run();
 		}
 	}
-	
+
 	/**
 	 * 内部类，抓取页面内容
 	 * @author wanghao
@@ -82,12 +101,13 @@ public class WebInputModule extends Module {
 			}
 		}
 		
-		public void initCookies(List<Map<String, String>> cookies){
+		public void initCookies(List<Map<String, String>> cookies) {
 			for (Map<String, String> cookie : cookies) {
 				site = site.addCookie(cookie.get("cookieName"), cookie.get("cookieValue"));
 			}
 		}
-
+		
+		@Override
 		public void process(Page page) {
 			if (page.getUrl().toString().matches(targetUrl)) {
 				if (skipJugment != null && skipJugment.length() > 0) {
@@ -137,13 +157,34 @@ public class WebInputModule extends Module {
 		
 		private void helpProcess(Page page) {
 			page.addTargetRequests(page.getHtml().links().regex(targetUrl).all());
-			if (helpRegion != null && helpRegion.length() > 0) {				
-				page.addTargetRequests(page.getHtml().xpath(helpRegion).links().regex(helpUrl).all());
-			} else {
-				page.addTargetRequests(page.getHtml().links().regex(helpUrl).all());
+			List<String> cursors = page.getHtml().xpath(cursorXpath).all();
+			for (String cursor : cursors) {
+				if(cursor.matches("^\\d*$")) {
+					Map<String, Object> params = new HashMap<String, Object>();
+					if (formDatas != null && formDatas.size() > 0) {
+						int length = formDatas.size();
+						int count = 0;
+						NameValuePair[] nameValuePair = new NameValuePair[length];
+						for (Map<String, String> formData : formDatas) {
+							if (pageFlag.equals(formData.get("name"))) {
+								nameValuePair[count] = new BasicNameValuePair(pageFlag, cursor);
+							} else {
+								nameValuePair[count] = new BasicNameValuePair(formData.get("name"), formData.get("value"));
+							}
+							count++;
+						}
+						params.put("nameValuePair", nameValuePair);
+					}
+					Request request = new Request();
+					request.setMethod(method);
+					request.setExtras(params);
+					request.setUrl(startUrl + "?" +  cursor);
+					page.addTargetRequest(request);
+				}
 			}
 		}
 
+		@Override
 		public Site getSite() {
 			return site;
 		}

@@ -64,9 +64,17 @@ public class AddFieldModule extends Module {
 							Object area = inputs.getRows().get(i).get(address[0]);
 							Object addr = inputs.getRows().get(i).get(address[1]);
 							coordinate = Baidu.getPoint((String)addr, (String)area);
+							if (coordinate == null) {
+								coordinate = Baidu.getPoint((String) area + (String) addr, null);
+							}
 						} else if (address.length == 1){
-							Object addr = inputs.getRows().get(i).get(address[0]);
+							address = address[0].split(":");
+							Object area = inputs.getRows().get(i).get(address[0]);
+							Object addr = inputs.getRows().get(i).get(address[1]);
 							coordinate = Baidu.getPoint((String)addr, null);
+							if (coordinate == null) {
+								coordinate = Baidu.getPoint((String)addr, (String)area);
+							}
 						}
 						String[] name=fieldTable.get(j).get("name").toString().split(",");
 						map.put(name[0],coordinate != null ? coordinate[0] : null);    //x
