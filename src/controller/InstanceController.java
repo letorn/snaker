@@ -71,6 +71,7 @@ public class InstanceController extends Controller {
 			data.put("instanceId", instance.getInstanceId());
 			data.put("instanceParams", instance.getInstanceParams());
 			data.put("instanceCreateDate", dateFormat.format(instance.getInstanceCreateDate()));
+			data.put("instanceIsAlive", instance.isAlive());
 			dataList.add(data);
 		}
 		dataMap.put("total", pager.getTotalRow());
@@ -91,6 +92,7 @@ public class InstanceController extends Controller {
 				setAttr("process", instance.getProcessId());
 				setAttr("processName", instance.getProcessName());
 				setAttr("instance", instance.getInstanceId());
+				setAttr("instanceIsAlive", instance.isAlive());
 				setAttr("instanceParams", instance.getInstanceParams());
 				List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
 				for (Module module : instance.getModules()) {
@@ -199,6 +201,19 @@ public class InstanceController extends Controller {
 				renderFile(file);
 			}
 		}
+	}
+	
+	/**
+	 * 实例停止方法
+	 * @instanceId 需要停止的实例ID
+	 */
+	public void stop() {
+		Long instanceId = getParaToLong();
+		if(notBlank(instanceId)) {
+			snakerService.stopProcess(instanceId);
+			dataMap.put("success", true);
+		}
+		renderJson(dataMap);
 	}
 	
 	private Sheet exportHeaders(Workbook workbook, List<DataHeader> headers) {

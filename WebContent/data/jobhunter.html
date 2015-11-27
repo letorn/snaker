@@ -6,6 +6,7 @@
 			<th data-options="field:'name'" style="width:240px">求职者名称</th>
 			<th data-options="field:'data_src'" style="width:80px">数据源</th>
 			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败';}" style="width:220px">是否上传</th>
 			<th data-options="field:'action',formatter:dataJobhunterTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
@@ -14,6 +15,7 @@
 	数据源：<input id="data-jobhunter-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text'" style="width:120px" />
 	<input id="data-jobhunter-table-search" class="easyui-searchbox" data-options="prompt:'求职者名称'" style="width:200px" />
 	<a id="data-jobhunter-table-upload" class="easyui-linkbutton">上传</a>
+	<a id="data-jobhunter-table-add" class="easyui-linkbutton">新增</a>
 </div>
 <div id="data-jobhunter-upload-window" class="easyui-window" data-options="title:'上传',modal:true,closed:true,footer:'#data-jobhunter-upload-footer'" style="width:320px;height:400px">
     <ul id="data-jobhunter-upload-tree" class="easyui-tree" data-options="checkbox:true,url:'data/jobhunter/categories'" style="width:100%;height:100%"></ul>
@@ -22,17 +24,179 @@
 	<a id="data-jobhunter-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="data-jobhunter-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
+<div id="data-jobhunter-update-window" class="easyui-window " style="" data-options="maximizable:false,resizable:false,title:'修改',modal:true,closed:true,footer:'#data-jobhunter-update-footer'" data-options="iconCls:'icon-save',modal:true;">
+<form id="data-jobhunter-update-form" method="post" style="padding:10px">
+ 			<input style="display:none" type="text" id = "id" name="id" value=""></input>
+ 	   <table>
+                <tr>
+                    <td >姓名:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input></td>
+                    <td style="width:130px">账号:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="account" id="user_account" data-options="required:true"></input></td>
+                </tr>
+                <tr>
+                    <td> 账号状态:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="account_status" id="user_account_status" data-options="required:true"></input></td>
+                
+                    <td>性别:</td>
+                    <td><input class="easyui-combobox" style="" type="text" name="gender" id="user_gender" data-options="valueField:'id',textField:'text',url:'json/gender.json'"></input></td>
+                </tr>
+                <tr>
+                    <td>民族:</td>
+                    <td><input class="easyui-combobox" style="" type="text" name="nation" id="user_nation" data-options="valueField:'id',textField:'value',url:'json/nation.json'"></input></td>
+               
+                    <td>电话:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="phone" id="user_phone" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>手机:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="mobile" id="user_mobile" data-options=""></input>
+                    </td>
+               
+                    <td>邮箱:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="email" id="user_email" data-options=""></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>QQ号码:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="qq" id="user_qq" data-options=""></input>
+                    </td>
+               
+                    <td>工作经验:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='user_experience' name="experience" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="experience_code" id="user_experience_code" data-options="valueField:'value',textField:'text',url:'json/experience.json',
+                    onHidePanel:function(){$('#user_experience').val( $('#user_experience_code').textbox('getText'));}" /> </td>
+                </tr>
+                <tr>
+                    <td>学历:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='user_education' name="education" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="education_code" id="user_education_code" data-options="valueField:'value',textField:'text',url:'json/education.json',
+                    onHidePanel:function(){$('#user_education').val( $('#user_education_code').textbox('getText'));}" /> </td>
+              
+               	 <td>专业:</td>
+                   
+              	 <td><input id="user_major" name="major" class="easyui-combotree" style="width:200px;"data-options="url:'json/major.json',required:true"></input> </td>
+       		    </tr>
+       		     <tr>
+               	 <td>户籍:</td>
+                   
+              	 <td><input id="user_household" name="household" class="easyui-combotree" style="width:200px;"data-options="url:'json/area.json',required:true"></input> </td>
+       		    
+                    <td>人才类型:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='user_category' name="category" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="category_code" id="user_category_code" data-options="valueField:'id',textField:'text',url:'json/user_category.json',
+                    onHidePanel:function(){$('#user_category').val( $('#user_category_code').textbox('getText'));}" /> </td>
+                </tr>
+                <tr>
+                    <td>求职状态:</td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='user_hunter_status' name="hunter_status" data-options="required:true"></input>
+                   <input class="easyui-combobox" name="hunter_status_code" id="user_hunter_status_code" data-options="valueField:'id',textField:'text',url:'json/hunterstatus.json',
+                    onHidePanel:function(){$('#user_hunter_status').val( $('#user_hunter_status_code').textbox('getText'));}" /> </td>
+               
+                    <td>婚姻状态:</td>
+                    <td>
+                   <input class="easyui-combobox" name="marriage" id="user_marriage" data-options="valueField:'id',textField:'text',url:'json/marriage.json'" /> </td>
+                </tr>
+                  <tr>
+                    <td>证件类型:</td>
+                    <td>
+                   <input class="easyui-combobox" name="cert_type" id="user_cert_type" data-options="valueField:'id',textField:'text',url:'json/cert_type.json'" /> </td>
+                
+                    <td>证件号码:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="cert_id" id="user_cert_id" data-options=""></input>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>出生日期:</td>
+                    <td><input  type="text" class="easyui-datebox" name="birth" required="required"></input></td>
+                
+               	 <td>户籍:</td>
+                   
+              	 <td><input id="user_location_code" name="location_code" class="easyui-combotree" style="width:200px;"data-options="url:'json/area.json',required:true"></input> </td>
+       		    </tr>
+                 <tr>
+                    <td>详细地址:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="address" id="user_address" data-options=""></input>
+                    </td>
+               
+                    <td>坐标:</td>
+                    <td><input style="width:122px;" class="easyui-textbox" type="text" id = "user_lbs_lon" name="lbs_lon" value=""data-options="readonly:true"></input>
+                    	<input style="width:122px;" class="easyui-textbox"  type="text" id = "user_lbs_lat" name="lbs_lat" value="" data-options="readonly:true"></input></td>
+                </tr>
+                 
+                  <tr>
+                    <td>当前企业:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="curr_ent" id="user_curr_ent" data-options=""></input>
+                    </td>
+               
+                    <td>当前企业电话:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="curr_ent_phone" id="user_curr_ent_phone" data-options=""></input>
+                    </td>
+                </tr>
+                	     
+                <tr>
+                    <td style="width:130px">当前岗位名称:</td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="curr_post" data-options="required:true"></input></td>
+               
+                    <td>当前岗位类别:</td>
+                    <td><input id="user_curr_post_code" name="curr_post_code" class="easyui-combotree" style="width:200px;"   
+        data-options="url:'json/category.json',required:true"></input></td>
+                </tr>
+                 <tr>
+                    <td>数据源:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="data_src" data-options=""></input>
+                    </td>
+               
+                    <td>唯一标识:</td>
+                    <td>
+                        <input class="easyui-textbox" style="width:250px" type="text" name="data_key"  data-options="editable:false"></input>
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td>自我评价:</td>
+                   <td>  <input class="easyui-textbox" type="text"  name="self_comment" id ="self_comment" data-options="multiline:true,required:true" style="width:250px; height:230px"></input>
+                    </td>
+               
+                    <td>地图:</td>
+                    <td><div id ="userMap" style="width:250px;height:250px"></div></td>
+                </tr>
+            </table>
+</form>
+</div>
+<div id="data-jobhunter-update-footer" style="padding:5px;">
+	<a id="data-jobhunter-update-confirm" onclick="submitUserFrom()" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="data-jobhunter-update-cancel" onclick="closeWindow()" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
 <script type="text/javascript">
 	function dataJobhunterTableActionFormatter(value, row) {
-		return '<a class="data-jobhunter-table-look" data-jobhunter="' + row.id + '" style="cursor:pointer;color:blue">查看</a>';
+		return '<a class="data-jobhunter-table-look" data-jobhunter="' + row.id + '" onclick="openJobhunterWindow(' + row.id + ')" style="cursor:pointer;color:blue">查看</a>'
+		+' <a class="data-talk-enterprise-delete" onclick="deleteUserData('+ row.id +')"  data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
 	}
 
 	$.render(function() {
 		var $dataJobhunterTable = $('#data-jobhunter-table'), $dataJobhunterTableSource = $('#data-jobhunter-table-source'), $dataJobhunterTableSearch = $('#data-jobhunter-table-search');
 		var $dataJobhunterUploadWindow = $('#data-jobhunter-upload-window'), $dataJobhunterUploadTree = $('#data-jobhunter-upload-tree');
-		
+		var $dataJobhunterUpdateWindow = $('#data-jobhunter-update-window');
+		var $useraddress =$('#user_address');
 		$('#data-jobhunter-table-upload').click(function() {
 			$dataJobhunterUploadWindow.window('open');
+		});
+		
+		$useraddress.textbox({
+			onChange: function(addr){
+				BaiduMap("userMap", addr)
+			}
 		});
 		
 		$dataJobhunterTableSource.combobox({
@@ -94,5 +258,133 @@
 		$('#data-jobhunter-upload-cancel').click(function() {
 			$dataJobhunterUploadWindow.window('close');
 		});
+		
+		//不能选择子节点
+		$('#user_major').combotree({
+			onBeforeSelect: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					return false;
+				}
+			},
+			onClick: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					$('#user_major').combo('showPanel');
+				}
+			}
+		});
+		//不能选择子节点
+		$('#user_household').combotree({
+			onBeforeSelect: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					return false;
+				}
+			},
+			onClick: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					$('#user_household').combo('showPanel');
+				}
+			}
+		});
+	});
+	function BaiduMap(id,addr)
+	{
+		if (addr=="") addr="北京";
+		var map = new BMap.Map(id);  
+		map.centerAndZoom(addr,12);    
+		map.setDefaultCursor("crosshair");
+		var $lat=null;
+		var $lon=null;
+		var $address=null;
+		if(id=="entMap"){
+			$lat=$('#ent_lbs_lat');
+			$lon=$('#ent_lbs_lon');
+			$address=$('#ent_address');
+		}else if(id=="userMap"){
+			$lat=$('#user_lbs_lat');
+			$lon=$('#user_lbs_lon');
+			$address=$('#user_address');
+		}else{
+			$lat=$('#post_lbs_lat');
+			$lon=$('#post_lbs_lon');
+			$address=$('#post_address');
+		}
+		
+		map.clearOverlays();  
+        var new_point = new BMap.Point($lon.textbox('getValue'),$lat.textbox('getValue'));
+        // 创建标注  
+        var marker = new BMap.Marker(new_point);  
+        // 将标注添加到地图中  
+        map.addOverlay(marker);  
+        map.panTo(new_point);  
+        
+		//单击获取点击的经纬度
+		map.addEventListener("click",function(e){
+			$lat.textbox("setValue",e.point.lat);
+			$lon.textbox("setValue",e.point.lng);
+	        map.clearOverlays();  
+	        var new_point = new BMap.Point(e.point.lng,e.point.lat);
+	        // 创建标注  
+	        var marker = new BMap.Marker(new_point);  
+	        // 将标注添加到地图中  
+	        map.addOverlay(marker);  
+	        map.panTo(new_point);  
+	        var geoc = new BMap.Geocoder(); 
+	        var pt = e.point;
+			geoc.getLocation(pt, function(rs){
+				var addComp = rs.addressComponents;
+				//alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+				$address.textbox("setValue",addComp.province+addComp.city+addComp.district+addComp.street+addComp.streetNumber);
+			});        
+	        
+		});
+	}
+	
+	function deleteUserData(id){
+		$.post('data/jobhunter/deleteUser', {
+			id: id
+		}, function(resp) {
+			if(resp.success){
+				$('#data-jobhunter-table').datagrid('reload'); 
+				$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
+			}else{
+				$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});
+			}
+		}, 'json'); 
+	}
+
+	function submitUserFrom(){
+		//user
+		$('#data-jobhunter-update-form').form('submit', {
+			url: 'data/jobhunter/saveUser',
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');
+				}
+				return isValid;
+			},
+			success: function(){
+				$('#data-jobhunter-table').datagrid('reload'); 
+				//$('#data-enterprise-update-window').window('close');
+				$.messager.show({title: '提示', msg: '执行成功！', timeout: 1000, showType: 'slide'});
+			}
+		});
+	}
+	//关闭form窗口
+	function closeWindow(){
+		$('#data-jobhunter-update-window').window('close');
+	}
+	function openJobhunterWindow(id){
+		$('#data-jobhunter-update-window').window("open");
+		$('#data-jobhunter-update-form').form("clear");
+		$('#data-jobhunter-update-form').form('load','data/jobhunter/getUser?id='+id);
+		BaiduMap("userMap", "");
+	}
+	$('#data-jobhunter-table-add').click(function() {
+		$('#data-jobhunter-update-window').window({title:"新增"});
+		$('#data-jobhunter-update-form').form("clear");  //清空ent表单
+		
+		$('#data-jobhunter-update-window').window("open");
+		
 	});
 </script>

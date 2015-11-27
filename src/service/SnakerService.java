@@ -112,6 +112,15 @@ public class SnakerService {
 	}
 	
 	/**
+	 * 是否存在实例
+	 * @param processId 流程主键
+	 * @return 是否存在
+	 */
+	public boolean hasInstance(Long processId) {
+		return engine.hasInstance(processId);
+	}
+	
+	/**
 	 * 获取流程实例
 	 * @param instanceId 实例主键
 	 * @return 流利实例
@@ -120,6 +129,12 @@ public class SnakerService {
 		return engine.getInstance(instanceId);
 	}
 	
+	/**
+	 * 获取组件的所有记录
+	 * @param instanceId 实例主键
+	 * @param moduleName 组件名称
+	 * @return 记录列表
+	 */
 	public ModuleData getRecords(Long instanceId, String moduleName) {
 		Workflow workflow = engine.getInstance(instanceId);
 		for (Module module : workflow.getModules())
@@ -152,4 +167,21 @@ public class SnakerService {
 		return new Page<Workflow>(list.subList(fromIndex, toIndex), page, limit, total % limit == 0 ? total / limit : total / limit + 1, total);
 	}
 	
+	/**
+	 * 实例活动状态
+	 * @param instanceId 实例主键
+	 * @return 是否正在活动
+	 */
+	public boolean instanceIsAlive(Long instanceId) {
+		return engine.instanceIsAlive(instanceId);
+	}
+	
+	/**
+	 * 停止工作流实例
+	 * @param 要停止的实例ID
+	 * @return 是否停止
+	 */
+	public boolean stopProcess(Long instanceId) {
+		return engine.stopProcess(instanceId);
+	}
 }

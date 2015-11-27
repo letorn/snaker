@@ -2,6 +2,7 @@ package controller;
 
 import static util.Validator.notBlank;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import engine.module.Module;
  */
 public class ProcessController extends Controller{
 
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	/*
 	 * snaker工作流程服务类
 	 */
@@ -179,7 +182,7 @@ public class ProcessController extends Controller{
 	
 	/**
 	 * 定时任务
-	 * process 流程主键
+	 * processIds 流程主键
 	 * daemon 后台运行
 	 * params 实例参数
 	 * runTime 定时启动时间
@@ -231,6 +234,10 @@ public class ProcessController extends Controller{
 		renderJson(timerDataList);
 	}
 	
+	/**
+	 * 取消定时任务
+	 * processId 流程ID
+	 */
 	public void timerStop() {
 		Long processId = getParaToLong();
 		timerDataMap.get(processId).cancel();

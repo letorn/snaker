@@ -3,6 +3,7 @@ package controller;
 import static util.Validator.blank;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +37,7 @@ public class DataJobhunterController extends Controller {
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	private List<Object> dataList = new ArrayList<Object>();
-	
+	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	/**
 	 * 列表
 	 * page 页码
@@ -46,11 +47,14 @@ public class DataJobhunterController extends Controller {
 	public void index() {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
+		String source = getPara("source", "");
 		String name = getPara("name", "");
 		if (page < 1) page = 1;
 		if (rows < 1) rows = 1;
 
-		Page<ViJobhunter> pager = ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key", "from vi_jobhunter where name like ?", "%" + name + "%");
+		Page<ViJobhunter> pager = blank(source) ?
+				ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where name like ?", "%" + name + "%") :
+				ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where data_src=? and name like ?", source, "%" + name + "%");
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -78,37 +82,39 @@ public class DataJobhunterController extends Controller {
 		String date = dateFormat.format(new Date());
 		String categoryName = getPara("category");
 		String field = getPara("field");
+		Integer page = getParaToInt("page", 1);
+		Integer rows = getParaToInt("rows", 20);
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 
-		List<ViJobhunter> jobhunters = null;
+		Page<ViJobhunter> jobhunters = null;
 		if ("day_new".equals(field)) {
 			if ("全部".equals(categoryName)) {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date between ? and ?", beginTime, endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date between ? and ?", beginTime, endTime);
 			} else {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date between ? and ?", getCategoryCode(categoryName), beginTime, endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code=? and create_date between ? and ?", getCategoryCode(categoryName), beginTime, endTime);
 			}
 		} else if("syn".equals(field)) {
 			if ("全部".equals(categoryName)) {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date<? and syn_status=1", endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date<? and syn_status=1", endTime);
 			} else {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date<? and syn_status=1", getCategoryCode(categoryName), endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code=? and create_date<? and syn_status=1", getCategoryCode(categoryName), endTime);
 			}
 		} else if("day_syn".equals(field)) {
 			if ("全部".equals(categoryName)) {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date between ? and ? and syn_status=1", beginTime, endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date between ? and ? and syn_status=1", beginTime, endTime);
 			} else {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date between ? and ? and syn_status=1", getCategoryCode(categoryName), beginTime, endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code=? and create_date between ? and ? and syn_status=1", getCategoryCode(categoryName), beginTime, endTime);
 			}
 		} else {
 			if ("全部".equals(categoryName)) {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date<?", endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code in (select code from ut_post) and create_date<?", endTime);
 			} else {
-				jobhunters = ViJobhunter.dao.find("select id, name, data_src, data_key from vi_jobhunter where curr_post_code=? and create_date<?", getCategoryCode(categoryName), endTime);
+				jobhunters = ViJobhunter.dao.paginate(page, rows, "select id, name, data_src, data_key", "from vi_jobhunter where curr_post_code=? and create_date<?", getCategoryCode(categoryName), endTime);
 			}
 		}
-		dataMap.put("total", jobhunters.size());
-		dataMap.put("rows", jobhunters);
+		dataMap.put("total", jobhunters.getTotalRow());
+		dataMap.put("rows", jobhunters.getList());
 		renderJson(dataMap);
 	}
 	
@@ -186,6 +192,157 @@ public class DataJobhunterController extends Controller {
 				+ "(select count(*) from vi_jobhunter where curr_post_code=p.code and create_date between ? and ? and syn_status=1) day_syn "
 				+ "from ut_post p", endTime, beginTime, endTime, endTime, beginTime, endTime);
 		renderJson(records);
+	}
+	public void getUser(){
+		String id = getPara("id");
+		Record record = Db.findFirst("SELECT id,name,account,account_status,gender,nation,mobile,email,qq,experience,experience_code,education,education_code,"
+				+ "major,household,polity,category,category_code,hunter_status,hunter_status_code,marriage,cert_type,cert_id,birth,height,weight,location,"
+				+ "location_code,address,lbs_lon,lbs_lat,curr_ent,curr_ent_phone,curr_post,curr_post_code,data_src,data_key,syn_status,"
+				+ "syn_date,syn_message,self_comment FROM vi_jobhunter where id="+id);
+		renderJson(record);
+	}
+	
+	public void saveUser(){
+		String id =getPara("id");
+		String name =getPara("name");
+		String account =getPara("account");
+		String account_status =getPara("account_status");
+		String gender =getPara("gender");
+		String nation =getPara("nation");
+		String mobile =getPara("mobile");
+		String email =getPara("email");
+		String qq =getPara("qq");
+		String experience = getPara("experience");
+		String experience_code =getPara("experience_code");
+		String education =getPara("education");
+		String education_code =getPara("education_code");
+		String major =getPara("major");
+		String lons=getPara("lbs_lon");
+		String lats=getPara("lbs_lat");
+		Object lbs_lon=null;
+		Object lbs_lat=null;
+		if(lons!=null && lats!=null){
+		lbs_lon =Double.parseDouble(getPara("lbs_lon"));
+		lbs_lat =Double.parseDouble(getPara("lbs_lat"));
+		}
+		String household =getPara("household");
+		String category =getPara("category");
+		String category_code =getPara("category_code");
+		String hunter_status =getPara("hunter_status");
+		String hunter_status_code =getPara("hunter_status_code");
+		String marriage =getPara("marriage");
+		String cert_type =getPara("cert_type");
+		String cert_id =getPara("cert_id");
+		Date update_date = null;
+		Date create_date = null;
+		Date birth= null;
+		try {
+			update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():sdf.parse(getPara("update_date"));
+			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
+			birth =getPara("birth")==null|| getPara("birth").equals("")?new Date():getParaToDate("birth");
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String location =getPara("location");
+		String location_code =getPara("location_code");
+		String address =getPara("address");
+		String curr_ent =getPara("curr_ent");
+		String curr_ent_phone =getPara("curr_ent_phone");
+		String curr_post =getPara("curr_post");
+		String curr_post_code =getPara("curr_post_code");
+		String data_src =getPara("data_src");
+		String data_key =getPara("data_key");
+		String self_comment =getPara("self_comment");
+		
+		boolean isSuccess=true;
+		if(id!=null && !id.equals("")){
+			isSuccess=ViJobhunter.dao.findById(id).set("name",name)
+					.set("account",account)
+					.set("account_status",account_status)
+					.set("gender",gender)
+					.set("nation",nation)
+					.set("mobile",mobile)
+					.set("account",account)
+					.set("email",email)
+					.set("qq",qq)
+					.set("experience",experience)
+					.set("experience_code",experience_code)
+					.set("education",education)
+					.set("education_code",education_code)
+					.set("major",major)
+					.set("lbs_lon",lbs_lon)
+					.set("lbs_lat",lbs_lat)
+					.set("household",household)
+					.set("category",category)
+					.set("category_code",category_code)
+					.set("hunter_status",hunter_status)
+					.set("hunter_status_code",hunter_status_code)
+					.set("marriage",marriage)
+					.set("cert_type",cert_type)
+					.set("cert_id",cert_id)
+					.set("update_date",update_date)
+					.set("create_date",create_date)
+					.set("birth",birth)
+					.set("location",location)
+					.set("location_code",location_code)
+					.set("address",address)
+					.set("curr_ent",curr_ent)
+					.set("curr_ent_phone",curr_ent_phone)
+					.set("curr_post",curr_post)
+					.set("curr_post_code",curr_post_code)
+					.set("data_src",data_src)
+					.set("data_key",data_key)
+					.set("syn_status", 2)
+					.set("self_comment",self_comment).update();
+		}else{
+			isSuccess=new ViJobhunter().set("name",name)
+					.set("account",account)
+					.set("account_status",account_status)
+					.set("gender",gender)
+					.set("nation",nation)
+					.set("mobile",mobile)
+					.set("account",account)
+					.set("email",email)
+					.set("qq",qq)
+					.set("experience",experience)
+					.set("experience_code",experience_code)
+					.set("education",education)
+					.set("education_code",education_code)
+					.set("major",major)
+					.set("lbs_lon",lbs_lon)
+					.set("lbs_lat",lbs_lat)
+					.set("household",household)
+					.set("category",category)
+					.set("category_code",category_code)
+					.set("hunter_status",hunter_status)
+					.set("hunter_status_code",hunter_status_code)
+					.set("marriage",marriage)
+					.set("cert_type",cert_type)
+					.set("cert_id",cert_id)
+					.set("update_date",update_date)
+					.set("create_date",create_date)
+					.set("birth",birth)
+					.set("location",location)
+					.set("location_code",location_code)
+					.set("address",address)
+					.set("curr_ent",curr_ent)
+					.set("curr_ent_phone",curr_ent_phone)
+					.set("curr_post",curr_post)
+					.set("curr_post_code",curr_post_code)
+					.set("data_src",data_src)
+					.set("data_key",data_key)
+					.set("self_comment",self_comment).save();
+		}
+		dataMap.put("success", isSuccess);
+		renderJson(dataMap);
+	}
+	public void deleteUser(){
+		String id=getPara("id");
+		boolean isSuccess=ViJobhunter.dao.findById(id).delete();
+		dataMap.put("success", isSuccess);
+		renderJson(dataMap);
 	}
 	
 }

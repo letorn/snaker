@@ -103,6 +103,17 @@ public class Workflow {
 	}
 	
 	/**
+	 * 实例活动状态
+	 * @return 是否正在活动
+	 */
+	public boolean isAlive() {
+		for (Module module : modules)
+			if (module.isAlive())
+				return true;
+		return false;
+	}
+	
+	/**
 	 * 创建工作流
 	 * @param process 流程流程
 	 * @return 工作流

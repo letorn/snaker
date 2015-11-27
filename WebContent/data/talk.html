@@ -6,6 +6,7 @@
 			<th data-options="field:'title'" style="width:240px">宣讲会标题</th>
 			<th data-options="field:'data_src'" style="width:80px">数据源</th>
 			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败';}" style="width:220px">是否上传</th>
 			<th data-options="field:'action',formatter:dataTalkTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
@@ -14,6 +15,7 @@
 	数据源：<input id="data-talk-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text'" style="width:120px" />
 	<input id="data-talk-table-search" class="easyui-searchbox" data-options="prompt:'宣讲会标题'" style="width:200px" />
 	<a id="data-talk-table-upload" class="easyui-linkbutton">上传</a>
+	<a id="data-talk-table-add" class="easyui-linkbutton">新增</a>
 </div>
 <div id="data-talk-upload-window" class="easyui-window" data-options="title:'上传',modal:true,closed:true,footer:'#data-talk-upload-footer'" style="width:320px;height:400px">
     <ul id="data-talk-upload-tree" class="easyui-tree" data-options="checkbox:true,url:'data/talk/categories'" style="width:100%;height:100%"></ul>
@@ -41,21 +43,9 @@
                 </tr>
                 <tr>
                     <td>data_key:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="data_key" data-options="required:true"></input></td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="data_key" data-options="required:true,editable:false"></input></td>
                 </tr>
                 <tr>
-                    <td>修改时间:</td>
-                    <td>
-                        <input class="easyui-textbox" style="width:250px"  type="text" name="update_time" id="update_time" data-options=""></input>
-                    </td>
-                </tr>
-                 <tr>
-                    <td>创建时间:</td>
-                    <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="create_time" id="create_time" data-options=""></input>
-                    </td>
-                </tr>
-                 <tr>
                     <td>内容:</td>
                     <td>
                         <input class="easyui-textbox" type="text"  name="content" id ="content" data-options="multiline:true,required:true" style="width:250px; height:80px"></input>
@@ -208,4 +198,11 @@
 			
 		}, 'json'); 
 	}
+	$('#data-talk-table-add').click(function() {
+		$('#data-talk-update-window').window({title:"新增"});
+		$('#data-talk-update-form').form("clear");  //清空ent表单
+		
+		$('#data-talk-update-window').window("open");
+		
+	});
 </script>

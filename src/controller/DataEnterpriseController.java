@@ -16,6 +16,7 @@ import model.UtIndustry;
 import model.ViEnterprise;
 import service.DataService;
 import test.Area;
+import test.Major;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
@@ -56,8 +57,8 @@ public class DataEnterpriseController extends Controller {
 		if (rows < 1) rows = 1;
 
 		Page<ViEnterprise> pager = blank(source) ?
-									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key", "from vi_enterprise where name like ?", "%" + name + "%") : 
-									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%");
+									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where name like ?", "%" + name + "%") : 
+									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%");
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -74,37 +75,39 @@ public class DataEnterpriseController extends Controller {
 		String date = dateFormat.format(new Date());
 		String categoryName = getPara("category");
 		String field = getPara("field");
+		Integer page = getParaToInt("page", 1);
+		Integer rows = getParaToInt("rows", 20);
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 
-		List<ViEnterprise> ents = null;
+		Page<ViEnterprise> ents = null;
 		if ("day_new".equals(field)) {
 			if ("全部".equals(categoryName)) {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date between ? and ?", beginTime, endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code in (select code from ut_industry) and create_date between ? and ?", beginTime, endTime);
 			} else {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date between ? and ?", getCategoryCode(categoryName), beginTime, endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code=? and create_date between ? and ?", getCategoryCode(categoryName), beginTime, endTime);
 			}
 		} else if("syn".equals(field)) {
 			if ("全部".equals(categoryName)) {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date<? and syn_status=1", endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code in (select code from ut_industry) and create_date<? and syn_status=1", endTime);
 			} else {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date<? and syn_status=1", getCategoryCode(categoryName), endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code=? and create_date<? and syn_status=1", getCategoryCode(categoryName), endTime);
 			}
 		} else if("day_syn".equals(field)) {
 			if ("全部".equals(categoryName)) {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date between ? and ? and syn_status=1", beginTime, endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code in (select code from ut_industry) and create_date between ? and ? and syn_status=1", beginTime, endTime);
 			} else {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date between ? and ? and syn_status=1", getCategoryCode(categoryName), beginTime, endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code=? and create_date between ? and ? and syn_status=1", getCategoryCode(categoryName), beginTime, endTime);
 			}
 		} else {
 			if ("全部".equals(categoryName)) {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code in (select code from ut_industry) and create_date<?", endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code in (select code from ut_industry) and create_date<?", endTime);
 			} else {
-				ents = ViEnterprise.dao.find("select id, name, account, data_src, data_key from vi_enterprise where category_code=? and create_date<?", getCategoryCode(categoryName), endTime);
+				ents = ViEnterprise.dao.paginate(page, rows, "select id, name, account, data_src, data_key", "from vi_enterprise where category_code=? and create_date<?", getCategoryCode(categoryName), endTime);
 			}
 		}
-		dataMap.put("total", ents.size());
-		dataMap.put("rows", ents);
+		dataMap.put("total", ents.getTotalRow());
+		dataMap.put("rows", ents.getList());
 		renderJson(dataMap);
 	}
 	
@@ -188,10 +191,9 @@ public class DataEnterpriseController extends Controller {
 	}
 	public void getEnt(){
 		String id = getPara("id");
-		Record record = Db.findFirst("SELECT id,name ,account ,category ,category_code ,nature ,nature_code  ,scale  ,scale_code  ,tag  ,establish "
-				+ ",introduction ,area ,area_code  ,address  ,lbs_lon  ,lbs_lat,website ,orgains ,license ,contacter ,public_contact ,phone ,"
-				+ "fax  ,mobile ,email  ,qq  ,visit_count ,data_src ,data_key  ,update_date ,create_date ,syn_status ,syn_date  ,syn_message "
-				+ " ,role  ,legalize FROM vi_enterprise  WHERE id ="+id);
+		Record record = Db.findFirst("SELECT id,name,account,category,category_code,nature,nature_code,scale,scale_code,tag,establish"
+				+ ",introduction,area,area_code,address,lbs_lon,lbs_lat,website ,orgains,license,contacter,public_contact,phone,"
+				+ "fax,mobile,email,qq,legalize FROM vi_enterprise  WHERE id ="+id);
 		renderJson(record);
 	}
 	public void saveEnt(){
@@ -228,8 +230,6 @@ public class DataEnterpriseController extends Controller {
 		String mobile =getPara("mobile");
 		String email =getPara("email");
 		String qq =getPara("qq");
-		String data_src =getPara("data_src");
-		String data_key =getPara("data_key");
 		
 		
 		Date update_date = null;
@@ -243,7 +243,6 @@ public class DataEnterpriseController extends Controller {
 			e.printStackTrace();
 		}
 		
-		String role =getPara("role").equals("")?"1":getPara("role");
 		String legalize =getPara("legalize").equals("")?"1":getPara("legalize"); 
 		boolean isSuccess=true;
 		if(id!=null && !id.equals("")){
@@ -273,11 +272,9 @@ public class DataEnterpriseController extends Controller {
 				.set("mobile",mobile)
 				.set("email",email)
 				.set("qq",qq)
-				.set("data_src",data_src)
-				.set("data_key",data_key)
 				.set("update_date",update_date)
 				.set("create_date",create_date)
-				.set("role",role)
+				.set("syn_status", 2)
 				.set("legalize",legalize).update();
 		}else{
 			isSuccess=new ViEnterprise().set("name",name)
@@ -306,11 +303,11 @@ public class DataEnterpriseController extends Controller {
 					.set("mobile",mobile)
 					.set("email",email)
 					.set("qq",qq)
-					.set("data_src",data_src)
-					.set("data_key",data_key)
+					.set("data_src", "snaker")
+					.set("data_key",name)
 					.set("update_date",update_date)
 					.set("create_date",create_date)
-					.set("role",role)
+					.set("role","1")
 					.set("legalize",legalize).save();
 		}
 		dataMap.put("success", isSuccess);
@@ -358,5 +355,38 @@ public class DataEnterpriseController extends Controller {
 		dataMap.put("success", out);
 		renderJson(JSON.toJSON(dataMap));
 		return areas;
+	}
+	
+	public void major(){
+		List<Record> recordlist=Db.use("zcdh").find("SELECT CODE,major_name,parent_code FROM  zcdh_jobhunte_major");
+		List<Major> majors=new ArrayList<Major>();
+		for(int i=0;i<recordlist.size();i++){
+			Major major=new Major();
+			major.setCode(recordlist.get(i).get("CODE").toString());
+			major.setName(recordlist.get(i).get("major_name").toString());
+			major.setParent(recordlist.get(i).get("parent_code").toString());
+			majors.add(major);
+		}
+		
+		for(int i=0;i<majors.size();i++){
+			List<Major> children =new ArrayList<Major>();
+			for (int j = 0; j < recordlist.size(); j++) {
+				if(majors.get(i).getCode().equals(recordlist.get(j).get("parent_code"))){
+					children.add(majors.get(j));
+				}
+			}
+			majors.get(i).setChildren(children);
+		}
+		List<Major> out= new ArrayList<Major>();
+		for(int i=0;i<majors.size();i++){
+			if(majors.get(i).getCode().length()==3){
+				out.add(majors.get(i));
+			}
+		}
+		System.out.println(out);
+		//renderJson(out);
+		dataMap.put("success", out);
+		renderJson(JSON.toJSON(dataMap));
+		//return areas;
 	}
 }

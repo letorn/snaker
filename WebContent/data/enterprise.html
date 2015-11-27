@@ -6,6 +6,7 @@
 			<th data-options="field:'name'" style="width:240px">企业名称</th>
 			<th data-options="field:'data_src'" style="width:80px">数据源</th>
 			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败';}" style="width:220px">是否上传</th>
 			<th data-options="field:'action',formatter:dataEnterpriseTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
@@ -33,7 +34,8 @@
  	   <table style="margin:10px">
                 <tr>
                     <td style="width:130px">企业名称:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input></td>
+                    <td><input id="ent_name" class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true,editable:false,
+                    	onChange:function(v){$('#post_ent_name').val(v);}"></input></td>
                 </tr>
                 <tr>
                     <td>账号:</td>
@@ -77,13 +79,15 @@
                     <td>区域:</td>
                     <td>
                    <input id="ent_area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
-        data-options="url:'json/area.json',required:true"></input> 
+        data-options="url:'json/area.json',required:true,onChange:function(){$('#ent_area').val($('#ent_area_code').textbox('getText'));}"></input> 
+        			<input id="ent_area" name="area" class="" style="display:none;" type="text" data-options="required:true"></input></td>
 					
                 </tr>
                   <tr>
                     <td>地址:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="address" id="ent_address" data-options=""></input>
+                        <input class="easyui-textbox" style="width:190px" type="text" name="address" id="ent_address" data-options=""></input>
+                        <a id="ent_address_linkbutton" class="easyui-linkbutton" style="width:50px" data-options="text:'定位',onClick:function(){BaiduMap('entMap', $('#ent_address').textbox('getValue'));}"></a>
                     </td>
                 </tr>
                   <tr>
@@ -154,39 +158,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>数据源:</td>
-                    <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="data_src" id="data_src" data-options=""></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td>唯一标识:</td>
-                    <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="data_key" data-options=""></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td>更新时间:</td>
-                    <td>
-                    <input class="easyui-datetimebox" name="update_date"     
-        data-options="required:true,showSeconds:false" value="" style="width:150px"/>  
-                        
-                    </td>
-                </tr>
-                  <tr>
-                    <td>创建时间:</td>
-                    <td>
-                     <input class="easyui-datetimebox" name="create_date"     
-        data-options="required:true,showSeconds:false" value="" style="width:150px"/> 
-                    </td>
-                </tr>
-                   <tr>
-                    <td>角色id:</td>
-                    <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="role" id="role" data-options=""></input>
-                    </td>
-                </tr>
-                   <tr>
                     <td>是否认证:</td>
                     <td>
                         <input class="easyui-textbox" style="width:250px" type="text" name="legalize" id="legalize" data-options=""></input>
@@ -203,10 +174,10 @@
 					    <thead >   
 					        <tr>   
 					            <th data-options="field:'name'"  style="width:100px">岗位名称</th>   
-					            <th data-options="field:'address'"  style="width:180px">工作地点</th>   
+					            <th data-options="field:'address'"  style="width:170px">工作地点</th>   
 					            <th data-options="field:'headcount'"  style="width:40px">人数</th>
 					            <th data-options="field:'nature'"  style="width:40px">性质</th>   
-					            <th data-options="field:'education'"  style="width:40px">学历</th>   
+					            <th data-options="field:'action',formatter:dataEntpostTableActionFormatter"  style="width:40px">操作</th>   
 					        </tr>   
 					    </thead>   
 					</table>  
@@ -217,16 +188,18 @@
 					     <table style="margin:10px">
                 <tr>
                     <td style="width:130px">岗位名称:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input></td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text"  name="name" data-options="required:true"></input>
+                    <input id="post_ent_name" class="" name="ent_name" type="text" style="display:none;" data-options="required:true"></input></td>
                 </tr>
                 <tr>
                     <td>岗位类别:</td>
-                    <td><input id="post_category_code" name="category_code" class="easyui-combotree" style="width:200px;"   
-        data-options="url:'json/category.json',required:true"></input></td>
+                    <td><input class="" style="width:250px;display:none;" type="text" id="post_category" name="category" data-options="required:true"></input>
+                    <input id="post_category_code" name="category_code" class="easyui-combotree" style="width:200px;"   
+        				data-options="url:'json/category.json',required:true,onHidePanel:function(){$('#post_category').val($('#post_category_code').textbox('getText'));}"></input></td>
                 </tr>
                 <tr>
                     <td>求职类型:</td>
-                   <td><input class="" style="width:250px;display:none;" type="text" id='post_nature' name="nature" data-options="required:true"></input>
+                   	<td><input class="" style="width:250px;display:none;" type="text" id='post_nature' name="nature" data-options="required:true"></input>
                    <input class="easyui-combobox" name="nature_code" id="post_nature_code" data-options="valueField:'value',textField:'text',url:'json/post_nature.json',
                     onHidePanel:function(){$('#post_nature').val( $('#post_nature_code').textbox('getText'));}" /> </td>
                 </tr>
@@ -242,27 +215,31 @@
                 
                 <tr>
                     <td>性别:</td>
-                    <td><input class="easyui-combobox" style="" type="text" name="gender" id="post_gender" data-options="data:[{'id':'1','text':'男'},{'id':'0','text':'女'},{'id':'-1','text':'不限'}]"></input></td>
+                    <td><input class="easyui-combobox" style="" type="text" name="gender" id="post_gender" data-options="valueField:'id',textField:'text',url:'json/gender.json'"></input></td>
                 </tr>
                 <tr>
                     <td>薪资:</td>
                     <td><input class="easyui-textbox" style="width:250px" type="text" name="salary" id="post_salary" data-options="required:true"></input></td>
                 </tr>
                 <tr>
+                 	<td>薪资类型：</td>
+                 	<td><input class="easyui-combobox" name="salary_type" id="post_salary_type" data-options="valueField:'value',textField:'text',url:'json/salary_type.json'"></input></td>
+                </tr>
+                <tr>
                     <td>工作经验:</td>
-                    <td><input class="" style="width:250px;display:none;" type="text" id='post_experience' name="experience_code" data-options="required:true"></input>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='post_experience' name="experience" data-options="required:true"></input>
                    <input class="easyui-combobox" name="experience_code" id="post_experience_code" data-options="valueField:'value',textField:'text',url:'json/experience.json',
                     onHidePanel:function(){$('#post_experience').val( $('#post_experience_code').textbox('getText'));}" /> </td>
                 </tr>
                 <tr>
                     <td>最低学历:</td>
-                    <td><input class="" style="width:250px;display:none;" type="text" id='post_education' name="education_code" data-options="required:true"></input>
+                    <td><input class="" style="width:250px;display:none;" type="text" id='post_education' name="education" data-options="required:true"></input>
                    <input class="easyui-combobox" name="education_code" id="post_education_code" data-options="valueField:'value',textField:'text',url:'json/education.json',
                     onHidePanel:function(){$('#post_education').val( $('#post_education_code').textbox('getText'));}" /> </td>
                 </tr>
                  <tr>
                     <td>标签:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="tag" id="post_tag" data-options="required:true"></input></td>
+                    <td><input class="easyui-textbox" style="width:250px" type="text" name="tag" id="post_tag" data-options=""></input></td>
                 </tr>
                  <tr>
                     <td>岗位介绍:</td>
@@ -271,11 +248,16 @@
                  <tr>
                     <td>区域:</td>
                     <td><input id="post_area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
-        data-options="url:'json/area.json',required:true"></input> </td>
+        data-options="url:'json/area.json',required:true,onChange:function(){$('#post_area').val($('#post_area_code').textbox('getText'));}"></input> 
+        			<input id="post_area" name="area" class="" style="display:none;" type="text" data-options="required:true"></input>
+        			</td>
                 </tr>
                  <tr>
                     <td>工作地点:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="address" id="post_address" data-options="required:true"></input></td>
+                    <td>
+                    	<input class="easyui-textbox" style="width:190px" type="text" name="address" id="post_address" data-options="required:true"></input>
+                    	<a id="post_address_linkbutton" class="easyui-linkbutton" style="width:50px" data-options="text:'定位',onClick:function(){BaiduMap('postMap', $('#post_address').textbox('getValue'));}"></a>
+                    </td>
                 </tr>
                  <tr>
                     <td>坐标:</td>
@@ -286,28 +268,6 @@
                     <td>地图:</td>
                     <td><div id ="postMap" style="width:250px;height:250px"></div></td>
                 </tr>
-                 <tr>
-                    <td>数据源:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_src" id="post_data_src" data-options="required:true"></input></td>
-                </tr>
-                 <tr>
-                    <td>唯一标识:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_key" id="post_data_key" data-options="required:true"></input></td>
-                </tr>
-                <tr>
-                    <td>企业唯一标识:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="data_ent_key" id="post_data_ent_key" data-options="required:true"></input></td>
-                </tr>
-                <tr>
-                    <td>更新时间:</td>
-                    <td><input class="easyui-datetimebox" name="update_date"     
-        data-options="required:true,showSeconds:false" value="" style="width:150px"/> </td>
-                </tr>
-                <tr>
-                    <td>创建时间:</td>
-                    <td><input class="easyui-datetimebox" name="create_date"     
-        data-options="required:true,showSeconds:false" value="" style="width:150px"/> </td>
-                </tr>
                 </table>
 					</form>  
 	    		</div>
@@ -315,9 +275,10 @@
 	</div>
 
 <div id="data-enterprise-update-footer" style="padding:5px;">
-	<a id="data-enterprise-update-confirm" class="easyui-linkbutton" onclick="submitFrom()"  style="width:80px">确定</a>
+	<a id="data-enterprise-update-confirm" class="easyui-linkbutton" onclick="submitEntFrom()"  style="width:80px">保存企业</a>
 	<a id="data-enterprise-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px">取消</a>
-	<a id="data-enterprise-update-cancel" class="easyui-linkbutton" onclick="closeWindow()" style="width:80px;float:right;">查看岗位</a>
+	<a id="data-entpost-update-save" class="easyui-linkbutton" onclick="submitPostFrom()" style="width:80px;float:right;">保存岗位</a>
+	<a id="data-entpost-update-reset" class="easyui-linkbutton" onclick="resetPostFrom()" style="width:80px;float:right;">添加岗位</a>
 </div>
 
 </div>
@@ -325,7 +286,11 @@
 <script type="text/javascript">
 	function dataEnterpriseTableActionFormatter(value, row) {
 		return '<a class="data-enterprise-table-look" onclick="openFromWindow('+row.id+',\''+row.data_key+'\')" data-enterprise="'  + row.id + '" style="cursor:pointer;color:blue">查看</a>'+
-		' <a class="data-talk-enterprise-delete" onclick="deleteData('+ row.id +')"  data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
+		' <a class="data-talk-enterprise-delete" onclick="deleteEntData('+ row.id +')"  data-enterprise="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
+	}
+	function dataEntpostTableActionFormatter(value, row){
+		return ' <a class="data-talk-entpost-delete" onclick="deletePostData('+ row.id +')"  data-entpost="' + row.id + '" style="cursor:pointer;color:blue">删除</a>';
+
 	}
 
 	$.render(function() {
@@ -336,25 +301,16 @@
 		var $postaddress=$('#post_address');
 		var $dataPostTable=$('#data-post-table');
 		
-		$entaddress.textbox({
-			onChange: function(addr){
-				BaiduMap("entMap", addr)
-			}
-		});
-		$postaddress.textbox({
-			onChange: function(addr){
-				BaiduMap("postMap", addr)
-			}
-		});
-		
 		$('#data-enterprise-table-upload').click(function() {
 			$dataEnterpriseUploadWindow.window('open');
 		});
 		$('#data-enterprise-table-add').click(function() {
 			$dataEnterpriseUpdateWindow.window({title:"新增"});
-			$('#data-enterprise-update-form').form("clear");
+			$('#data-enterprise-update-form').form("clear");  //清空ent表单
+			$('#data-post-form').form("clear");//清空post表单
+			$('#data-post-table').datagrid('loadData',{total:0,rows:[]});//清空post列表
 			$dataEnterpriseUpdateWindow.window("open");
-			
+			$('#ent_name').textbox({editable:true});
 		});
 		
 		$dataEnterpriseTableSource.combobox({
@@ -418,21 +374,19 @@
 		
 		$dataEnterpriseTable.datagrid({
 			url:'data/enterprise',
-			method:'get',
-			onLoadSuccess: function() {
-				$('.data-enterprise-table-look').click(function() {
-					console.log('look...');
-				})
-			}
+			method:'get'
 		});
 		$dataPostTable.datagrid ({
 			striped:true,
 			singleSelect:true,
 			onClickRow:function(rowIndex,rowData){
 				$('#data-post-form').form("clear");
+				$('#data-post-form').form({
+					onLoadSuccess: function(){
+						BaiduMap("postMap", rowData.address);
+					}
+				});
 				$('#data-post-form').form('load','data/entpost/getEntpost?id='+rowData.id);
-				console.log($('#post_address').textbox('getValue'))
-				BaiduMap("postMap","");
 			}
 		})
 		
@@ -475,18 +429,27 @@
 		$('#data-enterprise-update-window').window("open");
 		$('#data-enterprise-update-form').form("clear");
 		$('#data-post-form').form("clear");
+		$('#data-enterprise-update-form').form({
+			onLoadSuccess: function() {
+				$('#ent_name').textbox({editable:false});
+				BaiduMap('entMap', $('#ent_address').textbox('getValue'));
+			}
+		})
 		$('#data-enterprise-update-form').form('load','data/enterprise/getEnt?id='+id);
 		$('#data-post-table').datagrid({
 			url:'data/entpost/list?data_key='+data_key,
-			method:'get'
-		})
+			method:'get',
+			onLoadSuccess: function() {
+				BaiduMap('postMap', "");
+			}
+		});
 	}
 	
 	function BaiduMap(id,addr)
 	{
 		if (addr=="") addr="北京";
 		var map = new BMap.Map(id);  
-		map.centerAndZoom(addr,12);    
+		//map.centerAndZoom(addr);
 		map.setDefaultCursor("crosshair");
 		var $lat=null;
 		var $lon=null;
@@ -495,19 +458,32 @@
 			$lat=$('#ent_lbs_lat');
 			$lon=$('#ent_lbs_lon');
 			$address=$('#ent_address');
+		}else if(id=="userMap"){
+			$lat=$('#user_lbs_lat');
+			$lon=$('#user_lbs_lon');
+			$address=$('#user_address');
 		}else{
 			$lat=$('#post_lbs_lat');
 			$lon=$('#post_lbs_lon');
 			$address=$('#post_address');
 		}
+		var myGeo = new BMap.Geocoder();
+		// 将地址解析结果显示在地图上,并调整地图视野
+		myGeo.getPoint(addr, function(point){
+			if (point) {
+				map.centerAndZoom(point, 12);
+				map.addOverlay(new BMap.Marker(point));
+				$lon.textbox('setValue', point.lng);
+				$lat.textbox('setValue', point.lat);
+				$address.textbox('setValue', addr);
+			}
+		});
 		
-		map.clearOverlays();  
         var new_point = new BMap.Point($lon.textbox('getValue'),$lat.textbox('getValue'));
         // 创建标注  
         var marker = new BMap.Marker(new_point);  
         // 将标注添加到地图中  
         map.addOverlay(marker);  
-        map.panTo(new_point);  
         
 		//单击获取点击的经纬度
 		map.addEventListener("click",function(e){
@@ -519,12 +495,10 @@
 	        var marker = new BMap.Marker(new_point);  
 	        // 将标注添加到地图中  
 	        map.addOverlay(marker);  
-	        map.panTo(new_point);  
 	        var geoc = new BMap.Geocoder(); 
 	        var pt = e.point;
 			geoc.getLocation(pt, function(rs){
 				var addComp = rs.addressComponents;
-				//alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
 				$address.textbox("setValue",addComp.province+addComp.city+addComp.district+addComp.street+addComp.streetNumber);
 			});        
 	        
@@ -532,7 +506,7 @@
 	}
 	
 	//提交表单
-	function submitFrom(){
+	function submitEntFrom(){
 		var $dataEnterpriseUpdateWindow = $('#data-enterprise-upload-window');
 		//ent
 		$('#data-enterprise-update-form').form('submit', {
@@ -550,7 +524,9 @@
 				$.messager.show({title: '提示', msg: '执行成功！', timeout: 1000, showType: 'slide'});
 			}
 		});
-		
+	}
+	
+	function submitPostFrom(){
 		//post
 		$('#data-post-form').form('submit', {
 			url: 'data/entpost/saveEntpost',
@@ -571,17 +547,34 @@
 	
 		
 	}
+	
+	function resetPostFrom(){
+		$('#data-post-form').form("reset");
+		$('#post_ent_name').val($('#ent_name').textbox('getText'));
+	}
 	//关闭form窗口
 	function closeWindow(){
 		$('#data-enterprise-update-window').window('close');
 	}
 	//删除数据
-	function deleteData(id){
+	function deleteEntData(id){
 		$.post('data/enterprise/deleteEnt', {
 			id: id
 		}, function(resp) {
 			if(resp.success){
 				$('#data-enterprise-table').datagrid('reload'); 
+				$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
+			}else{
+				$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});
+			}
+		}, 'json'); 
+	}
+	function deletePostData(id){
+		$.post('data/entpost/deletePost', {
+			id: id
+		}, function(resp) {
+			if(resp.success){
+				$('#data-post-table').datagrid('reload'); 
 				$.messager.show({title: '提示', msg: '删除成功！', timeout: 1000, showType: 'slide'});
 			}else{
 				$.messager.show({title: '提示', msg: '删除失败！', timeout: 1000, showType: 'slide'});

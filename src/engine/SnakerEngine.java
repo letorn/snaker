@@ -164,6 +164,18 @@ public class SnakerEngine {
 	}
 	
 	/**
+	 * 是否存在实例
+	 * @param processId 流程主键
+	 * @return 是否存在
+	 */
+	public boolean hasInstance(Long processId) {
+		for (Workflow instance : instanceWorkflowIdMap.values())
+			if (processId.equals(instance.getProcessId()))
+				return true;
+		return false;
+	}
+	
+	/**
 	 * 获取流程实例
 	 * @param instanceId 实例主键
 	 * @return 流程实例
@@ -186,4 +198,16 @@ public class SnakerEngine {
 		return list;
 	}
 
+	/**
+	 * 实例活动状态
+	 * @param instanceId 实例主键
+	 * @return 是否正在活动
+	 */
+	public boolean instanceIsAlive(Long instanceId) {
+		Workflow instance = instanceWorkflowIdMap.get(instanceId);
+		if (notBlank(instance))
+			return instance.isAlive();
+		return false;
+	}
+	
 }

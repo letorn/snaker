@@ -77,7 +77,7 @@ public class SQLPlugin implements IPlugin {
 		try (Connection conn = dataSource.getConnection();) {
 			if (useDatabase(conn, database)) {
 				if (!runScript(conn, "/db/schema-test.sql", true)) {
-					String[] schemas = new String[] { "/db/schema-mysql.sql", "/db/init-data.sql" };
+					String[] schemas = new String[] { "/db/schema-mysql.sql", "/db/init-data.sql", "/db/growth_proc.sql" };
 					for (String schema : schemas)
 						runScript(conn, schema, false);
 				}

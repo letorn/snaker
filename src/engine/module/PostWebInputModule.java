@@ -49,6 +49,16 @@ public class PostWebInputModule extends Module {
 	}
 	
 	@Override
+	public boolean isAlive() {
+		return spider.getStatus() == Spider.Status.Running;
+	}
+	
+	@Override
+	public void stop() {
+		spider.stop();
+	}
+	
+	@Override
 	public void run() {
 		if (spider.getStatus() == Spider.Status.Init) {
 			if (headers != null && headers.size() > 0) {
@@ -217,8 +227,6 @@ public class PostWebInputModule extends Module {
 
 		public void close() throws IOException {
 			output();
-			snakerProcessor = new SnakerProcessor();
-			spider = Spider.create(snakerProcessor);
 		}
 		
 		private void output() {

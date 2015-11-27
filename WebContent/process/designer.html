@@ -1000,6 +1000,7 @@
 							{name:'age',from:'age',default:''},
 							{name:'gender',from:'gender',default:''},
 							{name:'salary',from:'salary',default:''},
+							{name:'salary_type',from:'salary_type',default:''},
 							{name:'tag',from:'tag',default:''},
 							{name:'troduction',from:'troduction',default:''},
 							{name:'areaCode',from:'areaCode',default:''},
@@ -1039,6 +1040,29 @@
 							{name:'datakey',from:'datakey',default:''}
 
 							 ]
+				 }
+				if(procName == 'save_or_update_jobfair') {
+					fields = [{name:'de_title',from:'de_title',default:''},
+					          {name:'de_intro',from:'de_intro',default:''},
+					          {name:'de_fair_type',from:'de_fair_type',default:''},
+					          {name:'de_start_time',from:'de_start_time',default:''},
+					          {name:'de_end_time',from:'de_end_time',default:''},
+					          {name:'de_contacts',from:'de_contacts',default:''},
+					          {name:'de_phone',from:'de_phone',default:''},
+					          {name:'de_area_code',from:'de_area_code',default:''},
+					          {name:'de_address',from:'de_address',default:''},
+					          {name:'de_signup_start_time',from:'de_signup_start_time',default:''},
+					          {name:'de_signup_ent_time',from:'de_signup_ent_time',default:''},
+					          {name:'de_remark',from:'de_remark',default:''},
+					          {name:'de_data_src',from:'de_data_src',default:''},
+					          {name:'de_data_key',from:'de_data_key',default:''},
+					          {name:'de_status',from:'de_status',default:''},
+					          {name:'de_sign_status',from:'de_sign_status',default:''},
+					          {name:'de_signInType',from:'de_signInType',default:''},
+					          {name:'de_url_type',from:'de_url_type',default:''},
+					          {name:'url',from:'url',default:''},
+					          {name:'data_org_key',from:'data_org_key',default:''}]
+							 
 				 }
 				
 				for (var i = 0; i < fields.length; i ++) {
@@ -1121,12 +1145,6 @@
 					}];
 				}
 				
-				if (tableName == 'blog') {
-					fields = [{name:'title',from:'title'},{
-							name:'content',from:'content'},{
-							name:'test',from:'test'}
-							];
-				}
 				if (tableName == 'db_enterprise') {
 					fields = [{name:'name',from:'name',notnull:'true'},
 					          {name:'account',from:'account',notnull:'false'},
@@ -1154,7 +1172,6 @@
 					          {name:'mobile',from:'mobile',notnull:'false'},
 					          {name:'email',from:'email',notnull:'false'},
 					          {name:'qq',from:'qq',notnull:'false'},
-					          {name:'visit_count',from:'visit_count',notnull:'false'},
 					          {name:'data_src',from:'data_src',notnull:'true'},
 					          {name:'data_key',from:'data_key',notnull:'true'},
 					          {name:'update_date',from:'update_date',notnull:'false'},
@@ -1174,6 +1191,7 @@
 								name:'age',from:'age',notnull:'false'},{
 								name:'gender',from:'gender',notnull:'false'},{
 								name:'salary',from:'salary',notnull:'false'},{
+								name:'salary_type',from:'salary_type',notnull:'false'},{
 								name:'experience',from:'experience',notnull:'false'},{
 								name:'experience_code',from:'experience_code',notnull:'false'},{
 								name:'education',from:'education',notnull:'false'},{
@@ -1241,8 +1259,123 @@
 					          {name:'data_src',from: 'data_src',notnull:'false'},
 					          {name:'data_key',from: 'data_key',notnull:'false'},
 					          {name:'update_date',from: 'update_date',notnull:'false'},
-					          {name:'create_date',from: 'create_date',notnull:'false'}
-					         ];
+					          {name:'create_date',from: 'create_date',notnull:'false'}];
+				}
+				if (tableName == 'vi_enterprise') {
+					fields = [{name:'name',from:'name',notnull:'true'},
+					          {name:'account',from:'account',notnull:'false'},
+					          {name:'category',from:'category',notnull:'false'},
+					          {name:'category_code',from:'category_code',notnull:'true'},
+					          {name:'nature',from:'nature',notnull:'false'},
+					          {name:'nature_code',from:'nature_code',notnull:'false'},
+					          {name:'scale',from:'scale',notnull:'false'},
+					          {name:'scale_code',from:'scale_code',notnull:'false'},
+					          {name:'tag',from:'tag',notnull:'false'},
+					          {name:'establish',from:'establish',notnull:'false'},
+					          {name:'introduction',from:'introduction',notnull:'false'},
+					          {name:'area',from:'area',notnull:'false'},
+					          {name:'area_code',from:'area_code',notnull:'false'},
+					          {name:'address',from:'address',notnull:'false'},
+					          {name:'lbs_lon',from:'lbs_lon',notnull:'false'},
+					          {name:'lbs_lat',from:'lbs_lat',notnull:'false'},
+					          {name:'website',from:'website',notnull:'false'},
+					          {name:'orgains',from:'orgains',notnull:'false'},
+					          {name:'license',from:'license',notnull:'false'},
+					          {name:'contacter',from:'contacter',notnull:'false'},
+					          {name:'public_contact',from:'public_contact',notnull:'false'},
+					          {name:'phone',from:'phone',notnull:'false'},
+					          {name:'fax',from:'fax',notnull:'false'},
+					          {name:'mobile',from:'mobile',notnull:'false'},
+					          {name:'email',from:'email',notnull:'false'},
+					          {name:'qq',from:'qq',notnull:'false'},
+					          {name:'data_src',from:'data_src',notnull:'true'},
+					          {name:'data_key',from:'data_key',notnull:'true'},
+					          {name:'update_date',from:'update_date',notnull:'false'},
+					          {name:'create_date',from:'create_date',notnull:'false'},
+					          {name:'role',from:'role',notnull:'true'},
+					          {name:'legalize',from:'legalize',notnull:'true'}
+							];
+				}
+				if (tableName == 'vi_entpost') {
+					fields = [
+								{name:'name',from:'name',notnull:'false'},{
+								name:'category',from:'category',notnull:'false'},{
+								name:'category_code',from:'category_code',notnull:'false'},{
+								name:'nature',from:'nature',notnull:'false'},{
+								name:'nature_code',from:'nature_code',notnull:'false'},{
+								name:'headcount',from:'headcount',notnull:'false'},{
+								name:'age',from:'age',notnull:'false'},{
+								name:'gender',from:'gender',notnull:'false'},{
+								name:'salary',from:'salary',notnull:'false'},{
+								name:'salary_type',from:'salary_type',notnull:'false'},{
+								name:'experience',from:'experience',notnull:'false'},{
+								name:'experience_code',from:'experience_code',notnull:'false'},{
+								name:'education',from:'education',notnull:'false'},{
+								name:'education_code',from:'education_code',notnull:'false'},{
+								name:'tag',from:'tag',notnull:'false'},{
+								name:'introduction',from:'introduction',notnull:'false'},{
+								name:'area',from:'area',notnull:'false'},{
+								name:'area_code',from:'area_code',notnull:'false'},{
+								name:'address',from:'address',notnull:'false'},{
+								name:'lbs_lon',from:'lbs_lon',notnull:'false'},{
+								name:'lbs_lat',from:'lbs_lat',notnull:'false'},{
+								name:'data_src',from:'data_src',notnull:'false'},{
+								name:'data_key',from:'data_key',notnull:'false'},{
+								name:'data_ent_key',from:'data_ent_key',notnull:'false'},{
+								name:'update_date',from:'update_date',notnull:'false'},{
+								name:'create_date',from:'create_date',notnull:'false'}];
+				}
+				if (tableName == 'vi_jobhunter') {
+					fields = [
+								{name:'name',from: 'name',notnull:'false'},
+								{name:'account',from: 'account',notnull:'false'},
+								{name:'account_status',from: 'account_status',notnull:'false'},
+								{name:'gender',from: 'gender',notnull:'false'},
+								{name:'nation',from: 'nation',notnull:'false'},
+								{name:'mobile',from: 'mobile',notnull:'false'},
+								{name:'email',from: 'email',notnull:'false'},
+								{name:'qq',from: 'qq',notnull:'false'},
+								{name:'experience',from: 'experience',notnull:'false'},
+								{name:'experience_code',from: 'experience_code',notnull:'false'},
+								{name:'education',from: 'education',notnull:'false'},
+								{name:'education_code',from: 'education_code',notnull:'false'},
+								{name:'major',from: 'major',notnull:'false'},
+								{name:'household',from: 'household',notnull:'false'},
+								{name:'polity',from: 'polity',notnull:'false'},
+								{name:'category',from: 'category',notnull:'false'},
+								{name:'category_code',from: 'category_code',notnull:'false'},
+								{name:'hunter_status',from: 'hunter_status',notnull:'false'},
+								{name:'hunter_status_code',from: 'hunter_status_code',notnull:'false'},
+								{name:'marriage',from: 'marriage',notnull:'false'},
+								{name:'cert_type',from: 'cert_type',notnull:'false'},
+								{name:'cert_id',from: 'cert_id',notnull:'false'},
+								{name:'birth',from: 'birth',notnull:'false'},
+								{name:'height',from: 'height',notnull:'false'},
+								{name:'weight',from: 'weight',notnull:'false'},
+								{name:'location',from: 'location',notnull:'false'},
+								{name:'location_code',from: 'location_code',notnull:'false'},
+								{name:'address',from: 'address',notnull:'false'},
+								{name:'lbs_lon',from: 'lbs_lon',notnull:'false'},
+								{name:'lbs_lat',from: 'lbs_lat',notnull:'false'},
+								{name:'curr_ent',from: 'curr_ent',notnull:'false'},
+								{name:'curr_ent_phone',from: 'curr_ent_phone',notnull:'false'},
+								{name:'curr_post',from: 'curr_post',notnull:'false'},
+								{name:'curr_post_code',from: 'curr_post_code',notnull:'false'},
+								{name:'data_src',from: 'data_src',notnull:'false'},
+								{name:'data_key',from: 'data_key',notnull:'false'},
+								{name:'update_date',from: 'update_date',notnull:'false'},
+								{name:'create_date',from: 'create_date',notnull:'false'},
+								{name:'self_comment',from: 'self_comment',notnull:'false' }];
+				}
+				if (tableName == 'vi_talk') {
+					fields = [{name:'id',from: 'id',notnull:'false'},
+					          {name:'title',from: 'title',notnull:'false'},
+					          {name:'content',from: 'content',notnull:'false'},
+					          {name:'source',from: 'source',notnull:'false'},
+					          {name:'data_src',from: 'data_src',notnull:'false'},
+					          {name:'data_key',from: 'data_key',notnull:'false'},
+					          {name:'update_date',from: 'update_date',notnull:'false'},
+					          {name:'create_date',from: 'create_date',notnull:'false'}];
 				}
 				for (var i = 0; i < fields.length; i ++) {
 					var exist = false;
@@ -1282,6 +1415,9 @@
 				},{
 					text: 'save_or_update_information',
 					value: 'save_or_update_information'
+				},{
+					text: 'save_or_update_jobfair',
+					value: 'save_or_update_jobfair'
 				}]
 			}
 		};
@@ -1314,6 +1450,9 @@
 					},{
 						text: '个人信息查询',
 						value: 'hbjyweb_webservice_cc20_xml_task'
+					},{
+						text: '招聘会信息查询',
+						value: 'hbjyweb_webservice_cb33_xml_task'
 					}],
 					onSelect: function(record){
 						if(record.value=='hbjyweb_webservice_cb20_xml_task'){
@@ -1377,6 +1516,22 @@
 				{
 					text: 'db_talk',
 					value: 'db_talk'
+				},
+				{
+					text: 'vi_entpost',
+					value: 'vi_entpost'
+				},
+				{
+					text: 'vi_enterprise',
+					value: 'vi_enterprise'
+				},
+				{
+					text: 'vi_jobhunter',
+					value: 'vi_jobhunter'
+				},
+				{
+					text: 'vi_talk',
+					value: 'vi_talk'
 				}]
 			}
 		};

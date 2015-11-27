@@ -1,5 +1,9 @@
 package engine.module;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import util.DuXMLDoc;
 import util.HbClient;
 import engine.ModuleData;
@@ -20,13 +24,14 @@ public class HbInputModule extends Module  {
 	//private String interfaceName="hbjyweb_webservice_cb20_xml_task";
 	private String interfaceName;
 	String appName = "职场导航网络科技有限公司"; 
-	
+	private SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd");
+	java.util.Calendar calendar = java.util.Calendar.getInstance();
+     
 	private String ACB200; //经办机构区划代码
 	private String AAF036_1="20150101";//最后一次修改经办日期起始
 	private String AAF036_2="20150101"; //最后一次修改经办日期终止
 	private String p=null;  // 参数 xml字符串
 	private String AAC001;  //AAC001
-	
 	
 	
 	//private List<Map<String, Object>> tableFields;
@@ -58,11 +63,22 @@ public class HbInputModule extends Module  {
 			p = "<maps>"+
 					"<map><key><![CDATA[AAC001]]></key><value><![CDATA["+(AAC001==null||AAC001.equals("")?"%":AAC001)+"]]></value></map>" +
 				"</maps>";
+		}else if(interfaceName.equals("hbjyweb_webservice_cb33_xml_task")){
+			String today=sdf.format(calendar.getTime());//今天
+			calendar.add(Calendar.DATE, -3);//3天后
+			String threeDay=sdf.format(calendar.getTime());//3天后
+			//招聘会信息查询
+			p = "<maps>"+
+					"<map><key><![CDATA[ACB331]]></key><value><![CDATA[%]]></value></map> "+
+					"<map><key><![CDATA[AAF036_1]]></key><value><![CDATA["+threeDay+"]]></value></map>"+
+					"<map><key><![CDATA[AAF036_2]]></key><value><![CDATA["+today+"]]></value></map>"+ 
+					"<map><key><![CDATA[AAE022]]></key><value><![CDATA[%]]></value></map> "+
+				"</maps>";
 		} 
 		try {
 			HbClient client = new HbClient(dxUrl, dxUser, dxPwd, "get");
 			Object[] resps = client.execute(appName, interfaceName, p);
-			//System.out.println(resps[1]);
+			System.out.println(resps[1]);
 			DuXMLDoc doc = new DuXMLDoc();
 			inputs= doc.xmlElements(resps[1].toString());
 		} catch (Exception e) {

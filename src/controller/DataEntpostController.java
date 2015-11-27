@@ -3,6 +3,7 @@ package controller;
 import static util.Validator.blank;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +40,7 @@ public class DataEntpostController extends Controller {
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	private List<Object> dataList = new ArrayList<Object>();
+	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**
 	 * 列表
@@ -61,36 +63,12 @@ public class DataEntpostController extends Controller {
 		renderJson(dataMap);
 	}
 
-	/**
-	 * 获取所有企业所属行业
-	 */
-	public void categories() {
-		List<UtIndustry> industries = UtIndustry.dao.find("select i.name,i.code,ii.name parent_name,ii.code parent_code from ut_industry i join ut_industry ii on ii.code=i.parent");
-		
-		Map<String, Object> parentMap = new HashMap<String, Object>();
-		for (UtIndustry industry : industries) {
-			if (!industry.getStr("parent_name").equals(parentMap.get("text"))) {
-				parentMap = new HashMap<String, Object>();
-				parentMap.put("text", industry.getStr("parent_name"));
-				parentMap.put("state", "closed");
-				parentMap.put("children", new ArrayList<Map<String, Object>>());
-				dataList.add(parentMap);
-			}
-			Map<String, Object> nodeMap = new HashMap<String, Object>();
-			nodeMap.put("text", industry.getStr("name"));
-			nodeMap.put("code", industry.getStr("code"));
-			List<Map<String, Object>> children = (List<Map<String, Object>>) parentMap.get("children");
-			children.add(nodeMap);
-		}
-		renderJson(dataList);
-	}
-	
+
 	
 	public void getEntpost(){
 		String id = getPara("id");
-		Record record = Db.findFirst("SELECT id,name,category,category_code,nature,nature_code,headcount,age,gender,salary,experience,experience_code,"
-				+ "education,education_code,tag,introduction,area,area_code,address,lbs_lon,lbs_lat,data_src,data_key,data_ent_key,update_date,"
-				+ "create_date,syn_status,syn_date,syn_message FROM   vi_entpost   WHERE id ="+id);
+		Record record = Db.findFirst("SELECT id,name,category,category_code,nature,nature_code,headcount,age,gender,salary,salary_type,experience,experience_code,"
+				+ "education,education_code,tag,introduction,area,area_code,address,lbs_lon,lbs_lat FROM   vi_entpost   WHERE id ="+id);
 		renderJson(record);
 	}
 	public void saveEntpost(){
@@ -117,15 +95,22 @@ public class DataEntpostController extends Controller {
 		lbs_lat =Double.parseDouble(getPara("lbs_lat"));
 		}
 		String salary =getPara("salary");
+		Integer salary_type = getParaToInt("salary_type");
 		String experience =getPara("experience");
 		String experience_code =getPara("experience_code");
 		String education =getPara("education");
 		String education_code =getPara("education_code");
-		String data_ent_key =getPara("data_ent_key");
-		String data_src =getPara("data_src");
-		String data_key =getPara("data_key");
-		Date update_date =getParaToDate("update_date")==null?new Date():getParaToDate("update_date");
-		Date create_date =getParaToDate("create_date")==null?new Date():getParaToDate("create_date");
+		String ent_name = getPara("ent_name");
+		Date update_date = null;
+		Date create_date = null;
+		try {
+			update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():sdf.parse(getPara("update_date"));
+			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	
 		boolean isSuccess=true;
 		if(id!=null && !id.equals("")){
@@ -145,13 +130,12 @@ public class DataEntpostController extends Controller {
 				.set("lbs_lon",lbs_lon)
 				.set("lbs_lat",lbs_lat)
 				.set("salary",salary)
+				.set("salary_type", salary_type)
 				.set("experience",experience)
 				.set("experience_code",experience_code)
 				.set("education",education)
 				.set("education_code",education_code)
-				.set("data_ent_key",data_ent_key)
-				.set("data_src",data_src)
-				.set("data_key",data_key)
+				.set("syn_status", 2)
 				.set("update_date",update_date)
 				.set("create_date",create_date).update();
 		}else{
@@ -171,13 +155,14 @@ public class DataEntpostController extends Controller {
 					.set("lbs_lon",lbs_lon)
 					.set("lbs_lat",lbs_lat)
 					.set("salary",salary)
+					.set("salary_type", salary_type)
 					.set("experience",experience)
 					.set("experience_code",experience_code)
 					.set("education",education)
 					.set("education_code",education_code)
-					.set("data_ent_key",data_ent_key)
-					.set("data_src",data_src)
-					.set("data_key",data_key)
+					.set("data_ent_key",ent_name)
+					.set("data_src","snaker")
+					.set("data_key",ent_name + "-" + name + "-" + area)
 					.set("update_date",update_date)
 					.set("create_date",create_date).save();
 		}

@@ -44,11 +44,14 @@ public class DataTalkController extends Controller {
 	public void index() {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
+		String source = getPara("source", "");
 		String title = getPara("title", "");
 		if (page < 1) page = 1;
 		if (rows < 1) rows = 1;
 
-		Page<ViTalk> pager = ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key", "from vi_talk where title like ?", "%" + title + "%");
+		Page<ViTalk> pager = blank(source) ?
+				ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where title like ?", "%" + title + "%") :
+				ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where data_src=? and title like ?", source, "%" + title + "%");
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -76,37 +79,39 @@ public class DataTalkController extends Controller {
 		String date = dateFormat.format(new Date());
 		String source = getPara("source");
 		String field = getPara("field");
+		Integer page = getParaToInt("page", 1);
+		Integer rows = getParaToInt("rows", 20);
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 
-		List<ViTalk> talks = null;
+		Page<ViTalk> talks = null;
 		if ("day_new".equals(field)) {
 			if ("全部".equals(source)) {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where create_date between ? and ?", beginTime, endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where create_date between ? and ?", beginTime, endTime);
 			} else {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where source=? and create_date between ? and ?", source, beginTime, endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where source=? and create_date between ? and ?", source, beginTime, endTime);
 			}
 		} else if("syn".equals(field)) {
 			if ("全部".equals(source)) {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where create_date<? and syn_status=1", endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where create_date<? and syn_status=1", endTime);
 			} else {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where source=? and create_date<? and syn_status=1", source, endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where source=? and create_date<? and syn_status=1", source, endTime);
 			}
 		} else if("day_syn".equals(field)) {
 			if ("全部".equals(source)) {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where create_date between ? and ? and syn_status=1", beginTime, endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where create_date between ? and ? and syn_status=1", beginTime, endTime);
 			} else {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where source=? and create_date between ? and ? and syn_status=1", source, beginTime, endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where source=? and create_date between ? and ? and syn_status=1", source, beginTime, endTime);
 			}
 		} else {
 			if ("全部".equals(source)) {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where create_date<?", endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where create_date<?", endTime);
 			} else {
-				talks = ViTalk.dao.find("select id, title, data_src, data_key from vi_talk where source=? and create_date<?", source, endTime);
+				talks = ViTalk.dao.paginate(page, rows, "select id, title, data_src, data_key", "from vi_talk where source=? and create_date<?", source, endTime);
 			}
 		}
-		dataMap.put("total", talks.size());
-		dataMap.put("rows", talks);
+		dataMap.put("total", talks.getTotalRow());
+		dataMap.put("rows", talks.getList());
 		renderJson(dataMap);
 	}
 	
@@ -163,7 +168,7 @@ public class DataTalkController extends Controller {
 	 */
 	public void getTalk(){
 		String id = getPara("id");
-		List<Record> records =Db.find("SELECT id,title,content,source,data_src,data_key,update_date,create_date,syn_status,syn_date,syn_message FROM vi_talk where id ="+id +" limit 1");
+		List<Record> records =Db.find("SELECT id,title,content,source,data_src,data_key,syn_status,syn_date,syn_message FROM vi_talk where id ="+id +" limit 1");
 		renderJson(records);
 	}
 	
@@ -176,7 +181,27 @@ public class DataTalkController extends Controller {
 		String data_key=getPara("data_key");
 		Date update_time=getParaToDate("update_time");
 		Date create_time=getParaToDate("create_time");
-		boolean isSuccess=ViTalk.dao.findById(id).set("title", title).set("content", content).set("source", source).set("data_src", data_src).set("data_key", data_key).set("update_date", update_time).set("create_date", create_time).update();
+		boolean isSuccess=false;
+		if(id==null ||id.equals("")){
+			isSuccess=new ViTalk()
+					.set("title", title)
+					.set("content", content)
+					.set("source", source)
+					.set("data_src", data_src)
+					.set("data_key", data_key)
+					.set("update_date", update_time)
+					.set("create_date", create_time).save();
+		}else{
+			isSuccess=ViTalk.dao.findById(id)
+				.set("title", title)
+				.set("content", content)
+				.set("source", source)
+				.set("data_src", data_src)
+				.set("data_key", data_key)
+				.set("syn_status", 2)
+				.set("update_date", update_time)
+				.set("create_date", create_time).update();
+		}
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}

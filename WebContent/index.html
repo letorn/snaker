@@ -10,6 +10,8 @@
 <link rel="stylesheet" type="text/css" href="common/easyui/themes/icon.css">
 <script type="text/javascript" src="common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="common/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=10825252807d0ece8b0a30ce892ff059"></script>
+
 <script type="text/javascript">
 	$(function() {
 		$.render = function(render) {
@@ -32,6 +34,7 @@
 		editor.Enterprise = {
 				$window: $('#enterprise-list-window'),
 				$table: $('#enterprise-list-table'),
+				$pager: $('#enterprise-list-pager'),
 				$btnConfirm: $('#enterprise-list-confirm'),
 				show: function() {
 					editor.Enterprise.$window.window('open', true);
@@ -53,18 +56,49 @@
 							_this.$table.datagrid({
 								data: resp.rows
 							});
+							_this.$pager.pagination('refresh', {
+								total: resp.total
+							});
 							_this.show();
 						}
 					}, 'json');
 					_this.$btnConfirm.click(function() {
 						_this.$window.window('close', true);
-					})
+					});
+					_this.$pager.pagination({
+						onBeforeRefresh: function(page, pageSize) {
+							$(this).data("refresh", true);
+						},
+						onSelectPage: function(page, pageSize) {
+							$.post('data/enterprise/display', {
+								category: category,
+								field: field,
+								beginTime: beginTime,
+								endTime: endTime,
+								page: page,
+								rows: pageSize
+							}, function(resp){
+								if (resp.total == 0) {
+									$.messager.show({title: '提示', msg: '您所查询的企业个数为0！', timeout: 1000, showType: 'slide'});
+								} else {							
+									_this.$table.datagrid({
+										data: resp.rows
+									});
+									_this.$pager.pagination('refresh', {
+										total: resp.total
+									});
+									_this.show();
+								}
+							}, 'json');
+						}
+					});
 				}
 		}
 		
 		editor.Jobhunter = {
 				$window: $('#jobhunter-list-window'),
 				$table: $('#jobhunter-list-table'),
+				$pager: $('#jobhunter-list-pager'),
 				$btnConfirm: $('#jobhunter-list-confirm'),
 				show: function() {
 					editor.Jobhunter.$window.window('open', true);
@@ -86,18 +120,46 @@
 							_this.$table.datagrid({
 								data: resp.rows
 							});
+							_this.$pager.pagination('refresh', {
+								total: resp.total
+							});
 							_this.show();
 						}
 					}, 'json');
 					_this.$btnConfirm.click(function() {
 						_this.$window.window('close', true);
-					})
+					});
+					_this.$pager.pagination({
+						onSelectPage: function(page, pageSize) {
+							$.post('data/jobhunter/display', {
+								category: category,
+								field: field,
+								beginTime: beginTime,
+								endTime: endTime,
+								page: page,
+								rows: pageSize
+							}, function(resp) {
+								if (resp.total == 0) {
+									$.messager.show({title: '提示', msg: '您所查询的求职者人数为0！', timeout: 1000, showType: 'slide'});
+								} else {							
+									_this.$table.datagrid({
+										data: resp.rows
+									});
+									_this.$pager.pagination('refresh', {
+										total: resp.total
+									});
+									_this.show();
+								}
+							}, 'json');
+						}
+					});
 				}
 		}
 		
 		editor.Talk = {
 				$window: $('#talk-list-window'),
 				$table: $('#talk-list-table'),
+				$pager: $('#talk-list-pager'),
 				$btnConfirm: $('#talk-list-confirm'),
 				show: function() {
 					editor.Talk.$window.window('open', true);
@@ -119,12 +181,39 @@
 							_this.$table.datagrid({
 								data: resp.rows
 							});
+							_this.$pager.pagination('refresh', {
+								total: resp.total
+							});
 							_this.show();
 						}
 					}, 'json');
 					_this.$btnConfirm.click(function() {
 						_this.$window.window('close', true);
-					})
+					});
+					_this.$pager.pagination({
+						onSelectPage: function(page, pageSize) {
+							$.post('data/talk/display', {
+								source: source,
+								field: field,
+								beginTime: beginTime,
+								endTime: endTime,
+								page: page,
+								rows: pageSize
+							}, function(resp) {
+								if (resp.total == 0) {
+									$.messager.show({title: '提示', msg: '您所查询的宣讲会数量为0！', timeout: 1000, showType: 'slide'});
+								} else {							
+									_this.$table.datagrid({
+										data: resp.rows
+									});
+									_this.$pager.pagination('refresh', {
+										total: resp.total
+									});
+									_this.show();
+								}
+							}, 'json');
+						}
+					});
 				}
 		}
 		
@@ -345,6 +434,7 @@
 			</thead>
 		</table>
 		<div id="enterprise-list-footer" style="padding:5px;">
+			<div id="enterprise-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
 			<a id="enterprise-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
 		</div>
 	</div>
@@ -360,6 +450,7 @@
 			</thead>
 		</table>
 		<div id="jobhunter-list-footer" style="padding:5px;">
+			<div id="jobhunter-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
 			<a id="jobhunter-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
 		</div>
 	</div>
@@ -375,6 +466,7 @@
 			</thead>
 		</table>
 		<div id="talk-list-footer" style="padding:5px;">
+			<div id="talk-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
 			<a id="talk-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
 		</div>
 	</div>

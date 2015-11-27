@@ -60,6 +60,14 @@ public abstract class Module implements Runnable {
 	public void stop() {}
 	
 	/**
+	 * 组件活动状态
+	 * @return 是否正在活动
+	 */
+	public boolean isAlive() {
+		return false;
+	}
+	
+	/**
 	 * 运行模型
 	 */
 	public void run(ModuleData inputs) {

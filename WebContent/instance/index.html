@@ -5,6 +5,7 @@
 			<th data-options="field:'processName'" style="width:150px">流程名称</th>
 			<th data-options="field:'instanceParams'" style="width:320px">实例参数</th>
 			<th data-options="field:'instanceCreateDate'" style="width:130px">创建时间</th>
+			<th data-options="field:'instanceIsAlive',formatter:function(v){return v?'是':'否'}" style="width:60px">正在活动</th>
 			<th data-options="field:'action',formatter:instanceIndexTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
@@ -14,7 +15,8 @@
 </div>
 <script type="text/javascript">
 	function instanceIndexTableActionFormatter(value, row) {
-		return '<a class="instance-index-table-look" data-instance="' + row.instanceId + '" style="cursor:pointer;color:blue">查看</a>';
+		return '<a class="instance-index-table-look" data-instance="' + row.instanceId + '" style="cursor:pointer;color:blue">查看</a>&nbsp;&nbsp;' +
+				'<a class="instance-index-table-stop" data-instance="' + row.instanceId + '" style="cursor:pointer;color:blue">停止</a>';
 	}
 
 	$.render(function() {
@@ -34,6 +36,15 @@
 			onLoadSuccess: function() {
 				$('.instance-index-table-look').click(function() {
 					window.open('instance/all/' + $(this).data('instance'));
+				});
+				$('.instance-index-table-stop').click(function() {
+					$.getJSON('instance/stop/' + $(this).data('instance'), function(resp) {
+						if(resp.success) {
+							$.messager.show({title: '提示', msg: '停止成功！', timeout: 1000, showType: 'slide'});
+						} else {
+							$.messager.show({title: '提示', msg: '停止失败！', timeout: 1000, showType: 'slide'});
+						}
+					});
 				});
 			}
 		});
