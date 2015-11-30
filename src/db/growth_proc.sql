@@ -1,5 +1,5 @@
--- drop procedure if exists growth_proc;
 delimiter $$
+drop procedure if exists `growth_proc`$$
 create procedure `growth_proc`(in de_prefix varchar(255),out col varchar(255))
 begin
 declare de_id bigint;

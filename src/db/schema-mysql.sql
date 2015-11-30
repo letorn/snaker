@@ -1,3 +1,11 @@
+-- drop database if exists snaker_test;
+-- create database if not exists snaker_test default character set utf8;
+-- use snaker_test;
+
+-- drop database if exists snaker;
+-- create database if not exists snaker default character set utf;
+-- use snaker;
+
 -- drop table if exists wf_process;
 create table if not exists wf_process(
 	id bigint primary key auto_increment,
@@ -133,9 +141,9 @@ create table if not exists vi_entpost(
 	salary varchar(50) default -1 comment '薪资待遇. 1000-2000, -1 面议',
 	salary_type tinyint default 1 comment '薪资类型. 1 月薪, 2 时薪, 3 日薪, 4 计次, 5 年薪',
 	experience varchar(50) default '不限' comment '工作年限. 005.009 不限',
-	experience_code default '005.009' varchar(11),
+	experience_code varchar(11) default '005.009',
 	education varchar(50) default '不限' comment '最低学历. 004.011 不限',
-	education_code default '004.011' varchar(11),
+	education_code varchar(11) default '004.011',
 	tag varchar(255) comment '职位标签',
 	introduction text,
 	area varchar(50) comment '工作地区. 二级',

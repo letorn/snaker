@@ -61,7 +61,7 @@ public class ProcessController extends Controller{
 			data.put("id", workflow.getProcessId());
 			data.put("name", workflow.getProcessName());
 			data.put("content", workflow.getProcessContent());
-			data.put("update_date", workflow.getProcessUpdateDate());
+			data.put("update_date", dateFormat.format(workflow.getProcessUpdateDate()));
 			dataList.add(data);
 		}
 		

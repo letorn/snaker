@@ -40,7 +40,7 @@ public class IndexController extends Controller {
 		SkAdmin admin = SkAdmin.dao.findFirst("select * from sk_admin where account=? and password=?", account, password);
 		if (notBlank(admin)) {
 			setSessionAttr("admin", admin);
-			render("/index.html");
+			redirect("/index.html");
 		} else {
 			setAttr("error", "用户名或密码错误！");
 			render("/login.html");
