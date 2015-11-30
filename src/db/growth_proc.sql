@@ -1,5 +1,7 @@
 delimiter $$
+
 drop procedure if exists `growth_proc`$$
+
 create procedure `growth_proc`(in de_prefix varchar(255),out col varchar(255))
 begin
 declare de_id bigint;
@@ -25,11 +27,9 @@ values
         de_prefix,
         6
     ) ;
-    set de_current=1;
-    set de_step=1;
-    set de_len=6;
-end if;
+   end if;
 loop_label: loop
+select id,current,step,len into de_id,de_current,de_step,de_len from ut_growth where prefix=de_prefix limit 1;
 update 
     `ut_growth`
 set
@@ -44,7 +44,7 @@ then
     set re=concat(de_prefix,de_current);
     
 end if;
-select count(*) into num from zcdh_uni.`zcdh_ent_account` where account=re;
+select count(*) into num from zcdh_uni_test.`zcdh_ent_account` where account=re;
 if num =0
 then
 	set col=re;
@@ -52,4 +52,5 @@ then
 end if;
 end loop;
 end$$
+
 delimiter ;

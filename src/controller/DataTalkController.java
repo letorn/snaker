@@ -168,7 +168,7 @@ public class DataTalkController extends Controller {
 	 */
 	public void getTalk(){
 		String id = getPara("id");
-		List<Record> records =Db.find("SELECT id,title,content,source,data_src,data_key,syn_status,syn_date,syn_message FROM vi_talk where id ="+id +" limit 1");
+		List<Record> records =Db.find("SELECT id,title,content,source FROM vi_talk where id ="+id +" limit 1");
 		renderJson(records);
 	}
 	
@@ -177,8 +177,6 @@ public class DataTalkController extends Controller {
 		String title=getPara("title");
 		String content=getPara("content");
 		String source=getPara("source");
-		String data_src=getPara("data_src");
-		String data_key=getPara("data_key");
 		Date update_time=getParaToDate("update_time");
 		Date create_time=getParaToDate("create_time");
 		boolean isSuccess=false;
@@ -187,8 +185,8 @@ public class DataTalkController extends Controller {
 					.set("title", title)
 					.set("content", content)
 					.set("source", source)
-					.set("data_src", data_src)
-					.set("data_key", data_key)
+					.set("data_src", "snaker")
+					.set("data_key", source + title)
 					.set("update_date", update_time)
 					.set("create_date", create_time).save();
 		}else{
@@ -196,8 +194,6 @@ public class DataTalkController extends Controller {
 				.set("title", title)
 				.set("content", content)
 				.set("source", source)
-				.set("data_src", data_src)
-				.set("data_key", data_key)
 				.set("syn_status", 2)
 				.set("update_date", update_time)
 				.set("create_date", create_time).update();

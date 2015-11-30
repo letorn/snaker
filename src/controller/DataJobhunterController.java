@@ -197,8 +197,7 @@ public class DataJobhunterController extends Controller {
 		String id = getPara("id");
 		Record record = Db.findFirst("SELECT id,name,account,account_status,gender,nation,mobile,email,qq,experience,experience_code,education,education_code,"
 				+ "major,household,polity,category,category_code,hunter_status,hunter_status_code,marriage,cert_type,cert_id,birth,height,weight,location,"
-				+ "location_code,address,lbs_lon,lbs_lat,curr_ent,curr_ent_phone,curr_post,curr_post_code,data_src,data_key,syn_status,"
-				+ "syn_date,syn_message,self_comment FROM vi_jobhunter where id="+id);
+				+ "location_code,address,lbs_lon,lbs_lat,curr_ent,curr_ent_phone,curr_post,curr_post_code,self_comment FROM vi_jobhunter where id="+id);
 		renderJson(record);
 	}
 	
@@ -252,8 +251,6 @@ public class DataJobhunterController extends Controller {
 		String curr_ent_phone =getPara("curr_ent_phone");
 		String curr_post =getPara("curr_post");
 		String curr_post_code =getPara("curr_post_code");
-		String data_src =getPara("data_src");
-		String data_key =getPara("data_key");
 		String self_comment =getPara("self_comment");
 		
 		boolean isSuccess=true;
@@ -292,8 +289,6 @@ public class DataJobhunterController extends Controller {
 					.set("curr_ent_phone",curr_ent_phone)
 					.set("curr_post",curr_post)
 					.set("curr_post_code",curr_post_code)
-					.set("data_src",data_src)
-					.set("data_key",data_key)
 					.set("syn_status", 2)
 					.set("self_comment",self_comment).update();
 		}else{
@@ -331,8 +326,8 @@ public class DataJobhunterController extends Controller {
 					.set("curr_ent_phone",curr_ent_phone)
 					.set("curr_post",curr_post)
 					.set("curr_post_code",curr_post_code)
-					.set("data_src",data_src)
-					.set("data_key",data_key)
+					.set("data_src","snaker")
+					.set("data_key",mobile)
 					.set("self_comment",self_comment).save();
 		}
 		dataMap.put("success", isSuccess);
