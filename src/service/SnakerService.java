@@ -20,7 +20,7 @@ import engine.module.Module;
  */
 public class SnakerService {
 	
-	private SnakerEngine engine = enhance(SnakerEngine.class);;
+	private SnakerEngine engine = enhance(SnakerEngine.class);
 	
 	/**
 	 * 添加指定工作流程

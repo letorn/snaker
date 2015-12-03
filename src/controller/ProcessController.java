@@ -71,6 +71,35 @@ public class ProcessController extends Controller{
 	}
 	
 	/**
+	 * 获取工作流程，可以根据以下条件过滤
+	 * name 流程名称
+	 */
+	public void list() {
+		Integer page = getParaToInt("page", 1);
+		Integer rows = getParaToInt("rows", 30);
+		String name = getPara("name", "");
+		if (page < 1) page = 1;
+		if (rows < 1) rows = 1;
+
+		Page<Workflow> pager = snakerService.findProcess(page, rows, name);
+		for (Workflow workflow : pager.getList()) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("id", workflow.getProcessId());
+			data.put("name", workflow.getProcessName());
+			StringBuilder contentBuilder = new StringBuilder();
+			for (Module module : workflow.getModules())
+				contentBuilder.append(contentBuilder.length() > 0 ? " --> " + module.getName() : module.getName());
+			data.put("content", contentBuilder.toString());
+			data.put("update_date", dateFormat.format(workflow.getProcessUpdateDate()));
+			dataList.add(data);
+		}
+		
+		dataMap.put("total", pager.getTotalRow());
+		dataMap.put("rows", dataList);
+		renderJson(dataMap);
+	}
+	
+	/**
 	 * 导入默认的工作流程
 	 * 目录：/src/flows
 	 */

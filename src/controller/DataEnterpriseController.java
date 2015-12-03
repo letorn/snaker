@@ -17,6 +17,7 @@ import model.ViEnterprise;
 import service.DataService;
 import test.Area;
 import test.Major;
+import util.Growth;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
@@ -193,7 +194,7 @@ public class DataEnterpriseController extends Controller {
 		String id = getPara("id");
 		Record record = Db.findFirst("SELECT id,name,account,category,category_code,nature,nature_code,scale,scale_code,tag,establish"
 				+ ",introduction,area,area_code,address,lbs_lon,lbs_lat,website ,orgains,license,contacter,public_contact,phone,"
-				+ "fax,mobile,email,qq,legalize FROM vi_enterprise  WHERE id ="+id);
+				+ "fax,mobile,email,qq,legalize,syn_status FROM vi_enterprise  WHERE id ="+id);
 		renderJson(record);
 	}
 	public void saveEnt(){
@@ -207,7 +208,7 @@ public class DataEnterpriseController extends Controller {
 		String scale =getPara("scale");
 		String scale_code =getPara("scale_code");
 		String tag =getPara("tag");
-		Date establish =getParaToDate("establish")==null?new Date():getParaToDate("establish");
+		Date establish =getParaToDate("establish");
 		String introduction =getPara("introduction");
 		String area =getPara("area");
 		String area_code =getPara("area_code");
@@ -239,45 +240,53 @@ public class DataEnterpriseController extends Controller {
 			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
 			
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		String legalize =getPara("legalize").equals("")?"1":getPara("legalize"); 
 		boolean isSuccess=true;
+		ViEnterprise ve = null;
 		if(id!=null && !id.equals("")){
-			isSuccess=ViEnterprise.dao.findById(id).set("name",name)
-				.set("account",account)
-				.set("category",category)
-				.set("category_code",category_code)
-				.set("nature",nature)
-				.set("nature_code",nature_code)
-				.set("scale",scale)
-				.set("scale_code",scale_code)
-				.set("tag",tag)
-				.set("establish",establish)
-				.set("introduction",introduction)
-				.set("area",area)
-				.set("area_code",area_code)
-				.set("address",address)
-				.set("lbs_lon",lbs_lon)
-				.set("lbs_lat",lbs_lat)
-				.set("website",website)
-				.set("orgains",orgains)
-				.set("license",license)
-				.set("contacter",contacter)
-				.set("public_contact",public_contact)
-				.set("phone",phone)
-				.set("fax",fax)
-				.set("mobile",mobile)
-				.set("email",email)
-				.set("qq",qq)
-				.set("update_date",update_date)
-				.set("create_date",create_date)
-				.set("syn_status", 2)
-				.set("legalize",legalize).update();
+			ve = ViEnterprise.dao.findById(id);
+			if (ViEnterprise.dao.findFirst("select name from vi_enterprise where account=?", account).get("name").equals(name)) {
+				isSuccess=ve.set("name",name)
+					.set("account",account)
+					.set("category",category)
+					.set("category_code",category_code)
+					.set("nature",nature)
+					.set("nature_code",nature_code)
+					.set("scale",scale)
+					.set("scale_code",scale_code)
+					.set("tag",tag)
+					.set("establish",establish)
+					.set("introduction",introduction)
+					.set("area",area)
+					.set("area_code",area_code)
+					.set("address",address)
+					.set("lbs_lon",lbs_lon)
+					.set("lbs_lat",lbs_lat)
+					.set("website",website)
+					.set("orgains",orgains)
+					.set("license",license)
+					.set("contacter",contacter)
+					.set("public_contact",public_contact)
+					.set("phone",phone)
+					.set("fax",fax)
+					.set("mobile",mobile)
+					.set("email",email)
+					.set("qq",qq)
+					.set("update_date",update_date)
+					.set("create_date",create_date)
+					.set("syn_status", 2)
+					.set("legalize",legalize).update();
+			} else {
+				isSuccess = false;
+				dataMap.put("msg", "保存失败！账号已存在！");
+			}
 		}else{
-			isSuccess=new ViEnterprise().set("name",name)
+			ve = new ViEnterprise();
+			if(ViEnterprise.dao.findFirst("select name, account from vi_enterprise where name=? or account=?", name, account) == null) {
+				isSuccess=ve.set("name",name)
 					.set("account",account)
 					.set("category",category)
 					.set("category_code",category_code)
@@ -309,7 +318,12 @@ public class DataEnterpriseController extends Controller {
 					.set("create_date",create_date)
 					.set("role","1")
 					.set("legalize",legalize).save();
+			} else {
+				isSuccess = false;
+				dataMap.put("msg", "保存失败！企业或账号已存在！");
+			}
 		}
+		dataMap.put("id", ve.getLong("id"));
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}
@@ -321,6 +335,16 @@ public class DataEnterpriseController extends Controller {
 		boolean isSuccess=ViEnterprise.dao.findById(id).delete();
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
+	}
+	
+	/**
+	 * 调用存储过程获取自动生成的企业账号
+	 * prefix 账号前缀
+	 */
+	public void getAccount() {
+		String prefix = getPara("prefix", "job");
+		setAttr("account", Growth.get(prefix));
+		renderJson();
 	}
 	
 	public List<Area> area(){

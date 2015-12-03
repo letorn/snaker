@@ -16,7 +16,8 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
  * 脚本执行类
  */
 public class SQLPlugin implements IPlugin {
-	private static final Logger log = Logger.getLogger(SQLPlugin.class);
+	
+	private static final Logger logger = Logger.getLogger(SQLPlugin.class);
 	
 	private String jdbcUrl;
 	private String user;
@@ -109,16 +110,16 @@ public class SQLPlugin implements IPlugin {
 		try {
 			statement = conn.createStatement();
 			statement.execute("use " + database + ";");
-			log.info("use " + database + ";");
+			logger.info("use " + database + ";");
 			return true;
 		} catch (MySQLSyntaxErrorException e) {
 			if (e.getMessage().matches("Unknown database [\\w\\W]+")) {
 				try {
-					log.info("database " + database + " doesn't exist");
+					logger.info("database " + database + " doesn't exist");
 					statement.execute("create database " + database + " default character set " + encoding + ";");
-					log.info("create database " + database + " default character set " + encoding + ";");
+					logger.info("create database " + database + " default character set " + encoding + ";");
 					statement.execute("use " + database + ";");
-					log.info("use " + database + ";");
+					logger.info("use " + database + ";");
 					return true;
 				} catch (Exception e2) {
 					e.printStackTrace();
@@ -154,12 +155,12 @@ public class SQLPlugin implements IPlugin {
 					command = new StringBuffer();
 				String trimmedLine = line.trim();
 				if (trimmedLine.startsWith("--")) {
-					log.info(trimmedLine);
+					logger.info(trimmedLine);
 				} else if (trimmedLine.endsWith(";")) {
 					command.append(line);
 					Statement statement = conn.createStatement();
 					statement.execute(command.toString());
-					log.info(command.toString());
+					logger.info(command.toString());
 					statement.close();
 					command = null;
 				} else {

@@ -12,6 +12,7 @@ import model.ViEntpost;
 import model.ViJobhunter;
 import model.ViTalk;
 import plugin.SQLPlugin;
+import plugin.SchedulePlugin;
 
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
@@ -118,6 +119,10 @@ public class AppConfig extends JFinalConfig {
 		me.add(zcdhPlugin);
 		ActiveRecordPlugin zcdhArp = new ActiveRecordPlugin("zcdh", zcdhPlugin);
 		me.add(zcdhArp);
+		
+		// 定时器
+		SchedulePlugin schedulePlugin = new SchedulePlugin();
+		me.add(schedulePlugin);
 	}
 
 	/**

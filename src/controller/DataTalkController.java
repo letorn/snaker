@@ -180,8 +180,10 @@ public class DataTalkController extends Controller {
 		Date update_time=getParaToDate("update_time");
 		Date create_time=getParaToDate("create_time");
 		boolean isSuccess=false;
+		ViTalk vt = null;
 		if(id==null ||id.equals("")){
-			isSuccess=new ViTalk()
+			vt = new ViTalk();
+			isSuccess=vt
 					.set("title", title)
 					.set("content", content)
 					.set("source", source)
@@ -190,7 +192,8 @@ public class DataTalkController extends Controller {
 					.set("update_date", update_time)
 					.set("create_date", create_time).save();
 		}else{
-			isSuccess=ViTalk.dao.findById(id)
+			vt = ViTalk.dao.findById(id);
+			isSuccess=vt
 				.set("title", title)
 				.set("content", content)
 				.set("source", source)
@@ -198,6 +201,7 @@ public class DataTalkController extends Controller {
 				.set("update_date", update_time)
 				.set("create_date", create_time).update();
 		}
+		dataMap.put("id", vt.getLong("id"));
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}

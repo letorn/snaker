@@ -12,50 +12,48 @@
 <script type="text/javascript" src="${ctx}/common/raphael-min.js"></script>
 <script type="text/javascript" src="${ctx}/common/snaker.designer.js"></script>
 </head>
-<body>
-<div class="easyui-layout" data-options="fit:true">
-	<div id="precess-designer-toolbox" data-options="region:'west',split:true,title:'工具'" style="width:110px;text-align:center">
-		<br /><a id="process-designer-toolbox-save" class="easyui-linkbutton">保存</a><br />
-		<br /><input id="precess-designer-toolbox-moveable" class="easyui-switchbutton" data-options="onText:'移动',offText:'连线'" style="width:80%;margin:10px;padding:10px;" checked><br />
-		<br /><a id="process-designer-toolbox-ele-delete" class="easyui-linkbutton">删除</a><br /><br />
-		<div class="easyui-accordion" data-options="border:false,multiple:true">
-			<div data-options="title:'通用',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
-				<p class="precess-designer-toolbox-citem" data-mtype="begin" style="width:80px;height:20px;line-height:20px;background:#fafafa">开始</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="end" style="width:80px;height:20px;line-height:20px;background:#fafafa">结束</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="addFields" style="width:80px;height:20px;line-height:20px;background:#fafafa">添加属性</p>
-			</div>
-			<div data-options="title:'输入',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
-				<p class="precess-designer-toolbox-citem" data-mtype="tableinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格输入</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="webinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">页面输入</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="postwebinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">POST页面输入</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="excelinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">Excel输入</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="hbinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">湖北输入</p>
-			</div>
-			<div data-options="title:'映射',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
-				<p class="precess-designer-toolbox-citem" data-mtype="tablemapper" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格映射</p>
-				<p class="precess-designer-toolbox-citem" data-mtype="excelmapper" style="width:80px;height:20px;line-height:20px;background:#fafafa">Excel映射</p>
-			</div>
-			<div data-options="title:'输出',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
-				<p class="precess-designer-toolbox-citem" data-mtype="dbtableoutput" style="width:80px;height:20px;line-height:20px;background:#fafafa">表输出</p>
-			</div>
-			<div data-options="title:'上传',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
-				<p class="precess-designer-toolbox-citem" data-mtype="dbprocoutput" style="width:80px;height:20px;line-height:20px;background:#fafafa">存储过程输出</p>
-			</div>
+<body class="easyui-layout">
+<div id="precess-designer-toolbox" data-options="region:'west',split:true,title:'工具'" style="width:110px;text-align:center">
+	<br /><a id="process-designer-toolbox-save" class="easyui-linkbutton">保存</a><br />
+	<br /><input id="precess-designer-toolbox-moveable" class="easyui-switchbutton" data-options="onText:'移动',offText:'连线'" style="width:80%;margin:10px;padding:10px;" checked><br />
+	<br /><a id="process-designer-toolbox-ele-delete" class="easyui-linkbutton">删除</a><br /><br />
+	<div class="easyui-accordion" data-options="border:false,multiple:true">
+		<div data-options="title:'通用',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
+			<p class="precess-designer-toolbox-citem" data-mtype="begin" style="width:80px;height:20px;line-height:20px;background:#fafafa">开始</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="end" style="width:80px;height:20px;line-height:20px;background:#fafafa">结束</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="addFields" style="width:80px;height:20px;line-height:20px;background:#fafafa">添加属性</p>
+		</div>
+		<div data-options="title:'输入',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
+			<p class="precess-designer-toolbox-citem" data-mtype="tableinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格输入</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="webinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">页面输入</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="postwebinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">POST页面输入</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="excelinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">Excel输入</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="hbinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">湖北输入</p>
+		</div>
+		<div data-options="title:'映射',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
+			<p class="precess-designer-toolbox-citem" data-mtype="tablemapper" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格映射</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="excelmapper" style="width:80px;height:20px;line-height:20px;background:#fafafa">Excel映射</p>
+		</div>
+		<div data-options="title:'输出',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
+			<p class="precess-designer-toolbox-citem" data-mtype="dbtableoutput" style="width:80px;height:20px;line-height:20px;background:#fafafa">表输出</p>
+		</div>
+		<div data-options="title:'上传',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
+			<p class="precess-designer-toolbox-citem" data-mtype="dbprocoutput" style="width:80px;height:20px;line-height:20px;background:#fafafa">存储过程输出</p>
 		</div>
 	</div>
-	<div id="process-designer-tabs" class="easyui-tabs" data-options="region:'center'">
-		<div id="process-designer-tabs-canvas" data-options="title:'画板'" style="position:absolute"></div>
-		<div id="process-designer-tabs-content" data-options="title:'内容'" style="overflow:hidden;padding:0px 4px 4px 0px">
-			<textarea draggable="false" dropzone="false" spellcheck="false" style="width:100%;height:100%;border:0px;outline:none;resize:none"></textarea>
-		</div>
+</div>
+<div id="process-designer-tabs" class="easyui-tabs" data-options="region:'center'">
+	<div id="process-designer-tabs-canvas" data-options="title:'画板'" style="position:absolute"></div>
+	<div id="process-designer-tabs-content" data-options="title:'内容'" style="overflow:hidden;padding:0px 4px 4px 0px">
+		<textarea draggable="false" dropzone="false" spellcheck="false" style="width:100%;height:100%;border:0px;outline:none;resize:none"></textarea>
 	</div>
-	<div data-options="region:'east',split:true,title:'属性'" style="width:300px">
-		<form id="process-designer-prop-form" style="height:50px">
-			<br />
-			名称：<input type="text" class="easyui-textbox" style="width:250px" name="name"></input>
-		</form>
-		<table id="process-designer-prop-box" class="easyui-propertygrid" data-options="columns:[[{field:'name',title:'名称'},{field:'value',title:'内容',width:100}]],fix:true"></table>
-	</div>
+</div>
+<div data-options="region:'east',split:true,title:'属性'" style="width:300px">
+	<form id="process-designer-prop-form" style="height:50px">
+		<br />
+		名称：<input type="text" class="easyui-textbox" style="width:250px" name="name"></input>
+	</form>
+	<table id="process-designer-prop-box" class="easyui-propertygrid" data-options="columns:[[{field:'name',title:'名称'},{field:'value',title:'内容',width:100}]],fix:true"></table>
 </div>
 
 
@@ -1145,237 +1143,125 @@
 					}];
 				}
 				
-				if (tableName == 'db_enterprise') {
-					fields = [{name:'name',from:'name',notnull:'true'},
-					          {name:'account',from:'account',notnull:'false'},
-					          {name:'category',from:'category',notnull:'false'},
-					          {name:'category_code',from:'category_code',notnull:'true'},
-					          {name:'nature',from:'nature',notnull:'false'},
-					          {name:'nature_code',from:'nature_code',notnull:'false'},
-					          {name:'scale',from:'scale',notnull:'false'},
-					          {name:'scale_code',from:'scale_code',notnull:'false'},
-					          {name:'tag',from:'tag',notnull:'false'},
-					          {name:'establish',from:'establish',notnull:'false'},
-					          {name:'introduction',from:'introduction',notnull:'false'},
-					          {name:'area',from:'area',notnull:'false'},
-					          {name:'area_code',from:'area_code',notnull:'false'},
-					          {name:'address',from:'address',notnull:'false'},
-					          {name:'lbs_lon',from:'lbs_lon',notnull:'false'},
-					          {name:'lbs_lat',from:'lbs_lat',notnull:'false'},
-					          {name:'website',from:'website',notnull:'false'},
-					          {name:'orgains',from:'orgains',notnull:'false'},
-					          {name:'license',from:'license',notnull:'false'},
-					          {name:'contacter',from:'contacter',notnull:'false'},
-					          {name:'public_contact',from:'public_contact',notnull:'false'},
-					          {name:'phone',from:'phone',notnull:'false'},
-					          {name:'fax',from:'fax',notnull:'false'},
-					          {name:'mobile',from:'mobile',notnull:'false'},
-					          {name:'email',from:'email',notnull:'false'},
-					          {name:'qq',from:'qq',notnull:'false'},
-					          {name:'data_src',from:'data_src',notnull:'true'},
-					          {name:'data_key',from:'data_key',notnull:'true'},
-					          {name:'update_date',from:'update_date',notnull:'false'},
-					          {name:'create_date',from:'create_date',notnull:'false'},
-					          {name:'role',from:'role',notnull:'true'},
-					          {name:'legalize',from:'legalize',notnull:'true'}
+				if (tableName == 'db_enterprise' || tableName == 'vi_enterprise') {
+					fields = [
+								{name:'name', from:'name', notnull:'true'},
+								{name:'account', from:'account', notnull:'false'},
+								{name:'category', from:'category', notnull:'false'},
+								{name:'category_code', from:'category_code', notnull:'true'},
+								{name:'nature', from:'nature', notnull:'false'},
+								{name:'nature_code', from:'nature_code', notnull:'false'},
+								{name:'scale', from:'scale', notnull:'false'},
+								{name:'scale_code', from:'scale_code', notnull:'false'},
+								{name:'tag', from:'tag', notnull:'false'},
+								{name:'establish', from:'establish', notnull:'false'},
+								{name:'introduction', from:'introduction', notnull:'false'},
+								{name:'area', from:'area', notnull:'false'},
+								{name:'area_code', from:'area_code', notnull:'false'},
+								{name:'address', from:'address', notnull:'false'},
+								{name:'lbs_lon', from:'lbs_lon', notnull:'false'},
+								{name:'lbs_lat', from:'lbs_lat', notnull:'false'},
+								{name:'website', from:'website', notnull:'false'},
+								{name:'orgains', from:'orgains', notnull:'false'},
+								{name:'license', from:'license', notnull:'false'},
+								{name:'contacter', from:'contacter', notnull:'false'},
+								{name:'public_contact', from:'public_contact', notnull:'false'},
+								{name:'phone', from:'phone', notnull:'false'},
+								{name:'fax', from:'fax', notnull:'false'},
+								{name:'mobile', from:'mobile', notnull:'false'},
+								{name:'email', from:'email', notnull:'false'},
+								{name:'qq', from:'qq', notnull:'false'},
+								{name:'data_src', from:'data_src', notnull:'true'},
+								{name:'data_key', from:'data_key', notnull:'true'},
+								{name:'update_date', from:'update_date', notnull:'false'},
+								{name:'create_date', from:'create_date', notnull:'false'},
+								{name:'role', from:'role', notnull:'true'},
+								{name:'legalize', from:'legalize', notnull:'true'}
 							];
 				}
-				if (tableName == 'db_entpost') {
+				if (tableName == 'db_entpost' || tableName == 'vi_entpost') {
 					fields = [
-								{name:'name',from:'name',notnull:'false'},{
-								name:'category',from:'category',notnull:'false'},{
-								name:'category_code',from:'category_code',notnull:'false'},{
-								name:'nature',from:'nature',notnull:'false'},{
-								name:'nature_code',from:'nature_code',notnull:'false'},{
-								name:'headcount',from:'headcount',notnull:'false'},{
-								name:'age',from:'age',notnull:'false'},{
-								name:'gender',from:'gender',notnull:'false'},{
-								name:'salary',from:'salary',notnull:'false'},{
-								name:'salary_type',from:'salary_type',notnull:'false'},{
-								name:'experience',from:'experience',notnull:'false'},{
-								name:'experience_code',from:'experience_code',notnull:'false'},{
-								name:'education',from:'education',notnull:'false'},{
-								name:'education_code',from:'education_code',notnull:'false'},{
-								name:'tag',from:'tag',notnull:'false'},{
-								name:'introduction',from:'introduction',notnull:'false'},{
-								name:'area',from:'area',notnull:'false'},{
-								name:'area_code',from:'area_code',notnull:'false'},{
-								name:'address',from:'address',notnull:'false'},{
-								name:'lbs_lon',from:'lbs_lon',notnull:'false'},{
-								name:'lbs_lat',from:'lbs_lat',notnull:'false'},{
-								name:'data_src',from:'data_src',notnull:'false'},{
-								name:'data_key',from:'data_key',notnull:'false'},{
-								name:'data_ent_key',from:'data_ent_key',notnull:'false'},{
-								name:'update_date',from:'update_date',notnull:'false'},{
-								name:'create_date',from:'create_date',notnull:'false'}];
-				}
-				if (tableName == 'db_jobhunter') {
-					fields = [
-								{name:'name',from: 'name',notnull:'false'},
-								{name:'account',from: 'account',notnull:'false'},
-								{name:'account_status',from: 'account_status',notnull:'false'},
-								{name:'gender',from: 'gender',notnull:'false'},
-								{name:'nation',from: 'nation',notnull:'false'},
-								{name:'mobile',from: 'mobile',notnull:'false'},
-								{name:'email',from: 'email',notnull:'false'},
-								{name:'qq',from: 'qq',notnull:'false'},
-								{name:'experience',from: 'experience',notnull:'false'},
-								{name:'experience_code',from: 'experience_code',notnull:'false'},
-								{name:'education',from: 'education',notnull:'false'},
-								{name:'education_code',from: 'education_code',notnull:'false'},
-								{name:'major',from: 'major',notnull:'false'},
-								{name:'household',from: 'household',notnull:'false'},
-								{name:'polity',from: 'polity',notnull:'false'},
-								{name:'category',from: 'category',notnull:'false'},
-								{name:'category_code',from: 'category_code',notnull:'false'},
-								{name:'hunter_status',from: 'hunter_status',notnull:'false'},
-								{name:'hunter_status_code',from: 'hunter_status_code',notnull:'false'},
-								{name:'marriage',from: 'marriage',notnull:'false'},
-								{name:'cert_type',from: 'cert_type',notnull:'false'},
-								{name:'cert_id',from: 'cert_id',notnull:'false'},
-								{name:'birth',from: 'birth',notnull:'false'},
-								{name:'height',from: 'height',notnull:'false'},
-								{name:'weight',from: 'weight',notnull:'false'},
-								{name:'location',from: 'location',notnull:'false'},
-								{name:'location_code',from: 'location_code',notnull:'false'},
-								{name:'address',from: 'address',notnull:'false'},
-								{name:'lbs_lon',from: 'lbs_lon',notnull:'false'},
-								{name:'lbs_lat',from: 'lbs_lat',notnull:'false'},
-								{name:'curr_ent',from: 'curr_ent',notnull:'false'},
-								{name:'curr_ent_phone',from: 'curr_ent_phone',notnull:'false'},
-								{name:'curr_post',from: 'curr_post',notnull:'false'},
-								{name:'curr_post_code',from: 'curr_post_code',notnull:'false'},
-								{name:'data_src',from: 'data_src',notnull:'false'},
-								{name:'data_key',from: 'data_key',notnull:'false'},
-								{name:'update_date',from: 'update_date',notnull:'false'},
-								{name:'create_date',from: 'create_date',notnull:'false'},
-								{name:'self_comment',from: 'self_comment',notnull:'false' }];
-				}
-				if (tableName == 'db_talk') {
-					fields = [{name:'id',from: 'id',notnull:'false'},
-					          {name:'title',from: 'title',notnull:'false'},
-					          {name:'content',from: 'content',notnull:'false'},
-					          {name:'source',from: 'source',notnull:'false'},
-					          {name:'data_src',from: 'data_src',notnull:'false'},
-					          {name:'data_key',from: 'data_key',notnull:'false'},
-					          {name:'update_date',from: 'update_date',notnull:'false'},
-					          {name:'create_date',from: 'create_date',notnull:'false'}];
-				}
-				if (tableName == 'vi_enterprise') {
-					fields = [{name:'name',from:'name',notnull:'true'},
-					          {name:'account',from:'account',notnull:'false'},
-					          {name:'category',from:'category',notnull:'false'},
-					          {name:'category_code',from:'category_code',notnull:'true'},
-					          {name:'nature',from:'nature',notnull:'false'},
-					          {name:'nature_code',from:'nature_code',notnull:'false'},
-					          {name:'scale',from:'scale',notnull:'false'},
-					          {name:'scale_code',from:'scale_code',notnull:'false'},
-					          {name:'tag',from:'tag',notnull:'false'},
-					          {name:'establish',from:'establish',notnull:'false'},
-					          {name:'introduction',from:'introduction',notnull:'false'},
-					          {name:'area',from:'area',notnull:'false'},
-					          {name:'area_code',from:'area_code',notnull:'false'},
-					          {name:'address',from:'address',notnull:'false'},
-					          {name:'lbs_lon',from:'lbs_lon',notnull:'false'},
-					          {name:'lbs_lat',from:'lbs_lat',notnull:'false'},
-					          {name:'website',from:'website',notnull:'false'},
-					          {name:'orgains',from:'orgains',notnull:'false'},
-					          {name:'license',from:'license',notnull:'false'},
-					          {name:'contacter',from:'contacter',notnull:'false'},
-					          {name:'public_contact',from:'public_contact',notnull:'false'},
-					          {name:'phone',from:'phone',notnull:'false'},
-					          {name:'fax',from:'fax',notnull:'false'},
-					          {name:'mobile',from:'mobile',notnull:'false'},
-					          {name:'email',from:'email',notnull:'false'},
-					          {name:'qq',from:'qq',notnull:'false'},
-					          {name:'data_src',from:'data_src',notnull:'true'},
-					          {name:'data_key',from:'data_key',notnull:'true'},
-					          {name:'update_date',from:'update_date',notnull:'false'},
-					          {name:'create_date',from:'create_date',notnull:'false'},
-					          {name:'role',from:'role',notnull:'true'},
-					          {name:'legalize',from:'legalize',notnull:'true'}
+								{name:'name', from:'name', notnull:'false'},
+								{name:'category', from:'category', notnull:'false'},
+								{name:'category_code', from:'category_code', notnull:'false'},
+								{name:'nature', from:'nature', notnull:'false'},
+								{name:'nature_code', from:'nature_code', notnull:'false'},
+								{name:'headcount', from:'headcount', notnull:'false'},
+								{name:'age', from:'age', notnull:'false'},
+								{name:'gender', from:'gender', notnull:'false'},
+								{name:'salary', from:'salary', notnull:'false'},
+								{name:'salary_type', from:'salary_type', notnull:'false'},
+								{name:'experience', from:'experience', notnull:'false'},
+								{name:'experience_code', from:'experience_code', notnull:'false'},
+								{name:'education', from:'education', notnull:'false'},
+								{name:'education_code', from:'education_code', notnull:'false'},
+								{name:'tag', from:'tag', notnull:'false'},
+								{name:'introduction', from:'introduction', notnull:'false'},
+								{name:'area', from:'area', notnull:'false'},
+								{name:'area_code', from:'area_code', notnull:'false'},
+								{name:'address', from:'address', notnull:'false'},
+								{name:'lbs_lon', from:'lbs_lon', notnull:'false'},
+								{name:'lbs_lat', from:'lbs_lat', notnull:'false'},
+								{name:'data_src', from:'data_src', notnull:'false'},
+								{name:'data_key', from:'data_key', notnull:'false'},
+								{name:'data_ent_key', from:'data_ent_key', notnull:'false'},
+								{name:'update_date', from:'update_date', notnull:'false'},
+								{name:'create_date', from:'create_date', notnull:'false'}
 							];
 				}
-				if (tableName == 'vi_entpost') {
+				if (tableName == 'db_jobhunter' || tableName == 'vi_jobhunter') {
 					fields = [
-								{name:'name',from:'name',notnull:'false'},{
-								name:'category',from:'category',notnull:'false'},{
-								name:'category_code',from:'category_code',notnull:'false'},{
-								name:'nature',from:'nature',notnull:'false'},{
-								name:'nature_code',from:'nature_code',notnull:'false'},{
-								name:'headcount',from:'headcount',notnull:'false'},{
-								name:'age',from:'age',notnull:'false'},{
-								name:'gender',from:'gender',notnull:'false'},{
-								name:'salary',from:'salary',notnull:'false'},{
-								name:'salary_type',from:'salary_type',notnull:'false'},{
-								name:'experience',from:'experience',notnull:'false'},{
-								name:'experience_code',from:'experience_code',notnull:'false'},{
-								name:'education',from:'education',notnull:'false'},{
-								name:'education_code',from:'education_code',notnull:'false'},{
-								name:'tag',from:'tag',notnull:'false'},{
-								name:'introduction',from:'introduction',notnull:'false'},{
-								name:'area',from:'area',notnull:'false'},{
-								name:'area_code',from:'area_code',notnull:'false'},{
-								name:'address',from:'address',notnull:'false'},{
-								name:'lbs_lon',from:'lbs_lon',notnull:'false'},{
-								name:'lbs_lat',from:'lbs_lat',notnull:'false'},{
-								name:'data_src',from:'data_src',notnull:'false'},{
-								name:'data_key',from:'data_key',notnull:'false'},{
-								name:'data_ent_key',from:'data_ent_key',notnull:'false'},{
-								name:'update_date',from:'update_date',notnull:'false'},{
-								name:'create_date',from:'create_date',notnull:'false'}];
+								{name:'name', from:'name', notnull:'false'},
+								{name:'account', from:'account', notnull:'false'},
+								{name:'account_status', from:'account_status', notnull:'false'},
+								{name:'gender', from:'gender', notnull:'false'},
+								{name:'nation', from:'nation', notnull:'false'},
+								{name:'mobile', from:'mobile', notnull:'false'},
+								{name:'email', from:'email', notnull:'false'},
+								{name:'qq', from:'qq', notnull:'false'},
+								{name:'experience', from:'experience', notnull:'false'},
+								{name:'experience_code', from:'experience_code', notnull:'false'},
+								{name:'education', from:'education', notnull:'false'},
+								{name:'education_code', from:'education_code', notnull:'false'},
+								{name:'major', from:'major', notnull:'false'},
+								{name:'household', from:'household', notnull:'false'},
+								{name:'polity', from:'polity', notnull:'false'},
+								{name:'category', from:'category', notnull:'false'},
+								{name:'category_code', from:'category_code', notnull:'false'},
+								{name:'hunter_status', from:'hunter_status', notnull:'false'},
+								{name:'hunter_status_code', from:'hunter_status_code', notnull:'false'},
+								{name:'marriage', from:'marriage', notnull:'false'},
+								{name:'cert_type', from:'cert_type', notnull:'false'},
+								{name:'cert_id', from:'cert_id', notnull:'false'},
+								{name:'birth', from:'birth', notnull:'false'},
+								{name:'height', from:'height', notnull:'false'},
+								{name:'weight', from:'weight', notnull:'false'},
+								{name:'location', from:'location', notnull:'false'},
+								{name:'location_code', from:'location_code', notnull:'false'},
+								{name:'address', from:'address', notnull:'false'},
+								{name:'lbs_lon', from:'lbs_lon', notnull:'false'},
+								{name:'lbs_lat', from:'lbs_lat', notnull:'false'},
+								{name:'curr_ent', from:'curr_ent', notnull:'false'},
+								{name:'curr_ent_phone', from:'curr_ent_phone', notnull:'false'},
+								{name:'curr_post', from:'curr_post', notnull:'false'},
+								{name:'curr_post_code', from:'curr_post_code', notnull:'false'},
+								{name:'data_src', from:'data_src', notnull:'false'},
+								{name:'data_key', from:'data_key', notnull:'false'},
+								{name:'update_date', from:'update_date', notnull:'false'},
+								{name:'create_date', from:'create_date', notnull:'false'},
+								{name:'self_comment', from:'self_comment', notnull:'false'}
+							];
 				}
-				if (tableName == 'vi_jobhunter') {
+				if (tableName == 'db_talk' || tableName == 'vi_talk') {
 					fields = [
-								{name:'name',from: 'name',notnull:'false'},
-								{name:'account',from: 'account',notnull:'false'},
-								{name:'account_status',from: 'account_status',notnull:'false'},
-								{name:'gender',from: 'gender',notnull:'false'},
-								{name:'nation',from: 'nation',notnull:'false'},
-								{name:'mobile',from: 'mobile',notnull:'false'},
-								{name:'email',from: 'email',notnull:'false'},
-								{name:'qq',from: 'qq',notnull:'false'},
-								{name:'experience',from: 'experience',notnull:'false'},
-								{name:'experience_code',from: 'experience_code',notnull:'false'},
-								{name:'education',from: 'education',notnull:'false'},
-								{name:'education_code',from: 'education_code',notnull:'false'},
-								{name:'major',from: 'major',notnull:'false'},
-								{name:'household',from: 'household',notnull:'false'},
-								{name:'polity',from: 'polity',notnull:'false'},
-								{name:'category',from: 'category',notnull:'false'},
-								{name:'category_code',from: 'category_code',notnull:'false'},
-								{name:'hunter_status',from: 'hunter_status',notnull:'false'},
-								{name:'hunter_status_code',from: 'hunter_status_code',notnull:'false'},
-								{name:'marriage',from: 'marriage',notnull:'false'},
-								{name:'cert_type',from: 'cert_type',notnull:'false'},
-								{name:'cert_id',from: 'cert_id',notnull:'false'},
-								{name:'birth',from: 'birth',notnull:'false'},
-								{name:'height',from: 'height',notnull:'false'},
-								{name:'weight',from: 'weight',notnull:'false'},
-								{name:'location',from: 'location',notnull:'false'},
-								{name:'location_code',from: 'location_code',notnull:'false'},
-								{name:'address',from: 'address',notnull:'false'},
-								{name:'lbs_lon',from: 'lbs_lon',notnull:'false'},
-								{name:'lbs_lat',from: 'lbs_lat',notnull:'false'},
-								{name:'curr_ent',from: 'curr_ent',notnull:'false'},
-								{name:'curr_ent_phone',from: 'curr_ent_phone',notnull:'false'},
-								{name:'curr_post',from: 'curr_post',notnull:'false'},
-								{name:'curr_post_code',from: 'curr_post_code',notnull:'false'},
-								{name:'data_src',from: 'data_src',notnull:'false'},
-								{name:'data_key',from: 'data_key',notnull:'false'},
-								{name:'update_date',from: 'update_date',notnull:'false'},
-								{name:'create_date',from: 'create_date',notnull:'false'},
-								{name:'self_comment',from: 'self_comment',notnull:'false' }];
-				}
-				if (tableName == 'vi_talk') {
-					fields = [{name:'id',from: 'id',notnull:'false'},
-					          {name:'title',from: 'title',notnull:'false'},
-					          {name:'content',from: 'content',notnull:'false'},
-					          {name:'source',from: 'source',notnull:'false'},
-					          {name:'data_src',from: 'data_src',notnull:'false'},
-					          {name:'data_key',from: 'data_key',notnull:'false'},
-					          {name:'update_date',from: 'update_date',notnull:'false'},
-					          {name:'create_date',from: 'create_date',notnull:'false'}];
+								{name:'title', from:'title', notnull:'false'},
+								{name:'content', from:'content', notnull:'false'},
+								{name:'source', from:'source', notnull:'false'},
+								{name:'data_src', from:'data_src', notnull:'false'},
+								{name:'data_key', from:'data_key', notnull:'false'},
+								{name:'update_date', from:'update_date', notnull:'false'},
+								{name:'create_date', from:'create_date', notnull:'false'}
+							];
 				}
 				for (var i = 0; i < fields.length; i ++) {
 					var exist = false;

@@ -1,6 +1,7 @@
 package controller;
 
 import static util.Validator.blank;
+import static util.Validator.notBlank;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,14 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.UtPost;
-import model.ViJobhunter;
-import service.DataService;
-
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+
+import model.UtPost;
+import model.ViJobhunter;
+import service.DataService;
+import util.Growth;
 
 /*
  * 控制类 - 求职者信息相关
@@ -195,9 +197,9 @@ public class DataJobhunterController extends Controller {
 	}
 	public void getUser(){
 		String id = getPara("id");
-		Record record = Db.findFirst("SELECT id,name,account,account_status,gender,nation,mobile,email,qq,experience,experience_code,education,education_code,"
+		Record record = Db.findFirst("SELECT id,name,account,gender,nation,mobile,email,qq,experience,experience_code,education,education_code,"
 				+ "major,household,polity,category,category_code,hunter_status,hunter_status_code,marriage,cert_type,cert_id,birth,height,weight,location,"
-				+ "location_code,address,lbs_lon,lbs_lat,curr_ent,curr_ent_phone,curr_post,curr_post_code,self_comment FROM vi_jobhunter where id="+id);
+				+ "location_code,address,lbs_lon,lbs_lat,curr_ent,curr_ent_phone,curr_post,curr_post_code,self_comment,syn_status FROM vi_jobhunter where id="+id);
 		renderJson(record);
 	}
 	
@@ -205,7 +207,6 @@ public class DataJobhunterController extends Controller {
 		String id =getPara("id");
 		String name =getPara("name");
 		String account =getPara("account");
-		String account_status =getPara("account_status");
 		String gender =getPara("gender");
 		String nation =getPara("nation");
 		String mobile =getPara("mobile");
@@ -220,9 +221,9 @@ public class DataJobhunterController extends Controller {
 		String lats=getPara("lbs_lat");
 		Object lbs_lon=null;
 		Object lbs_lat=null;
-		if(lons!=null && lats!=null){
-		lbs_lon =Double.parseDouble(getPara("lbs_lon"));
-		lbs_lat =Double.parseDouble(getPara("lbs_lat"));
+		if(notBlank(lons) && notBlank(lats)){
+			lbs_lon =Double.parseDouble(getPara("lbs_lon"));
+			lbs_lat =Double.parseDouble(getPara("lbs_lat"));
 		}
 		String household =getPara("household");
 		String category =getPara("category");
@@ -241,7 +242,6 @@ public class DataJobhunterController extends Controller {
 			birth =getPara("birth")==null|| getPara("birth").equals("")?new Date():getParaToDate("birth");
 			
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String location =getPara("location");
@@ -254,47 +254,55 @@ public class DataJobhunterController extends Controller {
 		String self_comment =getPara("self_comment");
 		
 		boolean isSuccess=true;
+		ViJobhunter vj = null;
 		if(id!=null && !id.equals("")){
-			isSuccess=ViJobhunter.dao.findById(id).set("name",name)
-					.set("account",account)
-					.set("account_status",account_status)
-					.set("gender",gender)
-					.set("nation",nation)
-					.set("mobile",mobile)
-					.set("account",account)
-					.set("email",email)
-					.set("qq",qq)
-					.set("experience",experience)
-					.set("experience_code",experience_code)
-					.set("education",education)
-					.set("education_code",education_code)
-					.set("major",major)
-					.set("lbs_lon",lbs_lon)
-					.set("lbs_lat",lbs_lat)
-					.set("household",household)
-					.set("category",category)
-					.set("category_code",category_code)
-					.set("hunter_status",hunter_status)
-					.set("hunter_status_code",hunter_status_code)
-					.set("marriage",marriage)
-					.set("cert_type",cert_type)
-					.set("cert_id",cert_id)
-					.set("update_date",update_date)
-					.set("create_date",create_date)
-					.set("birth",birth)
-					.set("location",location)
-					.set("location_code",location_code)
-					.set("address",address)
-					.set("curr_ent",curr_ent)
-					.set("curr_ent_phone",curr_ent_phone)
-					.set("curr_post",curr_post)
-					.set("curr_post_code",curr_post_code)
-					.set("syn_status", 2)
-					.set("self_comment",self_comment).update();
+			vj = ViJobhunter.dao.findById(id);
+			if (ViJobhunter.dao.findFirst("select mobile from vi_jobhunter where account=?", account).get("mobile").equals(mobile)) {
+				isSuccess=vj.set("name",name)
+						.set("account",account)
+						.set("gender",gender)
+						.set("nation",nation)
+						.set("mobile",mobile)
+						.set("account",account)
+						.set("email",email)
+						.set("qq",qq)
+						.set("experience",experience)
+						.set("experience_code",experience_code)
+						.set("education",education)
+						.set("education_code",education_code)
+						.set("major",major)
+						.set("lbs_lon",lbs_lon)
+						.set("lbs_lat",lbs_lat)
+						.set("household",household)
+						.set("category",category)
+						.set("category_code",category_code)
+						.set("hunter_status",hunter_status)
+						.set("hunter_status_code",hunter_status_code)
+						.set("marriage",marriage)
+						.set("cert_type",cert_type)
+						.set("cert_id",cert_id)
+						.set("update_date",update_date)
+						.set("create_date",create_date)
+						.set("birth",birth)
+						.set("location",location)
+						.set("location_code",location_code)
+						.set("address",address)
+						.set("curr_ent",curr_ent)
+						.set("curr_ent_phone",curr_ent_phone)
+						.set("curr_post",curr_post)
+						.set("curr_post_code",curr_post_code)
+						.set("syn_status", 2)
+						.set("self_comment",self_comment).update();
+			} else {
+				isSuccess = false;
+				dataMap.put("msg", "保存失败！账号已存在！");
+			}
 		}else{
-			isSuccess=new ViJobhunter().set("name",name)
+			vj = new ViJobhunter();
+			if (ViJobhunter.dao.findFirst("select account from vi_jobhunter where account=?", account) == null) {
+				isSuccess=vj.set("name",name)
 					.set("account",account)
-					.set("account_status",account_status)
+					.set("account_status",2)
 					.set("gender",gender)
 					.set("nation",nation)
 					.set("mobile",mobile)
@@ -329,7 +337,12 @@ public class DataJobhunterController extends Controller {
 					.set("data_src","snaker")
 					.set("data_key",mobile)
 					.set("self_comment",self_comment).save();
+			} else {
+				isSuccess = false;
+				dataMap.put("msg", "保存失败！账号已存在！");
+			}
 		}
+		dataMap.put("id", vj.getLong("id"));
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}
@@ -339,5 +352,4 @@ public class DataJobhunterController extends Controller {
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}
-	
 }

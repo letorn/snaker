@@ -2,16 +2,17 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Snaker</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<title>数据采集</title>
 <script type="text/javascript" src="common/jquery.min.js"></script>
 <script type="text/javascript" src="common/jquery.upload.js"></script>
-<script type="text/javascript" src="common/jquery.custom.js"></script>
 <link rel="stylesheet" type="text/css" href="common/easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="common/easyui/themes/icon.css">
 <script type="text/javascript" src="common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="common/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="common/jquery.custom.js"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=10825252807d0ece8b0a30ce892ff059"></script>
-
 <script type="text/javascript">
 	$(function() {
 		$.render = function(render) {
@@ -27,195 +28,7 @@
 			delete $._render;
 		}
 
-		$.parser.auto = false;
-
-		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts'), editor = {};
-		
-		editor.Enterprise = {
-				$window: $('#enterprise-list-window'),
-				$table: $('#enterprise-list-table'),
-				$pager: $('#enterprise-list-pager'),
-				$btnConfirm: $('#enterprise-list-confirm'),
-				show: function() {
-					editor.Enterprise.$window.window('open', true);
-				},
-				init: function(category, field) {
-					var _this = editor.Enterprise;
-					var date = $('#index-content-enterprise-date').val();
-					var beginTime = date + ' 00:00:00';
-					var endTime = date + ' 23:59:59';
-					$.post('data/enterprise/display', {
-						category: category,
-						field: field,
-						beginTime: beginTime,
-						endTime: endTime
-					}, function(resp) {
-						if (resp.total == 0) {
-							$.messager.show({title: '提示', msg: '您所查询的企业个数为0！', timeout: 1000, showType: 'slide'});
-						} else {							
-							_this.$table.datagrid({
-								data: resp.rows
-							});
-							_this.$pager.pagination('refresh', {
-								total: resp.total
-							});
-							_this.show();
-						}
-					}, 'json');
-					_this.$btnConfirm.click(function() {
-						_this.$window.window('close', true);
-					});
-					_this.$pager.pagination({
-						onBeforeRefresh: function(page, pageSize) {
-							$(this).data("refresh", true);
-						},
-						onSelectPage: function(page, pageSize) {
-							$.post('data/enterprise/display', {
-								category: category,
-								field: field,
-								beginTime: beginTime,
-								endTime: endTime,
-								page: page,
-								rows: pageSize
-							}, function(resp){
-								if (resp.total == 0) {
-									$.messager.show({title: '提示', msg: '您所查询的企业个数为0！', timeout: 1000, showType: 'slide'});
-								} else {							
-									_this.$table.datagrid({
-										data: resp.rows
-									});
-									_this.$pager.pagination('refresh', {
-										total: resp.total
-									});
-									_this.show();
-								}
-							}, 'json');
-						}
-					});
-				}
-		}
-		
-		editor.Jobhunter = {
-				$window: $('#jobhunter-list-window'),
-				$table: $('#jobhunter-list-table'),
-				$pager: $('#jobhunter-list-pager'),
-				$btnConfirm: $('#jobhunter-list-confirm'),
-				show: function() {
-					editor.Jobhunter.$window.window('open', true);
-				},
-				init: function(category, field) {
-					var _this = editor.Jobhunter;
-					var date = $('#index-content-jobhunter-date').val();
-					var beginTime = date + ' 00:00:00';
-					var endTime = date + ' 23:59:59';
-					$.post('data/jobhunter/display', {
-						category: category,
-						field: field,
-						beginTime: beginTime,
-						endTime: endTime
-					}, function(resp) {
-						if (resp.total == 0) {
-							$.messager.show({title: '提示', msg: '您所查询的求职者人数为0！', timeout: 1000, showType: 'slide'});
-						} else {							
-							_this.$table.datagrid({
-								data: resp.rows
-							});
-							_this.$pager.pagination('refresh', {
-								total: resp.total
-							});
-							_this.show();
-						}
-					}, 'json');
-					_this.$btnConfirm.click(function() {
-						_this.$window.window('close', true);
-					});
-					_this.$pager.pagination({
-						onSelectPage: function(page, pageSize) {
-							$.post('data/jobhunter/display', {
-								category: category,
-								field: field,
-								beginTime: beginTime,
-								endTime: endTime,
-								page: page,
-								rows: pageSize
-							}, function(resp) {
-								if (resp.total == 0) {
-									$.messager.show({title: '提示', msg: '您所查询的求职者人数为0！', timeout: 1000, showType: 'slide'});
-								} else {							
-									_this.$table.datagrid({
-										data: resp.rows
-									});
-									_this.$pager.pagination('refresh', {
-										total: resp.total
-									});
-									_this.show();
-								}
-							}, 'json');
-						}
-					});
-				}
-		}
-		
-		editor.Talk = {
-				$window: $('#talk-list-window'),
-				$table: $('#talk-list-table'),
-				$pager: $('#talk-list-pager'),
-				$btnConfirm: $('#talk-list-confirm'),
-				show: function() {
-					editor.Talk.$window.window('open', true);
-				},
-				init: function(source, field) {
-					var _this = editor.Talk;
-					var date = $('#index-content-talk-date').val();
-					var beginTime = date + ' 00:00:00';
-					var endTime = date + ' 23:59:59';
-					$.post('data/talk/display', {
-						source: source,
-						field: field,
-						beginTime: beginTime,
-						endTime: endTime
-					}, function(resp) {
-						if (resp.total == 0) {
-							$.messager.show({title: '提示', msg: '您所查询的宣讲会数量为0！', timeout: 1000, showType: 'slide'});
-						} else {							
-							_this.$table.datagrid({
-								data: resp.rows
-							});
-							_this.$pager.pagination('refresh', {
-								total: resp.total
-							});
-							_this.show();
-						}
-					}, 'json');
-					_this.$btnConfirm.click(function() {
-						_this.$window.window('close', true);
-					});
-					_this.$pager.pagination({
-						onSelectPage: function(page, pageSize) {
-							$.post('data/talk/display', {
-								source: source,
-								field: field,
-								beginTime: beginTime,
-								endTime: endTime,
-								page: page,
-								rows: pageSize
-							}, function(resp) {
-								if (resp.total == 0) {
-									$.messager.show({title: '提示', msg: '您所查询的宣讲会数量为0！', timeout: 1000, showType: 'slide'});
-								} else {							
-									_this.$table.datagrid({
-										data: resp.rows
-									});
-									_this.$pager.pagination('refresh', {
-										total: resp.total
-									});
-									_this.show();
-								}
-							}, 'json');
-						}
-					});
-				}
-		}
+		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts');
 		
 		window.Content = {
 				$indexContent: $indexContent,
@@ -249,226 +62,48 @@
 		
 		$('#index-accordion p').click(function() {
 			var $p = $(this), text = $p.text(), location = $p.data('location'), scripts = $p.data('scripts');
-			if ($indexContent.tabs('getTab', text)) {
-				$indexContent.tabs('select', text)
-			} else {
-				if (scripts) {
-					scripts = scripts.split(';')
-					for (var i = 0; i < scripts.length; i++) {
-						$indexScripts.append('<script type="text/javascript" src="' + scripts[i] + '"><\/script>');
-					}
-					$.parser.parse('index-scripts');
-				}
-				
-				var tab = $indexContent.tabs('add', {
-					closable: true,
-					title: text,
-					href: location,
-					onLoad: function() {
-						$.parser.parse(tab);
-						$.doRender(tab);
-					}
-				});
-			}
+			Content.addTab(text, location, scripts);
 		});
 		
-		$('#index-content-enterprise-table').datagrid({
-			url: 'data/enterprise/sum',
-			onBeforeLoad: function(param) {
-				var date = $('#index-content-enterprise-date').val();
-				param.beginTime = date + ' 00:00:00';
-				param.endTime = date + ' 23:59:59';
-			},
-			onLoadSuccess: function(data) {
-				var row = {name: '全部', total: 0, day_new: 0, syn: 0, day_syn: 0};
-				for (var i = 0; i < data.rows.length; i ++) {
-					row.total = row.total + data.rows[i].total;
-					row.day_new = row.day_new + data.rows[i].day_new;
-					row.syn = row.syn + data.rows[i].syn;
-					row.day_syn = row.day_syn + data.rows[i].day_syn;
-				}
-				$(this).datagrid('insertRow', {index: 0, row: row});
-				$(this).datagrid('freezeRow', 0);
-			},
-			onClickCell: function(index, field, value) {
-				var row = $('#index-content-enterprise-table').datagrid('selectRow', index).datagrid('getSelected');
-				editor.Enterprise.init(row.name, field);
-			}
-		});
-		
-		$('#index-content-jobhunter-table').datagrid({
-			url: 'data/jobhunter/sum',
-			onBeforeLoad: function(param) {
-				var date = $('#index-content-jobhunter-date').val();
-				param.beginTime = date + ' 00:00:00';
-				param.endTime = date + ' 23:59:59';
-			},
-			onLoadSuccess: function(data) {
-				var row = {name: '全部', total: 0, day_new: 0, syn: 0, day_syn: 0};
-				for (var i = 0; i < data.rows.length; i ++) {
-					row.total = row.total + data.rows[i].total;
-					row.day_new = row.day_new + data.rows[i].day_new;
-					row.syn = row.syn + data.rows[i].syn;
-					row.day_syn = row.day_syn + data.rows[i].day_syn;
-				}
-				$(this).datagrid('insertRow', {index: 0, row: row});
-				$(this).datagrid('freezeRow', 0);
-			},
-			onClickCell: function(index, field, value) {
-				var row = $('#index-content-jobhunter-table').datagrid('selectRow', index).datagrid('getSelected');
-				editor.Jobhunter.init(row.name, field);
-			}
-		});
-		
-		$('#index-content-talk-table').datagrid({
-			url: 'data/talk/sum',
-			onBeforeLoad: function(param) {
-				var date = $('#index-content-talk-date').val();
-				param.beginTime = date + ' 00:00:00';
-				param.endTime = date + ' 23:59:59';
-			},
-			onLoadSuccess: function(data) {
-				var row = {name: '全部', total: 0, day_new: 0, syn: 0, day_syn: 0};
-				for (var i = 0; i < data.rows.length; i ++) {
-					row.total = row.total + data.rows[i].total;
-					row.day_new = row.day_new + data.rows[i].day_new;
-					row.syn = row.syn + data.rows[i].syn;
-					row.day_syn = row.day_syn + data.rows[i].day_syn;
-				}
-				$(this).datagrid('insertRow', {index: 0, row: row});
-				$(this).datagrid('freezeRow', 0);
-			},
-			onClickCell: function(index, field, value) {
-				var row = $('#index-content-talk-table').datagrid('selectRow', index).datagrid('getSelected');
-				editor.Talk.init(row.name, field);
-			}
-		});
+		Content.addTab('工作任务', 'process/list.html');
 	});
-	function onIndexContentEnterpriseTableRefresh() {
-		$('#index-content-enterprise-table').datagrid('reload')
-	}
-	function onIndexContentJobhunterTableRefresh() {
-		$('#index-content-jobhunter-table').datagrid('reload')
-	}
-	function onIndexContentTalkTableRefresh() {
-		$('#index-content-talk-table').datagrid('reload')
+	function logout() {
+		window.location = 'logout';
 	}
 </script>
 </head>
 <body class="easyui-layout">
-	<div id="index-scripts" style="display:none"></div>
-	<div id="index-accordion" class="easyui-accordion" data-options="region:'west',title:'菜单',split:true" style="width:100px">
-		<div data-options="title:'任务管理'" style="text-align:center">
-			<p data-location="process/index.html" style="cursor:pointer;color:blue">工作流程</p>
-			<p data-location="process/task.html" style="cursor:pointer;color:blue">任务管理</p>
+<div id="index-scripts" style="display:none"></div>
+<div data-options="region:'north'" style="height:58px;overflow:hidden">
+	<img src="common/images/banner.jpg"/>
+</div>
+<div data-options="region:'west',title:'菜单',split:true" style="width:100px">
+	<div id="index-accordion" class="easyui-accordion" data-options="border:false,multiple:true">
+		<div data-options="title:'任务管理',collapsed:false" style="text-align:center">
+			<p data-location="process/list.html" style="cursor:pointer;color:blue">工作任务</p>
+			<p data-location="process/task.html" style="cursor:pointer;color:blue">定时任务</p>
 			<p data-location="instance/index.html" style="cursor:pointer;color:blue">流程实例</p>
+		</div>
+		<div data-options="title:'统计分析',collapsed:false" style="text-align:center">
+			<p data-location="stat/enterprise.html" style="cursor:pointer;color:blue">企业汇总</p>
+			<p data-location="stat/jobhunter.html" style="cursor:pointer;color:blue">求职者汇总</p>
+			<p data-location="stat/talk.html" style="cursor:pointer;color:blue">宣讲会汇总</p>
+		</div>
+		<div data-options="title:'数据上传',collapsed:false" style="text-align:center">
+			<p data-location="data/enterprise.html" style="cursor:pointer;color:blue">企业数据</p>
+			<p data-location="data/jobhunter.html" style="cursor:pointer;color:blue">求职者数据</p>
+			<p data-location="data/talk.html" style="cursor:pointer;color:blue">宣讲会数据</p>
+		</div>
+		<div data-options="title:'配置管理',collapsed:false" style="text-align:center">
+			<p data-location="process/index.html" style="cursor:pointer;color:blue">流程设计</p>
 			<p data-location="data/file.html" style="cursor:pointer;color:blue">文件管理</p>
-			<p data-location="data/enterprise.html" style="cursor:pointer;color:blue">所有企业</p>
-			<p data-location="data/jobhunter.html" style="cursor:pointer;color:blue">所有求职者</p>
-			<p data-location="data/talk.html" style="cursor:pointer;color:blue">所有宣讲会</p>
 		</div>
 	</div>
-	<div id="index-content" class="easyui-tabs" data-options="region:'center'">
-		<div data-options="title:'企业汇总'">
-			<table id="index-content-enterprise-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#index-content-enterprise-toolbar'">
-				<thead>
-					<tr>
-						<th data-options="field:'name'" style="width:260px">行业</th>
-						<th data-options="field:'total'" style="width:60px">所有</th>
-						<th data-options="field:'day_new'" style="width:60px">当日新增</th>
-						<th data-options="field:'syn'" style="width:60px">已上传</th>
-						<th data-options="field:'day_syn'" style="width:60px">当日上传</th>
-					</tr>
-				</thead>
-			</table>
-			<div id="index-content-enterprise-toolbar" style="padding: 2px 5px;">
-				当日：<input id="index-content-enterprise-date" class="easyui-datebox" data-options="value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()},onSelect:onIndexContentEnterpriseTableRefresh" style="width:100px" />
-				<a id="index-content-enterprise-refresh" class="easyui-linkbutton" data-options="onClick:onIndexContentEnterpriseTableRefresh" style="width:80px">刷新</a>
-			</div>
-		</div>
-		<div data-options="title:'求职者汇总'">
-			<table id="index-content-jobhunter-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#index-content-jobhunter-toolbar'">
-				<thead>
-					<tr>
-						<th data-options="field:'name'" style="width:260px">岗位</th>
-						<th data-options="field:'total'" style="width:60px">所有</th>
-						<th data-options="field:'day_new'" style="width:60px">当日新增</th>
-						<th data-options="field:'syn'" style="width:60px">已上传</th>
-						<th data-options="field:'day_syn'" style="width:60px">当日上传</th>
-					</tr>
-				</thead>
-			</table>
-			<div id="index-content-jobhunter-toolbar" style="padding: 2px 5px;">
-				当日：<input id="index-content-jobhunter-date" class="easyui-datebox" data-options="value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()},onSelect:onIndexContentJobhunterTableRefresh" style="width:100px" />
-				<a id="index-content-jobhunter-refresh" class="easyui-linkbutton" data-options="onClick:onIndexContentJobhunterTableRefresh" style="width:80px">刷新</a>
-			</div>
-		</div>
-		<div data-options="title:'宣讲会汇总'">
-			<table id="index-content-talk-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#index-content-talk-toolbar'">
-				<thead>
-					<tr>
-						<th data-options="field:'name'" style="width:260px">来源</th>
-						<th data-options="field:'total'" style="width:60px">所有</th>
-						<th data-options="field:'day_new'" style="width:60px">当日新增</th>
-						<th data-options="field:'syn'" style="width:60px">已上传</th>
-						<th data-options="field:'day_syn'" style="width:60px">当日上传</th>
-					</tr>
-				</thead>
-			</table>
-			<div id="index-content-talk-toolbar" style="padding: 2px 5px;">
-				当日：<input id="index-content-talk-date" class="easyui-datebox" data-options="value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()},onSelect:onIndexContentTalkTableRefresh" style="width:100px" />
-				<a id="index-content-talk-refresh" class="easyui-linkbutton" data-options="onClick:onIndexContentTalkTableRefresh" style="width:80px">刷新</a>
-			</div>
-		</div>
-	</div>
-	<div id="enterprise-list-window" class="easyui-window" data-options="title:'企业列表',modal:true,closed:true,footer:'#enterprise-list-footer'" style="width:1000px;height:600px">
-		<table id="enterprise-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
-			<thead>
-				<tr>
-					<th data-options="field:'id'" style="width:60px">ID</th>
-					<th data-options="field:'name'" style="width:240px">企业名称</th>
-					<th data-options="field:'account'" style="width:100px">企业账号</th>
-					<th data-options="field:'data_src'" style="width:80px">数据源</th>
-					<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
-				</tr>
-			</thead>
-		</table>
-		<div id="enterprise-list-footer" style="padding:5px;">
-			<div id="enterprise-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
-			<a id="enterprise-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
-		</div>
-	</div>
-	<div id="jobhunter-list-window" class="easyui-window" data-options="title:'求职者列表',modal:true,closed:true,footer:'#jobhunter-list-footer'" style="width:1000px;height:600px">
-		<table id="jobhunter-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
-			<thead>
-				<tr>
-					<th data-options="field:'id'" style="width:60px">ID</th>
-					<th data-options="field:'name'" style="width:240px">求职者名称</th>
-					<th data-options="field:'data_src'" style="width:80px">数据源</th>
-					<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
-				</tr>
-			</thead>
-		</table>
-		<div id="jobhunter-list-footer" style="padding:5px;">
-			<div id="jobhunter-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
-			<a id="jobhunter-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
-		</div>
-	</div>
-	<div id="talk-list-window" class="easyui-window" data-options="title:'宣讲会列表',modal:true,closed:true,footer:'#talk-list-footer'" style="width:1000px;height:600px">
-		<table id="talk-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
-			<thead>
-				<tr>
-					<th data-options="field:'id'" style="width:60px">ID</th>
-					<th data-options="field:'title'" style="width:300px">宣讲会名称</th>
-					<th data-options="field:'data_src'" style="width:80px">数据源</th>
-					<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
-				</tr>
-			</thead>
-		</table>
-		<div id="talk-list-footer" style="padding:5px;">
-			<div id="talk-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
-			<a id="talk-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
-		</div>
-	</div>
+</div>
+<div id="index-content" class="easyui-tabs" data-options="region:'center',border:false,tools:'#tab-tools'"></div>
+<div id="tab-tools">
+	当前用户：<span id="user">${user}</span>
+	<a class="easyui-linkbutton" data-options="text:'退出登录',onClick:logout" style="width:80px"></a>
+</div>
 </body>
 </html>

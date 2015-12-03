@@ -113,8 +113,10 @@ public class DataEntpostController extends Controller {
 		}
 	
 		boolean isSuccess=true;
+		ViEntpost vep = null;
 		if(id!=null && !id.equals("")){
-			isSuccess=ViEntpost.dao.findById(id).set("name",name)
+			vep = ViEntpost.dao.findById(id);
+			isSuccess=vep.set("name",name)
 				.set("category",category)
 				.set("category_code",category_code)
 				.set("nature",nature)
@@ -139,7 +141,8 @@ public class DataEntpostController extends Controller {
 				.set("update_date",update_date)
 				.set("create_date",create_date).update();
 		}else{
-			isSuccess=new ViEntpost().set("name",name)
+			vep = new ViEntpost();
+			isSuccess=vep.set("name",name)
 					.set("category",category)
 					.set("category_code",category_code)
 					.set("nature",nature)
@@ -166,6 +169,7 @@ public class DataEntpostController extends Controller {
 					.set("update_date",update_date)
 					.set("create_date",create_date).save();
 		}
+		dataMap.put("id", vep.getLong("id"));
 		dataMap.put("success", isSuccess);
 		renderJson(dataMap);
 	}

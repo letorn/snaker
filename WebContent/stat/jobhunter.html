@@ -1,0 +1,122 @@
+<table id="index-content-jobhunter-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,toolbar:'#index-content-jobhunter-toolbar'">
+	<thead>
+		<tr>
+			<th data-options="field:'name'" style="width:260px">岗位</th>
+			<th data-options="field:'total'" style="width:60px">所有</th>
+			<th data-options="field:'day_new'" style="width:60px">当日新增</th>
+			<th data-options="field:'syn'" style="width:60px">已上传</th>
+			<th data-options="field:'day_syn'" style="width:60px">当日上传</th>
+		</tr>
+	</thead>
+</table>
+<div id="index-content-jobhunter-toolbar" style="padding: 2px 5px;">
+	当日：<input id="index-content-jobhunter-date" class="easyui-datebox" data-options="editable:false,value:Date(),formatter:function(v){return v.getFullYear()+'-'+(v.getMonth()+1)+'-'+v.getDate()},onSelect:onIndexContentJobhunterTableRefresh" style="width:100px" />
+	<a id="index-content-jobhunter-refresh" class="easyui-linkbutton" data-options="onClick:onIndexContentJobhunterTableRefresh" style="width:80px">刷新</a>
+</div>
+
+<div id="jobhunter-list-window" class="easyui-window" data-options="title:'求职者列表',modal:true,closed:true,footer:'#jobhunter-list-footer'" style="width:1000px;height:600px">
+	<table id="jobhunter-list-table" class="easyui-datagrid" data-options="border:false,fit:true,rownumbers:true">
+		<thead>
+			<tr>
+				<th data-options="field:'id'" style="width:60px">ID</th>
+				<th data-options="field:'name'" style="width:240px">求职者名称</th>
+				<th data-options="field:'data_src'" style="width:80px">数据源</th>
+				<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="jobhunter-list-footer" style="padding:5px;">
+		<div id="jobhunter-list-pager" class="easyui-pagination" data-options="pageSize:20,pageList:[20,40,60]" style="width:888px;float:left"></div>
+		<a id="jobhunter-list-confirm" class="easyui-linkbutton" style="width:80px;float:right">确定</a>
+	</div>
+</div>
+<script type="text/javascript">
+	$.render(function() {
+		Jobhunter = {
+			$window: $('#jobhunter-list-window'),
+			$table: $('#jobhunter-list-table'),
+			$pager: $('#jobhunter-list-pager'),
+			$btnConfirm: $('#jobhunter-list-confirm'),
+			show: function() {
+				Jobhunter.$window.window('open', true);
+			},
+			init: function(category, field) {
+				var _this = Jobhunter;
+				var date = $('#index-content-jobhunter-date').datebox('getValue');
+				var beginTime = date + ' 00:00:00';
+				var endTime = date + ' 23:59:59';
+				$.post('data/jobhunter/display', {
+					category: category,
+					field: field,
+					beginTime: beginTime,
+					endTime: endTime
+				}, function(resp) {
+					if (resp.total == 0) {
+						$.messager.show({title: '提示', msg: '您所查询的求职者人数为0！', timeout: 1000, showType: 'slide'});
+					} else {							
+						_this.$table.datagrid({
+							data: resp.rows
+						});
+						_this.$pager.pagination('refresh', {
+							total: resp.total
+						});
+						_this.show();
+					}
+				}, 'json');
+				_this.$btnConfirm.click(function() {
+					_this.$window.window('close', true);
+				});
+				_this.$pager.pagination({
+					onSelectPage: function(page, pageSize) {
+						$.post('data/jobhunter/display', {
+							category: category,
+							field: field,
+							beginTime: beginTime,
+							endTime: endTime,
+							page: page,
+							rows: pageSize
+						}, function(resp) {
+							if (resp.total == 0) {
+								$.messager.show({title: '提示', msg: '您所查询的求职者人数为0！', timeout: 1000, showType: 'slide'});
+							} else {							
+								_this.$table.datagrid({
+									data: resp.rows
+								});
+								_this.$pager.pagination('refresh', {
+									total: resp.total
+								});
+								_this.show();
+							}
+						}, 'json');
+					}
+				});
+			}
+		}
+		$('#index-content-jobhunter-table').datagrid({
+			url: 'data/jobhunter/sum',
+			onBeforeLoad: function(param) {
+				var date = $('#index-content-jobhunter-date').datebox('getValue');
+				param.beginTime = date + ' 00:00:00';
+				param.endTime = date + ' 23:59:59';
+			},
+			onLoadSuccess: function(data) {
+				var row = {name: '全部', total: 0, day_new: 0, syn: 0, day_syn: 0};
+				for (var i = 0; i < data.rows.length; i ++) {
+					row.total = row.total + data.rows[i].total;
+					row.day_new = row.day_new + data.rows[i].day_new;
+					row.syn = row.syn + data.rows[i].syn;
+					row.day_syn = row.day_syn + data.rows[i].day_syn;
+				}
+				$(this).datagrid('insertRow', {index: 0, row: row});
+				$(this).datagrid('freezeRow', 0);
+			},
+			onClickCell: function(index, field, value) {
+				var row = $('#index-content-jobhunter-table').datagrid('selectRow', index).datagrid('getSelected');
+				Jobhunter.init(row.name, field);
+			}
+		});
+	});
+	function onIndexContentJobhunterTableRefresh() {
+		$('#index-content-jobhunter-table').datagrid('reload')
+	}
+</script>

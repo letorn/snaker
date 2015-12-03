@@ -7,6 +7,7 @@
 	<packaging>war</packaging>
 
 	<build>
+		<finalName>snaker</finalName>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
@@ -26,9 +27,26 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<includes>
+					<include>jfinal.properties</include>
+					<include>log4j.properties</include>
+					<include>snaker.xml</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 
 	<dependencies>
+		<!-- 用于编译 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- jfinal -->
 		<dependency>
 			<groupId>com.jfinal</groupId>

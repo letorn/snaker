@@ -6,13 +6,13 @@
 			<th data-options="field:'name'" style="width:240px">企业名称</th>
 			<th data-options="field:'data_src'" style="width:80px">数据源</th>
 			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
-			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败';}" style="width:220px">是否上传</th>
+			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败'; else if(v == 2) return '已修改';}" style="width:220px">是否上传</th>
 			<th data-options="field:'action',formatter:dataEnterpriseTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
 </table>
 <div id="data-enterprise-table-toolbar" style="padding: 2px 5px;">
-	数据源：<input id="data-enterprise-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text'" style="width:120px" />
+	数据源：<input id="data-enterprise-table-source" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text'" style="width:120px" />
 	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'企业名称'" style="width:200px" />
 	<a id="data-enterprise-table-upload" class="easyui-linkbutton">上传</a>
 	<a id="data-enterprise-table-add" class="easyui-linkbutton">新增</a>
@@ -39,29 +39,38 @@
                 </tr>
                 <tr>
                     <td>账号:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="account" id="account" data-options="required:true"></input></td>
+                    <td>
+                    	<input class="easyui-textbox" style="width:190px" type="text" name="account" id="ent_account" data-options="required:true"></input>
+                    	<a id="ent_account_linkbutton" class="easyui-linkbutton" style="width:50px" data-options="text:'生成',onClick:getAccount"></a>
+                    </td>
                 </tr>
                 
                 <tr>
                     <td>行业:</td>
                     <td>
                     <input class="" style="width:250px;display:none;" type="text" id='ent_category' name="category" data-options="required:true"></input>
-                    <input class="easyui-combobox" name="category_code" id="ent_category_code" data-options="required:true,valueField:'value',textField:'text',url:'json/industry.json',
-                    onHidePanel:function(){$('#ent_category').val( $('#ent_category_code').textbox('getText'));}" /> </td>
+                    <input class="easyui-combotree" style="width:250px" name="category_code" id="ent_category_code" style="width:200px;" data-options="required:true,data:entCates,
+                    onChange:function(){$('#ent_category').val( $('#ent_category_code').textbox('getText'));}" /> </td>
                 </tr>
                 <tr>
                     <td>性质:</td>
                     <td><input class="" style="width:250px;display:none;" type="text" id='ent_nature' name="nature" data-options="required:true"></input>
-                   <input class="easyui-combobox" name="nature_code" id="ent_nature_code" data-options="required:true,valueField:'value',textField:'text',url:'json/nature.json',
+                   <input class="easyui-combobox" style="width:250px" name="nature_code" id="ent_nature_code" data-options="editable:false,required:true,valueField:'value',textField:'text',data:entNatures,
                     onHidePanel:function(){$('#ent_nature').val( $('#ent_nature_code').textbox('getText'));}" /> </td>
 				
                 </tr>
                 <tr>
                     <td>规模:</td>
                     <td><input class="" style="width:250px;display:none;" type="text" id='ent_scale' name="scale" data-options="required:true"></input>
-                    <input class="easyui-combobox" name="scale_code" id="ent_scale_code" data-options="required:true,valueField:'value',textField:'text',url:'json/scale.json',
+                    <input class="easyui-combobox" style="width:250px" name="scale_code" id="ent_scale_code" data-options="editable:false,required:true,valueField:'value',textField:'text',data:scales,
                     onHidePanel:function(){$('#ent_scale').val( $('#ent_scale_code').textbox('getText'));}" /> </td>
 					
+                </tr>
+                <tr>
+                	<td>成立时间:</td>
+                	<td>
+                		<input class="easyui-datebox" style="width:250px" type="text" name="establish" id="establish" data-options="editable:false"></input>
+                	</td>
                 </tr>
                  <tr>
                     <td>标签:</td>
@@ -72,14 +81,14 @@
                  <tr>
                     <td>简介:</td>
                     <td>
-                        <input class="easyui-textbox" type="text"  name="introduction" id ="introduction" data-options="multiline:true,required:true" style="width:250px; height:80px"></input>
+                        <input class="easyui-textbox" type="text" name="introduction" id ="introduction" data-options="multiline:true,required:true" style="width:250px; height:80px"></input>
                     </td>
                 </tr>
                   <tr>
                     <td>区域:</td>
                     <td>
-                   <input id="ent_area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
-        data-options="url:'json/area.json',required:true,onChange:function(){$('#ent_area').val($('#ent_area_code').textbox('getText'));}"></input> 
+                   <input id="ent_area_code" name="area_code" class="easyui-combotree" style="width:250px;"   
+        data-options="data:areas,required:true,onChange:function(){$('#ent_area').val($('#ent_area_code').textbox('getText'));}"></input> 
         			<input id="ent_area" name="area" class="" style="display:none;" type="text" data-options="required:true"></input></td>
 					
                 </tr>
@@ -124,7 +133,8 @@
                 <tr>
                     <td>是否公开联系方式:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="public_contact" id="public_contact" data-options=""></input>
+                        <input class="easyui-combobox" style="width:250px" type="text" name="public_contact" id="public_contact"
+                        	 data-options="editable:false,valueField:'value',textField:'text',data:[{value:'1',text:'公开'},{value:'0',text:'不公开'}]"></input>
                     </td>
                 </tr>
                 <tr>
@@ -158,9 +168,13 @@
                     </td>
                 </tr>
                 <tr>
+                	<td><input class="" style="display:none" id="ent_syn_status" name="syn_status" type="text"></input></td>
+                </tr>
+                <tr>
                     <td>是否认证:</td>
                     <td>
-                        <input class="easyui-textbox" style="width:250px" type="text" name="legalize" id="legalize" data-options=""></input>
+                        <input class="easyui-combobox" style="width:250px" type="text" name="legalize" id="legalize" 
+                        	data-options="editable:false,valueField:'value',textField:'text',data:[{value:'1',text:'已认证'},{value:'0',text:'未认证'}]"></input>
                     </td>
                 </tr>
                 
@@ -184,7 +198,7 @@
 	    		</div>   
 	    		<div data-options="region:'center'" style="width:390px;border:none;">
 	    			<form id="data-post-form" method="post">   
-	    			<input class="" style="width:250px;display:none;" type="text"  name="id" ></input>
+	    			<input class="" style="width:250px;display:none;" type="text"  name="id" id="post_id" ></input>
 					     <table style="margin:10px">
                 <tr>
                     <td style="width:130px">岗位名称:</td>
@@ -194,20 +208,20 @@
                 <tr>
                     <td>岗位类别:</td>
                     <td><input class="" style="width:250px;display:none;" type="text" id="post_category" name="category" data-options="required:true"></input>
-                    <input id="post_category_code" name="category_code" class="easyui-combotree" style="width:200px;"   
-        				data-options="url:'json/category.json',required:true,onHidePanel:function(){$('#post_category').val($('#post_category_code').textbox('getText'));}"></input></td>
+                    <input id="post_category_code" style="width:250px" name="category_code" class="easyui-combotree" style="width:200px;"   
+        				data-options="data:postCates,required:true,onHidePanel:function(){$('#post_category').val($('#post_category_code').textbox('getText'));}"></input></td>
                 </tr>
                 <tr>
                     <td>求职类型:</td>
                    	<td><input class="" style="width:250px;display:none;" type="text" id='post_nature' name="nature" data-options="required:true"></input>
-                   <input class="easyui-combobox" name="nature_code" id="post_nature_code" data-options="valueField:'value',textField:'text',url:'json/post_nature.json',
+                   <input class="easyui-combobox" style="width:250px" name="nature_code" id="post_nature_code" data-options="editable:false,valueField:'value',textField:'text',data:postNatures,
                     onHidePanel:function(){$('#post_nature').val( $('#post_nature_code').textbox('getText'));}" /> </td>
                 </tr>
                
                  <tr>
                     <td>招聘人数:</td>
                     <td>
-                    	<input class="easyui-textbox" style="" type="text" name="headcount" id="post_headcount" data-options="required:true"></input>
+                    	<input class="easyui-textbox" style="width:190px" type="text" name="headcount" id="post_headcount" data-options="required:true,validType:['headcount']"></input>
                     	<input id="post_headcount_checkbox" type="checkbox"
                     		onclick="if($('#post_headcount_checkbox').prop('checked') == false){$('#post_headcount').textbox('setValue', '');$('#post_headcount').textbox({editable:true});}else{$('#post_headcount').textbox('setValue', '-1');$('#post_headcount').textbox({editable:false});}"></input><span>不限</span>
                     </td>
@@ -215,34 +229,38 @@
                 <tr>
                     <td>年龄段:</td>
                     <td>
-                    	<input class="easyui-textbox" style="" type="text" name="age" id="post_age" data-options=""></input>
+                    	<input class="easyui-textbox" style="width:190px" type="text" name="age" id="post_age" data-options="validType:['age']"></input>
                     	<input id="post_age_checkbox" type="checkbox"
-                    		onclick="if($('#post_age_checkbox').prop('checked') == false){$('#post_age').textbox('setValue', '');$('#post_age').textbox({editable:true});}else{$('#post_age').textbox('setValue', '不限');$('#post_age').textbox({editable:false});}"></input><span>不限</span>
+                    		onclick="if($('#post_age_checkbox').prop('checked') == false){$('#post_age').textbox('setValue', '');$('#post_age').textbox({editable:true});}else{$('#post_age').textbox('setValue', '-1');$('#post_age').textbox({editable:false});}"></input><span>不限</span>
                     </td>
                 </tr>
                 
                 <tr>
                     <td>性别:</td>
-                    <td><input class="easyui-combobox" style="" type="text" name="gender" id="post_gender" data-options="valueField:'id',textField:'text',url:'json/gender.json'"></input></td>
+                    <td><input class="easyui-combobox" style="width:250px" type="text" name="gender" id="post_gender" data-options="editable:false,valueField:'id',textField:'text',data:genders"></input></td>
                 </tr>
                 <tr>
                     <td>薪资:</td>
-                    <td><input class="easyui-textbox" style="width:" type="text" name="salary" id="post_salary" data-options="required:true"></input></td>
+                    <td>
+                    	<input class="easyui-textbox" style="width:190px" type="text" name="salary" id="post_salary" data-options="required:true,validType:['salary']"></input>
+                    	<input id="post_salary_checkbox" type="checkbox"
+                    		onclick="if($('#post_salary_checkbox').prop('checked') == false){$('#post_salary').textbox('setValue', '');$('#post_salary').textbox({editable:true});}else{$('#post_salary').textbox('setValue', '-1');$('#post_salary').textbox({editable:false});}"></input><span>面议</span>
+                    </td>
                 </tr>
                 <tr>
                  	<td>薪资类型：</td>
-                 	<td><input class="easyui-combobox" name="salary_type" id="post_salary_type" data-options="valueField:'value',textField:'text',url:'json/salary_type.json'"></input></td>
+                 	<td><input class="easyui-combobox" style="width:250px" name="salary_type" id="post_salary_type" data-options="editable:false,valueField:'value',textField:'text',data:salaryTypes"></input></td>
                 </tr>
                 <tr>
                     <td>工作经验:</td>
                     <td><input class="" style="width:250px;display:none;" type="text" id='post_experience' name="experience" data-options="required:true"></input>
-                   <input class="easyui-combobox" name="experience_code" id="post_experience_code" data-options="valueField:'value',textField:'text',url:'json/experience.json',
+                   <input class="easyui-combobox" style="width:250px" name="experience_code" id="post_experience_code" data-options="editable:false,valueField:'value',textField:'text',data:experiences,
                     onHidePanel:function(){$('#post_experience').val( $('#post_experience_code').textbox('getText'));}" /> </td>
                 </tr>
                 <tr>
                     <td>最低学历:</td>
                     <td><input class="" style="width:250px;display:none;" type="text" id='post_education' name="education" data-options="required:true"></input>
-                   <input class="easyui-combobox" name="education_code" id="post_education_code" data-options="valueField:'value',textField:'text',url:'json/education.json',
+                   <input class="easyui-combobox" style="width:250px" name="education_code" id="post_education_code" data-options="editable:false,valueField:'value',textField:'text',data:educations,
                     onHidePanel:function(){$('#post_education').val( $('#post_education_code').textbox('getText'));}" /> </td>
                 </tr>
                  <tr>
@@ -255,8 +273,8 @@
                 </tr>
                  <tr>
                     <td>区域:</td>
-                    <td><input id="post_area_code" name="area_code" class="easyui-combotree" style="width:200px;"   
-        data-options="url:'json/area.json',required:true,onChange:function(){$('#post_area').val($('#post_area_code').textbox('getText'));}"></input> 
+                    <td><input id="post_area_code" name="area_code" class="easyui-combotree" style="width:250px;"   
+        data-options="data:areas,required:true,onChange:function(){$('#post_area').val($('#post_area_code').textbox('getText'));}"></input> 
         			<input id="post_area" name="area" class="" style="display:none;" type="text" data-options="required:true"></input>
         			</td>
                 </tr>
@@ -320,6 +338,8 @@
 			$dataEnterpriseUpdateWindow.window("open");
 			$('#ent_name').textbox({editable:true});
 			defaultPostValues();
+			$('#public_contact').combobox('setValue', '0');
+			$('#legalize').combobox('setValue', '0');
 		});
 		
 		$dataEnterpriseTableSource.combobox({
@@ -338,6 +358,19 @@
 					source: $dataEnterpriseTableSource.combobox('getValue'),
 					name: value
 				});
+			}
+		});
+		//不能选择父节点
+		$('#ent_category_code').combotree({
+			onBeforeSelect: function(node) {
+				if(!$(this).tree('isLeaf', node.target)) {
+					return false;
+				}
+			},
+			onClick: function(node) {
+				if (!$(this).tree('isLeaf', node.target)) {
+					$('#ent_category_code').combo('showPanel');
+				}
 			}
 		});
 		//不能选择子节点
@@ -393,6 +426,24 @@
 				$('#data-post-form').form({
 					onLoadSuccess: function(){
 						BaiduMap("postMap", rowData.address);
+						if($('#post_headcount').textbox('getValue') == '-1') {
+							document.getElementById('post_headcount_checkbox').checked = true;
+							$('#post_headcount').textbox({editable:false});
+						} else {
+							$('#post_headcount').textbox({editable:true});
+						}
+						if($('#post_age').textbox('getValue') == '-1') {
+							document.getElementById('post_age_checkbox').checked = true;
+							$('#post_age').textbox({editable:false});
+						} else {
+							$('#post_age').textbox({editable:true});
+						}
+						if($('#post_salary').textbox('getValue') == '-1') {
+							document.getElementById('post_salary_checkbox').checked = true;
+							$('#post_salary').textbox({editable:false});
+						} else {
+							$('#post_salary').textbox({editable:true});
+						}
 					}
 				});
 				$('#data-post-form').form('load','data/entpost/getEntpost?id='+rowData.id);
@@ -442,6 +493,40 @@
 			onLoadSuccess: function() {
 				$('#ent_name').textbox({editable:false});
 				BaiduMap('entMap', $('#ent_address').textbox('getValue'));
+				if (document.getElementById('ent_syn_status').value == 1) {
+					$('#ent_account').textbox({editable:false});
+				} else {
+					$('#ent_account').textbox({editable:true});
+				}
+				$('#tag').textbox({
+					onChange: function(value) {
+						if (!(/self/.test(value) || /system/.test(value)) && value != null) {
+							value = value.replace(/，/g, ',');
+							tmpList = value.split(",");
+							var value = "";
+							var flag;
+							for(var j in tmpList) {
+								flag = 0;
+								for(var i in tags) {
+									if (tmpList[j] == tags[i].text) {
+										value = value + "system&" + tags[i].value +　"&" + tags[i].text + "$$";
+										flag = 1;
+										break;
+									}
+								}
+								if (!flag) {
+									value = value + "self&" + tmpList[j] + "$$";
+								}
+							}
+							value = value.substring(0, value.length - 2);
+						}
+						if (value != null && value.length != 0) {
+							$('#tag').textbox('initValue', value);
+							var v = value.replace(/\d\d\d/g, '').replace(/self/g, '').replace(/&/g, '').replace(/system/g, '').replace(/\$\$/g, ',');
+							$('#tag').textbox('setText', v);
+						}
+					}
+				});
 			}
 		})
 		$('#data-enterprise-update-form').form('load','data/enterprise/getEnt?id='+id);
@@ -450,6 +535,35 @@
 			method:'get',
 			onLoadSuccess: function() {
 				BaiduMap('postMap', "");
+				$('#post_tag').textbox({
+					onChange: function(value) {
+						if (!(/self/.test(value) || /system/.test(value)) && value != null) {
+							value = value.replace(/，/g, ',');
+							tmpList = value.split(",");
+							var value = "";
+							var flag;
+							for(var j in tmpList) {
+								flag = 0;
+								for(var i in tags) {
+									if (tmpList[j] == tags[i].text) {
+										value = value + "system&" + tags[i].value +　"&" + tags[i].text + "$$";
+										flag = 1;
+										break;
+									}
+								}
+								if (!flag) {
+									value = value + "self&" + tmpList[j] + "$$";
+								}
+							}
+							value = value.substring(0, value.length - 2);
+						}
+						if (value != null && value.length != 0) {
+							$('#post_tag').textbox('initValue', value);
+							v = value.replace(/\d\d\d/g, '').replace(/self/g, '').replace(/&/g, '').replace(/system/g, '').replace(/\$\$/g, ',');
+							$('#post_tag').textbox('setText', v);
+						}
+					}
+				});
 			}
 		});
 		defaultPostValues();
@@ -528,10 +642,14 @@
 				}
 				return isValid;
 			},
-			success: function(){
+			success: function(data) {
+				$('#id').val($.decodeJson(data).id);
 				$('#data-enterprise-table').datagrid('reload'); 
 				//$('#data-enterprise-update-window').window('close');
-				$.messager.show({title: '提示', msg: '执行成功！', timeout: 1000, showType: 'slide'});
+				if($.decodeJson(data).success)
+					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
+				else
+					$.messager.show({title: '提示', msg: $.decodeJson(data).msg, timeout: 1000, showType: 'slide'});
 			}
 		});
 	}
@@ -547,10 +665,19 @@
 				}
 				return isValid;
 			},
-			success: function(){
-				$('#data-post-table').datagrid('reload'); 
-				//$('#data-enterprise-update-window').window('close');
-				$.messager.show({title: '提示', msg: '执行成功！', timeout: 1000, showType: 'slide'});
+			success: function(data){
+				$('#post_id').val($.decodeJson(data).id);
+				$('#data-post-table').datagrid({
+					url:'data/entpost/list?data_key='+$('#ent_name').textbox('getValue'),
+					method:'get',
+					onLoadSuccess: function() {
+						BaiduMap('postMap', "");
+					}
+				});
+				if($.decodeJson(data).success)
+					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
+				else
+					$.messager.show({title: '提示', msg: $.decodeJson(data).msg, timeout: 1000, showType: 'slide'});
 			}
 		});
 		
@@ -577,8 +704,11 @@
 		$('#post_headcount').textbox('setValue', '-1');
 		$('#post_headcount').textbox({editable:false});
 		document.getElementById('post_age_checkbox').checked=true;
-		$('#post_age').textbox('setValue', '不限');
+		$('#post_age').textbox('setValue', '-1');
 		$('#post_age').textbox({editable:false});
+		document.getElementById('post_salary_checkbox').checked=true;
+		$('#post_salary').textbox('setValue', '-1');
+		$('#post_salary').textbox({editable:false});
 	}
 	
 	//关闭form窗口
@@ -610,5 +740,13 @@
 			}
 		}, 'json'); 
 	}
-	
+	//获取自动生成的企业账号
+	function getAccount() {
+		var prefix = $('#ent_account').textbox('getValue');
+		$.post('data/enterprise/getAccount',{
+			prefix : prefix
+		}, function(resp) {
+			$('#ent_account').textbox('setValue', resp.account);
+		}, 'json');
+	}
 </script>

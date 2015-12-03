@@ -2,17 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
 <title>登录</title>
 </head>
-<body>
+<body style="background:url('common/images/background.jpg');">
+<div style="background:url('common/images/login_bg.png');position:relative;margin-top:234px;width:400px;height:377px;margin-left:auto;margin-right:auto;padding-left:20px;padding-bottom:10px;">
 	<form action="login" method="post">
-		<p>用户：<input type="text" name="account" /></p>
-		<p>密码：<input type="password" name="password" /></p>
-		<input type="submit" value="登录" />&nbsp;&nbsp;<span id="error"></span>
+		<p style="position:fixed;margin-left:50px;margin-top:165px;"><span style="color:#FFFFFF;">用户名:&nbsp;</span><input type="text" name="account" style="width:255px;height:40px;background-color:transparent;border:0px" /></p>
+		<p style="position:fixed;margin-left:50px;margin-top:230px;"><span style="color:#FFFFFF;">密&nbsp;码:&nbsp;</span><input type="password" name="password" style="width:255px;height:40px;background-color:transparent;border:0px" /></p>
+		<input type="submit" value="" style="cursor:pointer;width:402px;height:56px;margin-left:-12px;margin-top:313px;border-radius:8px;background-color:transparent;border:0px;position:fixed"/>
+		<div style="position:fixed;margin-top:381px;margin-left:67px;color:cornsilk;font-size:30px" id="error"></div>
 	</form>
+</div>
 	<script type="text/javascript">
 		var error = '${error}';
-		if (!error.startsWith('$')) {
+		if (!/\$/.test(error)) {
 			var ele = document.getElementById('error');
 			ele.innerHTML = error;
 		}

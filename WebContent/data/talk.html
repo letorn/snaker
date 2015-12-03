@@ -6,13 +6,13 @@
 			<th data-options="field:'title'" style="width:240px">宣讲会标题</th>
 			<th data-options="field:'data_src'" style="width:80px">数据源</th>
 			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
-			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败';}" style="width:220px">是否上传</th>
+			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败'; else if(v == 2) return '已修改';}" style="width:220px">是否上传</th>
 			<th data-options="field:'action',formatter:dataTalkTableActionFormatter" style="width:180px">操作</th>
 		</tr>
 	</thead>
 </table>
 <div id="data-talk-table-toolbar" style="padding: 2px 5px;">
-	数据源：<input id="data-talk-table-source" class="easyui-combobox" data-options="valueField:'value',textField:'text'" style="width:120px" />
+	数据源：<input id="data-talk-table-source" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text'" style="width:120px" />
 	<input id="data-talk-table-search" class="easyui-searchbox" data-options="prompt:'宣讲会标题'" style="width:200px" />
 	<a id="data-talk-table-upload" class="easyui-linkbutton">上传</a>
 	<a id="data-talk-table-add" class="easyui-linkbutton">新增</a>
@@ -30,16 +30,16 @@
  	   <table style="margin:10px">
                 <tr>
                     <td>标题:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" id = "title" name="title" data-options="required:true"></input></td>
+                    <td><input class="easyui-textbox" style="width:300px" type="text" id = "title" name="title" data-options="required:true"></input></td>
                 </tr>
                 <tr>
                     <td>来源:</td>
-                    <td><input class="easyui-textbox" style="width:250px" type="text" name="source" id="source" data-options="required:true"></input></td>
+                    <td><input class="easyui-textbox" style="width:300px" type="text" name="source" id="source" data-options="required:true"></input></td>
                 </tr>
                 <tr>
                     <td>内容:</td>
                     <td>
-                        <input class="easyui-textbox" type="text"  name="content" id ="content" data-options="multiline:true,required:true" style="width:250px; height:80px"></input>
+                        <input class="easyui-textbox" type="text"  name="content" id ="content" data-options="multiline:true,required:true" style="width:300px; height:180px"></input>
                     </td>
                 </tr>
             </table>
@@ -87,12 +87,7 @@
 		
 		$dataTalkTable.datagrid({
 			url:'data/talk',
-			method:'get',
-			onLoadSuccess: function() {
-				$('.data-talk-table-look').click(function() {
-					console.log('look...');
-				});
-			}
+			method:'get'
 		});
 		
 		$('#data-talk-upload-confirm').click(function() {
@@ -164,10 +159,14 @@
 				}
 				return isValid;
 			},
-			success: function(){
+			success: function(data){
+				$('#id').val($.decodeJson(data).id);
 				$('#data-talk-table').datagrid('reload'); 
 				$dataTalkUpdateWindow.window('close');
-				$.messager.show({title: '提示', msg: '修改成功！', timeout: 1000, showType: 'slide'});
+				if($.decodeJson(data).success)
+					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
+				else
+					$.messager.show({title: '提示', msg: $.decodeJson(data).msg, timeout: 1000, showType: 'slide'});
 			}
 		});
 	}

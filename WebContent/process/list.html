@@ -1,0 +1,130 @@
+<table id="process-list-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,singleSelect:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#process-list-table-toolbar'">
+	<thead>
+		<tr>
+			<th data-options="field:'id'" style="width:60px">流程编号</th>
+			<th data-options="field:'name'" style="width:150px">流程名称</th>
+			<th data-options="field:'content',formatter:$.encodeHtml" style="width:680px">流程内容</th>
+			<th data-options="field:'update_date'" style="width:130px">更新时间</th>
+			<th data-options="field:'action',formatter:processListTableActionFormatter" style="width:130px">操作</th>
+		</tr>
+	</thead>
+</table>
+<div id="process-list-table-toolbar">
+	<input id="process-list-table-search" class="easyui-searchbox" data-options="prompt:'流程名称'" style="width:200px"></input>
+</div>
+
+
+<div id="process-list-params-window" class="easyui-window" data-options="title:'启动',modal:true,closed:true,footer:'#process-list-params-window-footer'" style="width:320px;padding:10px">
+</div>
+<div id="process-list-params-window-footer" style="padding:5px;">
+	<a id="process-list-params-window-confirm" class="easyui-linkbutton" style="width:80px">运行</a>
+	<a id="process-list-params-window-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+<script type="text/javascript">
+	function processListTableActionFormatter(value, row) {
+		return '<a class="process-list-table-start" data-process="' + row.id + '" style="cursor:pointer;color:blue">启动</a>&nbsp;&nbsp;';
+	}
+
+	$.render(function() {
+		var $processListTable = $('#process-list-table'), $processListParamsWindow = $('#process-list-params-window');
+		
+		$('#process-list-table-search').searchbox({
+			searcher: function(value) {
+				$processListTable.datagrid('load', {
+					name: value
+				});
+			}
+		});
+		
+		$('#process-list-params-window-confirm').click(function() {
+			var params = {};
+			$processListParamsWindow.find('input,select').each(function(index, input) {
+				var $input = $(input);
+				var module = $input.data('module');
+				var field = $input.data('field');
+				if (module != undefined && field != undefined) {
+					params[module] = params[module] || {};
+					params[module][field] = $input.val();
+				}
+			});
+			$.post('process/start/' + $processListParamsWindow.data('process'), {
+				params: $.encodeJson(params)
+			}, function(resp) {
+				if (resp.success) {
+					window.open('instance/all/' + resp.instance);
+				} else {
+					$.messager.show({title: '提示', msg: '启动失败！', timeout: 1000, showType: 'slide'});
+				}
+				$processListParamsWindow.window('close');
+			}, 'json');
+		});
+		
+		$('#process-list-params-window-cancel').click(function() {
+			$processListParamsWindow.window('close');
+		});
+		
+		$processListTable.datagrid({
+			url:'process/list',
+			method:'get',
+			onLoadSuccess: function() {
+				$('.process-list-table-start').click(function() {
+					$processListParamsWindow.data('process', $(this).data('process'));
+					$processListParamsWindow.html('');
+					$.post('process/params/' + $(this).data('process'), function(data) {
+						if (data.length <= 0) {
+							$.post('process/start/' + $processListParamsWindow.data('process'), function(resp) {
+								if (resp.success) {
+									window.open('instance/all/' + resp.instance);
+								} else {
+									$.messager.show({title: '提示', msg: '启动失败！', timeout: 1000, showType: 'slide'});
+								}
+							}, 'json');
+						} else {
+							for (var i = 0; i < data.length; i ++) {
+								var d = data[i];
+								if (d.params) {
+									$processListParamsWindow.append('<h3>' + d.module + '</h3>');
+									for (var j = 0; j < d.params.length; j ++) {
+										var param = d.params[j];
+										if (param.editor == 'combobox') {
+											var options = '';
+											for (var k = 0; k < param.options.length; k ++) {
+												options += '<option value="' + param.options[k][1] + '">' + param.options[k][0] + '</option>';
+											}
+											$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<select class="easyui-combobox" data-module="' + d.module + '" data-field="' + param.name + '" style="width:173px">' + options + '</select><br />');
+										} else if (param.editor == 'filebox') {
+											$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-textbox file" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
+										} else {
+											$processListParamsWindow.append('<span style="display:inline-block;width:100px">' + param.name + '：</span>' + '<input class="easyui-' + param.editor + '" data-module="' + d.module + '" data-field="' + param.name + '" /><br />');
+										}
+									}
+								}
+							}
+							$processListParamsWindow.window('open');
+							$.parser.parse($processListParamsWindow);
+							$processListParamsWindow.find('.file').textbox({
+								buttonText: '选择文件',
+								iconAlign: 'left',
+								onClickButton: function() {
+									$file = $(this);
+									$.upload({
+										url: 'process/upload', 
+										fileName: 'file', 
+										dataType: 'json',
+										onSend: function() {
+											return true;
+										},
+										onComplate: function(data) {
+											$file.textbox('setText', data.file);
+											$file.val(data.path);
+										}
+									});
+								}
+							});
+						}
+					}, 'json');
+				});
+			}
+		});
+	});
+</script>
