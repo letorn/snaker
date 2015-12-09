@@ -2,6 +2,7 @@ package controller;
 
 import static util.Validator.notBlank;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.upload.UploadFile;
 
 import engine.Workflow;
+import engine.module.AddFieldModule;
 import engine.module.Module;
 
 /*
@@ -301,6 +303,7 @@ public class ProcessController extends Controller{
 
 		if (notBlank(processId)) {
 			Workflow process = snakerService.getProcess(processId);
+			List<Map<String, Object>> parameters = new ArrayList<Map<String, Object>>();
 			for (Module module : process.getModules()) {
 				if (notBlank(module.getParams())) {
 					Map<String, Object> row = new HashMap<String, Object>();
@@ -308,6 +311,25 @@ public class ProcessController extends Controller{
 					row.put("params", module.getParams());
 					dataList.add(row);
 				}
+				if (module instanceof AddFieldModule) {
+					List<Map<String, Object>> fieldTable = ((AddFieldModule) module).getFieldTable();
+					for (Map<String, Object> ft : fieldTable) {
+						if ("parameter".equals(ft.get("type"))) {
+							Map<String, Object> parameter = new HashMap<String, Object>();
+							parameter.put("name", ft.get("name"));
+							parameter.put("type", ft.get("string"));
+							parameter.put("editor", ft.get("textbox"));
+							parameter.put("options", "");
+							parameters.add(parameter);
+						}
+					}
+				}
+			}
+			if (parameters.size() > 0) {
+				Map<String, Object> row = new HashMap<String, Object>();
+				row.put("module", "Parameter");
+				row.put("params", parameters);
+				dataList.add(row);
 			}
 		}
 		renderJson(dataList);

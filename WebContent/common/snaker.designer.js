@@ -47,6 +47,36 @@ var Designer = {
 				dataRows: []
 			}
 		},
+		httpclientlogin: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.HttpClientLoginModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: '模拟登录',
+				loginUrl: '',
+				accountName: '',
+				passwordName: '',
+//				nameValuePairs: []
+				params: [{
+					name: 'account',
+					type: 'string',
+					editor: 'textbox',
+					options: ''
+				}, {
+					name: 'password',
+					type: 'string',
+					editor: 'textbox',
+					options: ''
+				}]
+			}
+		},
 		webinput: {
 			ptype: 'rect',
 			pattr: {
@@ -96,6 +126,24 @@ var Designer = {
 				targetUrl: '',
 				skipJugment: '',
 				dataPaths: []
+			}
+		},
+		pageanalyser: {
+			ptype: 'rect',
+			pattr: {
+				width: 40,
+				height: 60,
+				fill: '#999999'
+			},
+			pdata: {
+				node: true,
+				clazz: 'engine.module.PageAnalyserModule',
+				doRecord: true,
+				recordView: 'module/basiclog',
+				name: '单页分析',
+				analyserData: '',
+				targetXpath: '',
+				analyserDataPaths: []
 			}
 		},
 		excelinput: {

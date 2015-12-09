@@ -59,7 +59,7 @@ public class SnakerEngine {
 			workflow.setInstanceParams(params);
 			workflow.setInstanceCreateDate(new Date());
 			workflow.setDaemon(daemon);
-			if (workflow.start(params)) {
+			if (workflow.init() && workflow.start()) {
 				instanceWorkflowIdMap.put(workflow.getInstanceId(), workflow);
 				return workflow;
 			}

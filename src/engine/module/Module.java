@@ -25,7 +25,6 @@ public abstract class Module implements Runnable {
 	
 	protected String mtype;// 模型类型
 	protected String name;// 模型名称
-	protected String controller;// 模型界面
 	protected boolean doRecord = false;
 	protected ModuleData records = new ModuleData();
 	protected String recordView;// 模型视图
@@ -73,14 +72,7 @@ public abstract class Module implements Runnable {
 	public void run(ModuleData inputs) {
 		outputs = execute(inputs);
 		if (doRecord) {
-			records.addAll(inputs.getRows());
-			/*new WfRecord().set("process_id", workflow.getProcessId())
-							.set("instance_id", workflow.getInstanceId())
-							.set("module", name)
-							.set("headers", Json.toString(outputs.getHeaders()))
-							.set("rows", Json.toString(outputs.getRows()))
-							.set("create_date", new Date())
-							.save();*/
+			records.addAll(outputs.getRows());
 		}
 		for (Module module : nextModules) {
 			module.setInputs(outputs);
@@ -146,14 +138,6 @@ public abstract class Module implements Runnable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getController() {
-		return controller;
-	}
-
-	public void setController(String controller) {
-		this.controller = controller;
 	}
 
 	public boolean isDoRecord() {

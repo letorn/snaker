@@ -1,3 +1,7 @@
+/**
+ * @author wh
+ */
+
 package engine.module;
 
 import java.io.Closeable;
@@ -5,7 +9,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -20,7 +23,6 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
-import util.File;
 
 public class PostWebInputModule extends Module {
 
@@ -67,6 +69,12 @@ public class PostWebInputModule extends Module {
 			if (cookies != null && cookies.size() > 0) {
 				snakerProcessor.initCookies(cookies);
 			}
+			for (Module pre : this.prevModules) {
+				if (pre instanceof HttpClientLoginModule) {
+					Map<String, String> cookie = ((HttpClientLoginModule)pre).getCookie();
+					snakerProcessor.initCookies(cookie);
+				}
+			}
 			Map<String, Object> params = new HashMap<String, Object>();
 			if (formDatas != null && formDatas.size() > 0) {
 				int length = formDatas.size();
@@ -98,8 +106,6 @@ public class PostWebInputModule extends Module {
 
 	/**
 	 * 内部类，抓取页面内容
-	 * @author wanghao
-	 *
 	 */
 	private class SnakerProcessor implements PageProcessor {
 
@@ -114,6 +120,12 @@ public class PostWebInputModule extends Module {
 		public void initCookies(List<Map<String, String>> cookies) {
 			for (Map<String, String> cookie : cookies) {
 				site = site.addCookie(cookie.get("cookieName"), cookie.get("cookieValue"));
+			}
+		}
+		
+		public void initCookies(Map<String, String> cookies){
+			for (String cookieName : cookies.keySet()) {
+				site = site.addCookie(cookieName, cookies.get(cookieName));
 			}
 		}
 		
@@ -203,8 +215,6 @@ public class PostWebInputModule extends Module {
 	
 	/**
 	 * 输出类
-	 * @author wanghao
-	 *
 	 */
 	private class OutputPipeline implements Pipeline, Closeable {
 

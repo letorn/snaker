@@ -17,6 +17,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import service.SnakerService;
+import util.Json;
+
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Page;
 
@@ -24,8 +27,6 @@ import engine.ModuleData;
 import engine.ModuleData.DataHeader;
 import engine.Workflow;
 import engine.module.Module;
-import service.SnakerService;
-import util.Json;
 
 /*
  * 控制类 - 流程实例相关
@@ -96,13 +97,6 @@ public class InstanceController extends Controller {
 				setAttr("instanceParams", instance.getInstanceParams());
 				List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
 				for (Module module : instance.getModules()) {
-					if (notBlank(module.getController())) {
-						Map<String, Object> view = new HashMap<String, Object>();
-						view.put("mtype", module.getMtype());
-						view.put("name", module.getName());
-						view.put("form", module.getController());
-						views.add(view);
-					}
 					if (module.isDoRecord() && notBlank(module.getRecordView())) {
 						Map<String, Object> view = new HashMap<String, Object>();
 						view.put("mtype", module.getMtype());
@@ -237,9 +231,19 @@ public class InstanceController extends Controller {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void createCell(Row row, int column, Object value) {
 		Cell cell = row.createCell(column);
-		cell.setCellValue((String)value);
+		String result = "";
+		if (value instanceof List) {
+			for (String v : (List<String>)value) {
+				result = result + v + "\\";
+			}
+			result = result.substring(0, result.length() - 1);
+		} else {
+			result = (String)value;
+		}
+		cell.setCellValue(result);
 	}
 	
 }

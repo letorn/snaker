@@ -25,10 +25,12 @@
 		</div>
 		<div data-options="title:'输入',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
 			<p class="precess-designer-toolbox-citem" data-mtype="tableinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格输入</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="httpclientlogin" style="width:80px;height:20px;line-height:20px;background:#fafafa">模拟登录</p>
 			<p class="precess-designer-toolbox-citem" data-mtype="webinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">页面输入</p>
 			<p class="precess-designer-toolbox-citem" data-mtype="postwebinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">POST页面输入</p>
 			<p class="precess-designer-toolbox-citem" data-mtype="excelinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">Excel输入</p>
 			<p class="precess-designer-toolbox-citem" data-mtype="hbinput" style="width:80px;height:20px;line-height:20px;background:#fafafa">湖北输入</p>
+			<p class="precess-designer-toolbox-citem" data-mtype="pageanalyser" style="width:80px;height:20px;line-height:20px;background:#fafafa">单页解析</p>
 		</div>
 		<div data-options="title:'映射',collapsed:false" style="text-align:center;padding-left:10px;padding-top:10px">
 			<p class="precess-designer-toolbox-citem" data-mtype="tablemapper" style="width:80px;height:20px;line-height:20px;background:#fafafa">表格映射</p>
@@ -126,6 +128,27 @@
 <div id="module-editor-start-urls-footer" style="padding:5px;">
 	<a id="module-editor-start-urls-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
 	<a id="module-editor-start-urls-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+</div>
+
+<div id="module-editor-analyser-data-paths" class="easyui-window" data-options="title:'页面解析',modal:true,closed:true,footer:'#module-editor-analyser-data-paths-footer'" style="width:1500px;height:700px">
+	<table id="module-editor-analyser-data-paths-table" class="easyui-datagrid" data-options="border:false,fit:true,toolbar:'#module-editor-analyser-data-paths-toolbar',rownumbers:true">
+		<thead>
+			<tr>
+				<th data-options="field:'name',width:200,editor:{type:'textbox'}">name</th>
+				<th data-options="field:'xpath',width:550,editor:{type:'textbox'}">xpath</th>
+				<th data-options="field:'regex',width:550,editor:{type:'textbox'}">regex</th>
+				<th data-options="field:'isAll',width:100,editor:{type:'textbox'}">isAll</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="module-editor-analyser-data-paths-toolbar">
+		<a id="module-editor-analyser-data-paths-add" class="easyui-linkbutton">新增</a>
+		<a id="module-editor-analyser-data-paths-remove" class="easyui-linkbutton">删除</a>
+	</div>
+</div>
+<div id="module-editor-analyser-data-paths-footer" style="padding:5px;">
+	<a id="module-editor-analyser-data-paths-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
+	<a id="module-editor-analyser-data-paths-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
 </div>
 
 <div id="module-editor-headers" class="easyui-window" data-options="title:'Headers',modal:true,closed:true,footer:'#module-editor-headers-footer'" style="width:700px;height:400px">
@@ -247,7 +270,7 @@
 		<thead>
 			<tr>
 				<th data-options="field:'name',width:100,editor:{type:'textbox'}">属性名称</th>
-				<th data-options="field:'type',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'常量',value:'constant'},{name:'变量',value:'variable'},{name:'脚本',value:'script'},{name:'当前时间',value:'currentdate'},{name:'坐标',value:'coordinate'},{name:'企业账号',value:'entaccount'},{name:'求职者账号',value:'useraccount'},{name:'生成html页面',value:'createhtmlpage'},{name:'其他',value:'others'}]}}">类型</th>
+				<th data-options="field:'type',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'常量',value:'constant'},{name:'变量',value:'variable'},{name:'脚本',value:'script'},{name:'当前时间',value:'currentdate'},{name:'坐标',value:'coordinate'},{name:'企业账号',value:'entaccount'},{name:'求职者账号',value:'useraccount'},{name:'生成html页面',value:'createhtmlpage'},{name:'系统参数',value:'parameter'},{name:'其他',value:'others'}]}}">类型</th>
 				<th data-options="field:'datatype',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'字符串',value:'string'},{name:'整形',value:'integer'},{name:'长整形',value:'long'},{name:'小数',value:'double'},{name:'日期',value:'date'}]}}">数据类型</th>
 				<th data-options="field:'value',width:100,editor:{type:'textbox'}">值</th>
 			</tr>
@@ -673,6 +696,69 @@
 				},
 				show: function() {
 					editor.headers.$window.window('open', true);
+				}
+		}
+		
+		editor.analyserDataPaths = {
+				$window: $('#module-editor-analyser-data-paths'),
+				$table: $('#module-editor-analyser-data-paths-table'),
+				$btnAdd: $('#module-editor-analyser-data-paths-add'),
+				$btnRemove: $('#module-editor-analyser-data-paths-remove'),
+				$btnConfirm: $('#module-editor-analyser-data-paths-confirm'),
+				$btnCancel: $('#module-editor-analyser-data-paths-cancel'),
+				endEditing: function() {
+					var _this = editor.analyserDataPaths;
+					if (_this.lastEditingIndex == null) return true;
+					if (_this.$table.datagrid('validateRow', _this.lastEditingIndex)) {
+						_this.$table.datagrid('endEdit', _this.lastEditingIndex);
+						_this.lastEditingIndex = null;
+						return true;
+					}
+					return false;
+				},
+				init : function(index, row) {
+					var _this = editor.analyserDataPaths;
+					if(!_this.initEvent) {
+						_this.$table.datagrid({
+							onClickCell: function(index, field) {
+								if (index != _this.lastEditingIndex) {
+									if (_this.endEditing()) {
+										_this.$table.datagrid('selectRow', index).datagrid('beginEdit', index);
+										var editor = _this.$table.datagrid('getEditor', {index: index, field: field});
+										if (editor) {
+											($(editor.target).data('textbox') ? $(editor.target).textbox('textbox') : $(editor.target)).focus();
+										}
+										_this.lastEditingIndex = index;
+									} else {
+										_this.$table.datagrid('selectRow', _this.lastEditingIndex);
+									}
+								}
+							}
+						});
+						_this.$btnAdd.click(function() {
+							_this.$table.datagrid('appendRow', {name: '', xpath: '', regex: '', isAll: ''});
+						});
+						_this.$btnRemove.click(function() {
+							_this.$table.datagrid('deleteRow', _this.lastEditingIndex);
+						});
+						_this.$btnConfirm.click(function() {
+							if (_this.endEditing()) {
+								row.value = _this.$table.datagrid('getRows');
+								Designer.PropBox.updateValue(index, row, true);
+								_this.$window.window('close', true);
+							}
+						});
+						_this.$btnCancel.click(function() {
+							_this.$window.window('close', true);
+						});
+						_this.initEvent = true;
+					}
+				},
+				setValue: function(value) {
+					editor.analyserDataPaths.$table.datagrid('loadData', value);
+				},
+				show: function() {
+					editor.analyserDataPaths.$window.window('open', true);
 				}
 		}
 		

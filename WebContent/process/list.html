@@ -43,8 +43,12 @@
 				var module = $input.data('module');
 				var field = $input.data('field');
 				if (module != undefined && field != undefined) {
-					params[module] = params[module] || {};
-					params[module][field] = $input.val();
+					if (module == 'Parameter') {
+						params[field] = $input.val();
+					} else {
+						params[module] = params[module] || {};
+						params[module][field] = $input.val();
+					}
 				}
 			});
 			$.post('process/start/' + $processListParamsWindow.data('process'), {

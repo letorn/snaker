@@ -27,10 +27,6 @@ public class IndexController extends Controller {
 	 * 主页
 	 */
 	public void index() {
-		SkAdmin admin = getSessionAttr("admin");
-		if (notBlank(admin)) {
-			setAttr("user", admin.get("account"));
-		}
 		render("/index.html");
 	}
 
@@ -41,14 +37,13 @@ public class IndexController extends Controller {
 	public void login() {
 		String account = getPara("account");
 		String password = getPara("password");
-		SkAdmin admin = SkAdmin.dao.findFirst("select * from sk_admin where account=? and password=?", account, password);
+		SkAdmin admin = SkAdmin.dao.findFirst("select account from sk_admin where account=? and password=?", account, password);
 		if (notBlank(admin)) {
+			dataMap.put("success", true);
 			setSessionAttr("admin", admin);
-			redirect("/index");
-		} else {
-			setAttr("error", "用户名或密码错误！");
-			render("/login.html");
+			setCookie("adminAccount", admin.getStr("account"), -1);
 		}
+		renderJson(dataMap);
 	}
 	
 	/**

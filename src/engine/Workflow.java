@@ -42,16 +42,18 @@ public class Workflow {
 	private Module beginModule;// 开始模型
 	private List<Module> modules;// 所有模型
 
+	private Map<String, Object> parameters;// 实例参数Map
+	
 	/**
 	 * 初始化参数
 	 * @param params 实例参数
 	 * @return 是否初始化成功
 	 */
-	public boolean init(String params) {
-		Map<String, Map<String, Object>> allModuleParamMap = Json.parseToMap(params);
+	public boolean init() {
+		parameters = Json.parseToMap(instanceParams);
 		for (Module module : modules) {
 			String moduleName = module.getName();
-			Map<String, Object> moduleParamMap = allModuleParamMap.get(moduleName);
+			Map<String, Object> moduleParamMap = (Map<String, Object>) parameters.get(moduleName);
 			List<Map<String, Object>> moduleParams = module.getParams();
 			if (notBlank(moduleParamMap) && notBlank(moduleParams) && moduleParams.size() > 0) {
 				Class classType = module.getClass();
@@ -79,8 +81,8 @@ public class Workflow {
 	 * @param params 实例参数
 	 * @return 是否运行成功
 	 */
-	public boolean start(String params) {
-		if (notBlank(beginModule) && init(params)) {
+	public boolean start() {
+		if (notBlank(beginModule)) {
 			if (daemon) {
 				new Thread(beginModule).start();
 			} else {
@@ -281,6 +283,10 @@ public class Workflow {
 
 	public void setModules(List<Module> modules) {
 		this.modules = modules;
+	}
+
+	public Map<String, Object> getParameters() {
+		return parameters;
 	}
 	
 }

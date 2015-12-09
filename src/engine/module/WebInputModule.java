@@ -1,11 +1,14 @@
+/**
+ * @author wh
+ */
 package engine.module;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import engine.ModuleData;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -14,6 +17,7 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
+import engine.ModuleData;
 
 /*
  * 流程模型 - 页面爬取
@@ -61,6 +65,12 @@ public class WebInputModule extends Module {
 			if (cookies != null && cookies.size() > 0) {
 				snakerProcessor.initCookies(cookies);
 			}
+			for (Module pre : this.prevModules) {
+				if (pre instanceof HttpClientLoginModule) {
+					Map<String, String> cookie = ((HttpClientLoginModule)pre).getCookie();
+					snakerProcessor.initCookies(cookie);
+				}
+			}
 			for (Map<String, String> url : startUrls) {
 				spider = spider.addUrl(url.get("startUrl"));
 			}
@@ -79,8 +89,6 @@ public class WebInputModule extends Module {
 	
 	/**
 	 * 内部类，抓取页面内容
-	 * @author wanghao
-	 *
 	 */
 	private class SnakerProcessor implements PageProcessor {
 
@@ -95,6 +103,12 @@ public class WebInputModule extends Module {
 		public void initCookies(List<Map<String, String>> cookies){
 			for (Map<String, String> cookie : cookies) {
 				site = site.addCookie(cookie.get("cookieName"), cookie.get("cookieValue"));
+			}
+		}
+		
+		public void initCookies(Map<String, String> cookies){
+			for (String cookieName : cookies.keySet()) {
+				site = site.addCookie(cookieName, cookies.get(cookieName));
 			}
 		}
 
@@ -133,7 +147,11 @@ public class WebInputModule extends Module {
 					result = result.regex(regex);
 				}
 				if (isAll != null && isAll.length() > 0 && "true".equals(isAll.toLowerCase())) {
-					page.putField(attr, result.all());
+					List<String> out = new ArrayList<String>();
+					for (String output : result.all()) {
+						out.add(output.replaceAll(" ", ""));
+					}
+					page.putField(attr, out);
 				} else {
 					String out = result.toString();
 					if (out == null || out.length() == 0) {
@@ -162,8 +180,6 @@ public class WebInputModule extends Module {
 	
 	/**
 	 * 输出类
-	 * @author wanghao
-	 *
 	 */
 	private class OutputPipeline implements Pipeline, Closeable {
 
