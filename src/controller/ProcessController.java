@@ -204,6 +204,7 @@ public class ProcessController extends Controller{
 			Workflow instance = snakerService.startProcess(processId, params, daemon);
 			if (instance != null) {
 				dataMap.put("success", true);
+				dataMap.put("message", instance.getMessage());
 				dataMap.put("process", instance.getProcessId());
 				dataMap.put("instance", instance.getInstanceId());
 			}

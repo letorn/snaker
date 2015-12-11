@@ -3,6 +3,8 @@
  */
 package engine.module;
 
+import static util.Validator.notBlank;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -29,11 +32,11 @@ public class HttpClientLoginModule extends Module{
 	private String accountName;
 	private String passwordName;
 	private String loginUrl;
+	private String verifyHeader;
+	private String verifyString;
+	private String errorMsg;
+	private boolean success = false;
 	private Map<String, String> cookie = new HashMap<String, String>();
-
-	public Map<String, String> getCookie() {
-		return this.cookie;
-	}
 	
 	/**
 	 * 模拟登录方法执行体
@@ -55,10 +58,29 @@ public class HttpClientLoginModule extends Module{
 		try {
 			HttpEntity he = new UrlEncodedFormEntity(loginParames);
 			login.setEntity(he);
-			client.execute(login);
+			HttpResponse response = client.execute(login);
 			List<Cookie> cookies = cookieStore.getCookies();
-			for (Cookie cookie : cookies) {
+			for (Cookie cookie: cookies) {
 				this.cookie.put(cookie.getName(), cookie.getValue());
+			}
+			if (notBlank(verifyHeader)) {
+				if ("Set-Cookie".equals(verifyHeader)) {
+					for (String cookieName: this.cookie.keySet()) {
+						if (cookieName.equals(verifyString)) {
+							success = true;
+						}
+					}
+					if (!success) {
+						this.workflow.setMessage(errorMsg);
+					}
+				} else {
+					String verifyValue = response.getFirstHeader(verifyHeader).getValue();
+					if (verifyString.equals(verifyValue)) {
+						this.workflow.setMessage(errorMsg);
+					} else {
+						success = true;
+					}
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException();
@@ -71,6 +93,30 @@ public class HttpClientLoginModule extends Module{
 			}
 		}
 		return inputs;
+	}
+	
+	@Override
+	public void run(ModuleData inputs) {
+		outputs = execute(inputs);
+		if (doRecord) {
+			records.addAll(outputs.getRows());
+		}
+		if (success) {
+			for (Module module : nextModules) {
+				module.setInputs(outputs);
+				if (workflow.isDaemon()) {
+					module.start();
+				} else {
+					module.run();
+				}
+			}
+		} else {
+			logger.error("模拟登录失败！");
+		}
+	}
+	
+	public Map<String, String> getCookie() {
+		return this.cookie;
 	}
 
 }

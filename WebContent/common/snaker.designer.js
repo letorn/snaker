@@ -61,6 +61,9 @@ var Designer = {
 				recordView: 'module/basiclog',
 				name: '模拟登录',
 				loginUrl: '',
+				verifyHeader: '',
+				verifyString: '',
+				errorMsg: '',
 				accountName: '',
 				passwordName: '',
 //				nameValuePairs: []
@@ -96,6 +99,7 @@ var Designer = {
 				threadNum: '1',
 				helpRegion: '',
 				helpUrl: '',
+				targetNum: '',
 				targetUrl: '',
 				skipJugment: '',
 				dataPaths: []
@@ -123,6 +127,7 @@ var Designer = {
 				helpUrl: '',
 				pageFlag: '',
 				cursorXpath: '',
+				targetNum: '',
 				targetUrl: '',
 				skipJugment: '',
 				dataPaths: []

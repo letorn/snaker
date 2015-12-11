@@ -43,7 +43,7 @@ public class Workflow {
 	private List<Module> modules;// 所有模型
 
 	private Map<String, Object> parameters;// 实例参数Map
-	
+	private String message;
 	/**
 	 * 初始化参数
 	 * @param params 实例参数
@@ -287,6 +287,14 @@ public class Workflow {
 
 	public Map<String, Object> getParameters() {
 		return parameters;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 }

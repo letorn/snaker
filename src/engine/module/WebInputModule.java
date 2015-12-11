@@ -3,12 +3,15 @@
  */
 package engine.module;
 
+import static util.Validator.notBlank;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import engine.ModuleData;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -17,7 +20,6 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
-import engine.ModuleData;
 
 /*
  * 流程模型 - 页面爬取
@@ -31,6 +33,7 @@ public class WebInputModule extends Module {
 	private String threadNum;
 	private String helpRegion;
 	private String helpUrl;
+	private String targetNum;
 	private String targetUrl;
 	private String skipJugment;
 	private List<Map<String, String>> dataPaths;
@@ -59,10 +62,10 @@ public class WebInputModule extends Module {
 	@Override
 	public void run() {
 		if (spider.getStatus() == Spider.Status.Init) {
-			if (headers != null && headers.size() > 0) {
+			if (notBlank(headers)) {
 				snakerProcessor.initHeaders(headers);
 			}
-			if (cookies != null && cookies.size() > 0) {
+			if (notBlank(cookies)) {
 				snakerProcessor.initCookies(cookies);
 			}
 			for (Module pre : this.prevModules) {
@@ -81,9 +84,6 @@ public class WebInputModule extends Module {
 			} else {
 				spider.run();
 			}
-		}
-		if (spider.getStatus() == Spider.Status.Running || spider.getStatus() == Spider.Status.Stopped) {
-			super.run();
 		}
 	}
 	
@@ -114,7 +114,7 @@ public class WebInputModule extends Module {
 
 		public void process(Page page) {
 			if (page.getUrl().toString().matches(targetUrl)) {
-				if (skipJugment != null && skipJugment.length() > 0) {
+				if (notBlank(skipJugment)) {
 					if (page.getHtml().xpath(skipJugment).toString() != null && page.getHtml().xpath(skipJugment).toString().length() > 0) {
 						page.setSkip(true);
 					}
@@ -134,19 +134,19 @@ public class WebInputModule extends Module {
 				String regex = dataPath.get("regex");
 				String isAll = dataPath.get("isAll");
 				Selectable result = page.getHtml();
-				if (attr == null || attr.length() == 0) {
+				if (!notBlank(attr)) {
 					continue;
 				}
 				if ("url".equals(attr.toLowerCase())) {
 					result = page.getUrl();
 				}
-				if (xpath != null && xpath.length() > 0) {
+				if (notBlank(xpath)) {
 					result = result.xpath(xpath);
 				}
-				if (regex != null && regex.length() > 0) {
+				if (notBlank(regex)) {
 					result = result.regex(regex);
 				}
-				if (isAll != null && isAll.length() > 0 && "true".equals(isAll.toLowerCase())) {
+				if (notBlank(isAll) && "true".equals(isAll.toLowerCase())) {
 					List<String> out = new ArrayList<String>();
 					for (String output : result.all()) {
 						out.add(output.replaceAll(" ", ""));
@@ -154,7 +154,7 @@ public class WebInputModule extends Module {
 					page.putField(attr, out);
 				} else {
 					String out = result.toString();
-					if (out == null || out.length() == 0) {
+					if (!notBlank(out)) {
 						page.putField(attr, out);
 					} else {
 						page.putField(attr, out.replaceAll(" ", ""));
@@ -164,8 +164,18 @@ public class WebInputModule extends Module {
 		}
 		
 		private void helpProcess(Page page) {
-			page.addTargetRequests(page.getHtml().links().regex(targetUrl).all());
-			if (helpRegion != null && helpRegion.length() > 0) {				
+			if (notBlank(targetNum)) {
+				int num = Integer.parseInt(targetNum);
+				for (String url : page.getHtml().links().regex(targetUrl).all()) {
+					page.addTargetRequest(url);
+					num--;
+					if (num == 0)
+						break;
+				}
+			} else {
+				page.addTargetRequests(page.getHtml().links().regex(targetUrl).all());
+			}
+			if (notBlank(helpRegion)) {				
 				page.addTargetRequests(page.getHtml().xpath(helpRegion).links().regex(helpUrl).all());
 			} else {
 				page.addTargetRequests(page.getHtml().links().regex(helpUrl).all());
@@ -196,7 +206,6 @@ public class WebInputModule extends Module {
 			}
 			if (inputs.getRows().size() >= 30) {
 				output();
-				inputs = new ModuleData();
 			}
 		}
 
@@ -206,11 +215,19 @@ public class WebInputModule extends Module {
 		
 		private void output() {
 			module.setInputs(inputs);
-			if (workflow.isDaemon()) {
-				module.start();
-			} else {
-				module.run();
+			outputs = execute(inputs);
+			if (doRecord) {
+				records.addAll(outputs.getRows());
 			}
+			for (Module module : nextModules) {
+				module.setInputs(outputs);
+				if (workflow.isDaemon()) {
+					module.start();
+				} else {
+					module.run();
+				}
+			}
+			inputs = new ModuleData();
 		}
 		
 	}

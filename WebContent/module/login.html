@@ -24,12 +24,17 @@
 			if (request.readyState == 4) {
 				if (request.status == 200) {
 					if (/true/.test(request.responseText)) {
-						// window.location = 'index.html';
+						var response = JSON.parse(request.responseText);
+						if(String(response.message) == 'null') {
+							$moduleLoginError.innerText == '成功！';
+						} else {
+							$moduleLoginError.innerText = response.message;
+						}
 					} else {
-						$loginError.innerText = '用户名或密码错误！';
+						$moduleLoginError.innerText = '用户名或密码错误！';
 					}
 				} else {
-					$loginError.innerText = '服务器异常！';
+					$moduleLoginError.innerText = '服务器异常！';
 				}
 			}
 		}
@@ -37,7 +42,7 @@
 			account: $moduleLoginAccount.value,
 			password: $moduleLoginPassword.value
 		};
-		request.send('deamon=false&params=' + JSON.stringify(params));
+		request.send('daemon=false&params=' + JSON.stringify(params));
 	}
 </script>
 </body>

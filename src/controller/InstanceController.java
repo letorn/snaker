@@ -90,6 +90,7 @@ public class InstanceController extends Controller {
 		if (notBlank(instanceId)) {
 			Workflow instance = snakerService.getInstance(instanceId);
 			if (notBlank(instance)) {
+				setAttr("message", instance.getMessage());
 				setAttr("process", instance.getProcessId());
 				setAttr("processName", instance.getProcessName());
 				setAttr("instance", instance.getInstanceId());

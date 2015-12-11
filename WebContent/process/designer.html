@@ -1148,6 +1148,52 @@
 					          {name:'data_org_key',from:'data_org_key',default:''}]
 							 
 				 }
+				if(procName == 'save_or_update_education') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'startTime',from:'startTime',default:''},
+					          {name:'endTime',from:'endTime',default:''},
+					          {name:'school',from:'school',default:''},
+					          {name:'schoolCode',from:'schoolCode',default:''},
+					          {name:'major',from:'major',default:''},
+					          {name:'degree',from:'degree',default:''},
+					          {name:'content',from:'content',default:''},
+					          {name:'createDate',from:'createDate',default:''},
+					          {name:'eduType',from:'eduType',default:''}]
+							 
+				 }
+				if(procName == 'save_or_update_wep_post') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'company',from:'company',default:''},
+					          {name:'startTime',from:'startTime',default:''},
+					          {name:'endTime',from:'endTime',default:''},
+					          {name:'industry',from:'industry',default:''},
+					          {name:'postCode',from:'postCode',default:''},
+					          {name:'createDate',from:'createDate',default:''},
+					          {name:'workContent',from:'workContent',default:''}]
+							 
+				 }
+				if(procName == 'save_or_update_import_resume') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'name',from:'name',default:''},
+					          {name:'gender',from:'gender',default:''},
+					          {name:'birthDate',from:'birthDate',default:''},
+					          {name:'mobile',from:'mobile',default:''},
+					          {name:'email',from:'email',default:''},
+					          {name:'serviceYear',from:'serviceYear',default:''},
+					          {name:'location',from:'location',default:''},
+					          {name:'locationCode',from:'locationCode',default:''},
+					          {name:'jobStatus',from:'jobStatus',default:''},
+					          {name:'householder',from:'householder',default:''},
+					          {name:'credentials',from:'credentials',default:''},
+					          {name:'pcred',from:'pcred',default:''},
+					          {name:'address',from:'address',default:''},
+					          {name:'lbsLon',from:'lbsLon',default:''},
+					          {name:'lbsLat',from:'lbsLat',default:''},
+					          {name:'createDate',from:'createDate',default:''},
+					          {name:'isMarried',from:'isMarried',default:''},
+					          {name:'selfComment',from:'selfComment',default:''},
+					          ]
+				}
 				
 				for (var i = 0; i < fields.length; i ++) {
 					var exist = false;
@@ -1390,6 +1436,15 @@
 				},{
 					text: 'save_or_update_jobfair',
 					value: 'save_or_update_jobfair'
+				},{
+					text: 'save_or_update_education',
+					value: 'save_or_update_education'
+				},{
+					text: 'save_or_update_wep_post',
+					value: 'save_or_update_wep_post'
+				},{
+					text: 'save_or_update_import_resume',
+					value: 'save_or_update_import_resume'
 				}]
 			}
 		};

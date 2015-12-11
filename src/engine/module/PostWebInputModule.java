@@ -4,6 +4,8 @@
 
 package engine.module;
 
+import static util.Validator.notBlank;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ public class PostWebInputModule extends Module {
 	private String helpUrl;
 	private String pageFlag;
 	private String cursorXpath;
+	private String targetNum;
 	private String targetUrl;
 	private String skipJugment;
 	private List<Map<String, String>> dataPaths;
@@ -63,10 +66,10 @@ public class PostWebInputModule extends Module {
 	@Override
 	public void run() {
 		if (spider.getStatus() == Spider.Status.Init) {
-			if (headers != null && headers.size() > 0) {
+			if (notBlank(headers)) {
 				snakerProcessor.initHeaders(headers);
 			}
-			if (cookies != null && cookies.size() > 0) {
+			if (notBlank(cookies)) {
 				snakerProcessor.initCookies(cookies);
 			}
 			for (Module pre : this.prevModules) {
@@ -76,7 +79,7 @@ public class PostWebInputModule extends Module {
 				}
 			}
 			Map<String, Object> params = new HashMap<String, Object>();
-			if (formDatas != null && formDatas.size() > 0) {
+			if (notBlank(formDatas)) {
 				int length = formDatas.size();
 				int count = 0;
 				NameValuePair[] nameValuePair = new NameValuePair[length];
@@ -98,9 +101,6 @@ public class PostWebInputModule extends Module {
 			} else {
 				spider.run();
 			}
-		}
-		if (spider.getStatus() == Spider.Status.Running || spider.getStatus() == Spider.Status.Stopped) {
-			super.run();
 		}
 	}
 
@@ -132,7 +132,7 @@ public class PostWebInputModule extends Module {
 		@Override
 		public void process(Page page) {
 			if (page.getUrl().toString().matches(targetUrl)) {
-				if (skipJugment != null && skipJugment.length() > 0) {
+				if (notBlank(skipJugment)) {
 					if (page.getHtml().xpath(skipJugment).toString() != null && page.getHtml().xpath(skipJugment).toString().length() > 0) {
 						page.setSkip(true);
 					}
@@ -152,23 +152,23 @@ public class PostWebInputModule extends Module {
 				String regex = dataPath.get("regex");
 				String isAll = dataPath.get("isAll");
 				Selectable result = page.getHtml();
-				if (attr == null || attr.length() == 0) {
+				if (!notBlank(attr)) {
 					continue;
 				}
 				if ("url".equals(attr.toLowerCase())) {
 					result = page.getUrl();
 				}
-				if (xpath != null && xpath.length() > 0) {
+				if (notBlank(xpath)) {
 					result = result.xpath(xpath);
 				}
-				if (regex != null && regex.length() > 0) {
+				if (notBlank(regex)) {
 					result = result.regex(regex);
 				}
-				if (isAll != null && isAll.length() > 0 && "true".equals(isAll.toLowerCase())) {
+				if (notBlank(isAll) && "true".equals(isAll.toLowerCase())) {
 					page.putField(attr, result.all());
 				} else {
 					String out = result.toString();
-					if (out == null || out.length() == 0) {
+					if (!notBlank(out)) {
 						page.putField(attr, out);
 					} else {
 						page.putField(attr, out.replaceAll(" ", ""));
@@ -178,7 +178,17 @@ public class PostWebInputModule extends Module {
 		}
 		
 		private void helpProcess(Page page) {
-			page.addTargetRequests(page.getHtml().links().regex(targetUrl).all());
+			if (notBlank(targetNum)) {
+				int num = Integer.parseInt(targetNum);
+				for (String url : page.getHtml().links().regex(targetUrl).all()) {
+					page.addTargetRequest(url);
+					num--;
+					if (num == 0)
+						break;
+				}
+			} else {
+				page.addTargetRequests(page.getHtml().links().regex(targetUrl).all());
+			}
 			List<String> cursors = page.getHtml().xpath(cursorXpath).all();
 			for (String cursor : cursors) {
 				if(cursor.matches("^\\d*$")) {
@@ -231,7 +241,6 @@ public class PostWebInputModule extends Module {
 			}
 			if (inputs.getRows().size() >= 30) {
 				output();
-				inputs = new ModuleData();
 			}
 		}
 
@@ -241,11 +250,19 @@ public class PostWebInputModule extends Module {
 		
 		private void output() {
 			module.setInputs(inputs);
-			if (workflow.isDaemon()) {
-				module.start();
-			} else {
-				module.run();
+			outputs = execute(inputs);
+			if (doRecord) {
+				records.addAll(outputs.getRows());
 			}
+			for (Module module : nextModules) {
+				module.setInputs(outputs);
+				if (workflow.isDaemon()) {
+					module.start();
+				} else {
+					module.run();
+				}
+			}
+			inputs = new ModuleData();
 		}
 		
 	}
