@@ -100,7 +100,7 @@ public class File {
 	 * @param filename 文件的相对路径，相对于当前项目
 	 * @return 文件的绝对路径
 	 */
-	private static String classpathBy(String filename) {
+	public static String classpathBy(String filename) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		URL url = classLoader.getResource(filename);
 		if (url == null)

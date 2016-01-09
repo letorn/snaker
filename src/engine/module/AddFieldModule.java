@@ -12,20 +12,25 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import util.Baidu;
-import util.CreateHtml;
-import util.Growth;
-
 import com.jfinal.kit.PropKit;
 
 import engine.ModuleData;
 import engine.ModuleData.DataHeader;
+import net.sf.json.JSONObject;
+import util.Baidu;
+import util.CreateHtml;
+import util.Growth;
 
 public class AddFieldModule extends Module {
 
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private List<Map<String, Object>> fieldTable;
+	private Map<String, String> cookies = new HashMap<String, String>();
 
+	public Map<String, String> getCookie() {
+		return this.cookies;
+	}
+	
 	@Override
 	public ModuleData execute(ModuleData inputs) {
 		ScriptEngineManager manager = new ScriptEngineManager();
@@ -39,6 +44,18 @@ public class AddFieldModule extends Module {
 				header.add(new DataHeader((String) fieldTable.get(j).get("name"), "string", ""));
 		}
 
+		if (inputs.getRows().size() == 0) {
+			for (int j = 0; j < fieldTable.size(); j++) {
+				 if (fieldTable.get(j).get("type").equals("parameter") && fieldTable.get(j).get("name").equals("loginCookie")) {
+					 JSONObject cookie = JSONObject.fromObject(workflow.getParameters().get(fieldTable.get(j).get("value")));
+					 for(Object key : cookie.keySet()) {
+						cookies.put((String)key, cookie.getString((String)key));
+					 }
+					 break;
+				 }
+			}
+		}
+		
 		for (int i = 0; i < inputs.getRows().size(); i++) {
 			Map<String, Object> map = inputs.getRows().get(i);
 			boolean initScript = false;
@@ -69,11 +86,16 @@ public class AddFieldModule extends Module {
 							}
 						} else if (address.length == 1) {
 							address = address[0].split(":");
-							Object area = inputs.getRows().get(i).get(address[0]);
-							Object addr = inputs.getRows().get(i).get(address[1]);
-							coordinate = Baidu.getPoint((String) addr, null);
-							if (coordinate == null) {
-								coordinate = Baidu.getPoint((String) addr, (String) area);
+							if (address.length == 2) {
+								Object area = inputs.getRows().get(i).get(address[0]);
+								Object addr = inputs.getRows().get(i).get(address[1]);
+								coordinate = Baidu.getPoint((String) addr, null);
+								if (coordinate == null) {
+									coordinate = Baidu.getPoint((String) addr, (String) area);
+								}
+							} else if (address.length == 1) {
+								Object addr = inputs.getRows().get(i).get(address[0]);
+								coordinate = Baidu.getPoint((String)addr, null);
 							}
 						}
 						String[] name = fieldTable.get(j).get("name").toString().split(",");

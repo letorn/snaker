@@ -36,6 +36,7 @@ public class WebInputModule extends Module {
 	private String targetNum;
 	private String targetUrl;
 	private String skipJugment;
+	private String cookieDomain;
 	private List<Map<String, String>> dataPaths;
 	private SnakerProcessor snakerProcessor = new SnakerProcessor();
 	private Spider spider = Spider.create(snakerProcessor);
@@ -73,6 +74,10 @@ public class WebInputModule extends Module {
 					Map<String, String> cookie = ((HttpClientLoginModule)pre).getCookie();
 					snakerProcessor.initCookies(cookie);
 				}
+				if (pre instanceof AddFieldModule) {
+					Map<String, String> cookie = ((AddFieldModule) pre).getCookie();
+					snakerProcessor.initCookies(cookie);
+				}
 			}
 			for (Map<String, String> url : startUrls) {
 				spider = spider.addUrl(url.get("startUrl"));
@@ -102,13 +107,21 @@ public class WebInputModule extends Module {
 		
 		public void initCookies(List<Map<String, String>> cookies){
 			for (Map<String, String> cookie : cookies) {
-				site = site.addCookie(cookie.get("cookieName"), cookie.get("cookieValue"));
+				if (notBlank(cookieDomain)) {
+					site = site.addCookie(cookieDomain, cookie.get("cookieName"), cookie.get("cookieValue"));
+				} else {
+					site = site.addCookie(cookie.get("cookieName"), cookie.get("cookieValue"));
+				}
 			}
 		}
 		
 		public void initCookies(Map<String, String> cookies){
 			for (String cookieName : cookies.keySet()) {
-				site = site.addCookie(cookieName, cookies.get(cookieName));
+				if (notBlank(cookieDomain)) {
+					site = site.addCookie(cookieDomain, cookieName, cookies.get(cookieName));
+				} else {
+					site = site.addCookie(cookieName, cookies.get(cookieName));
+				}
 			}
 		}
 

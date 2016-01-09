@@ -241,6 +241,12 @@ public class InstanceController extends Controller {
 				result = result + v + "\\";
 			}
 			result = result.substring(0, result.length() - 1);
+		} else if (value instanceof Double) {
+			result = ((Double)value).toString();
+		} else if (value instanceof Integer) {
+			result = ((Integer)value).toString();
+		} else if (!notBlank(value)) {
+			result = "";
 		} else {
 			result = (String)value;
 		}

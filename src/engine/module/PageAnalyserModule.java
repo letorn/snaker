@@ -71,7 +71,7 @@ public class PageAnalyserModule extends Module{
 									if (out == null || out.length() == 0) {
 										toInputs.put(attribute, out);
 									} else {
-										toInputs.put(attribute, out.replaceAll(" ", ""));
+										toInputs.put(attribute, out.replaceAll(" ", "").trim());
 									}
 								}
 							}

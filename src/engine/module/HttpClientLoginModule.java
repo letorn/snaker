@@ -26,7 +26,6 @@ import engine.ModuleData;
 
 public class HttpClientLoginModule extends Module{
 
-//	private List<Map<String, String>> nameValuePairs;
 	private String account;
 	private String password;
 	private String accountName;
@@ -44,9 +43,6 @@ public class HttpClientLoginModule extends Module{
 	@Override
 	public ModuleData execute(ModuleData inputs) {
 		List<NameValuePair> loginParames = new ArrayList<NameValuePair>();
-//		for (Map<String, String> nameValuePair : nameValuePairs) {
-//			loginParames.add(new BasicNameValuePair(nameValuePair.get("name"), nameValuePair.get("value")));
-//		}
 		loginParames.add(new BasicNameValuePair(accountName, account));
 		loginParames.add(new BasicNameValuePair(passwordName, password));
 		

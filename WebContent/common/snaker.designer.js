@@ -66,7 +66,6 @@ var Designer = {
 				errorMsg: '',
 				accountName: '',
 				passwordName: '',
-//				nameValuePairs: []
 				params: [{
 					name: 'account',
 					type: 'string',
@@ -96,6 +95,7 @@ var Designer = {
 				startUrls: [],
 				headers: [],
 				cookies: [],
+				cookieDomain: '',
 				threadNum: '1',
 				helpRegion: '',
 				helpUrl: '',
@@ -121,6 +121,7 @@ var Designer = {
 				startUrl: '',
 				headers: [],
 				cookies: [],
+				cookieDomain: '',
 				formDatas: [],
 				method: 'POST',
 				threadNum: '1',

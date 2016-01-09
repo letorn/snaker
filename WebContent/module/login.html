@@ -26,7 +26,7 @@
 					if (/true/.test(request.responseText)) {
 						var response = JSON.parse(request.responseText);
 						if(String(response.message) == 'null') {
-							$moduleLoginError.innerText == '成功！';
+							$moduleLoginError.innerText = '成功！';
 						} else {
 							$moduleLoginError.innerText = response.message;
 						}

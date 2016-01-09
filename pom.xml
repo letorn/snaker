@@ -34,6 +34,7 @@
 					<include>jfinal.properties</include>
 					<include>log4j.properties</include>
 					<include>snaker.xml</include>
+					<include>jssecacerts</include>
 				</includes>
 			</resource>
 		</resources>

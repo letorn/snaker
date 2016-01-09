@@ -1,19 +1,5 @@
 package init;
 
-import model.SkAdmin;
-import model.SkFile;
-import model.UtArea;
-import model.UtDate;
-import model.UtGrowth;
-import model.UtIndustry;
-import model.UtPost;
-import model.ViEnterprise;
-import model.ViEntpost;
-import model.ViJobhunter;
-import model.ViTalk;
-import plugin.SQLPlugin;
-import plugin.SchedulePlugin;
-
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
@@ -39,6 +25,20 @@ import engine.model.DbEntpost;
 import engine.model.DbJobhunter;
 import engine.model.DbTalk;
 import engine.model.WfProcess;
+import model.SkAdmin;
+import model.SkFile;
+import model.UtArea;
+import model.UtDate;
+import model.UtGrowth;
+import model.UtIndustry;
+import model.UtPost;
+import model.ViEnterprise;
+import model.ViEntpost;
+import model.ViJobhunter;
+import model.ViTalk;
+import plugin.SQLPlugin;
+import plugin.SchedulePlugin;
+import util.File;
 
 /*
  * jfinal配置类
@@ -57,6 +57,11 @@ public class AppConfig extends JFinalConfig {
 		me.setDevMode(true);
 		// 文件保存目录
 		me.setUploadedFileSaveDirectory("temp");
+		/*//PhantomJSDriver路径设置
+		System.getProperties().setProperty("phantomjs.binary.path", PropKit.get("phantomjs.path"));*/
+		//智联招聘证书路径
+//		System.setProperty("javax.net.ssl.trustStore", "C:\\Program Files\\Java\\jdk1.7.0_79\\jre\\lib\\security\\jssecacerts");
+		System.setProperty("javax.net.ssl.trustStore", File.classpathBy("jssecacerts"));
 	}
 
 	/**

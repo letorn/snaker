@@ -136,7 +136,7 @@
 			<tr>
 				<th data-options="field:'name',width:200,editor:{type:'textbox'}">name</th>
 				<th data-options="field:'xpath',width:550,editor:{type:'textbox'}">xpath</th>
-				<th data-options="field:'regex',width:550,editor:{type:'textbox'}">regex</th>
+				<th data-options="field:'regex',width:550,editor:{type:'textbox'},formatter:$.encodeHtml">regex</th>
 				<th data-options="field:'isAll',width:100,editor:{type:'textbox'}">isAll</th>
 			</tr>
 		</thead>
@@ -272,7 +272,7 @@
 				<th data-options="field:'name',width:100,editor:{type:'textbox'}">属性名称</th>
 				<th data-options="field:'type',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'常量',value:'constant'},{name:'变量',value:'variable'},{name:'脚本',value:'script'},{name:'当前时间',value:'currentdate'},{name:'坐标',value:'coordinate'},{name:'企业账号',value:'entaccount'},{name:'求职者账号',value:'useraccount'},{name:'生成html页面',value:'createhtmlpage'},{name:'系统参数',value:'parameter'},{name:'其他',value:'others'}]}}">类型</th>
 				<th data-options="field:'datatype',width:100,formatter:function(v,r){var options=this.editor.options;for(var i=0;i<options.data.length;i++){if(options.data[i][options.valueField]==v)return options.data[i][options.textField]}return ''},editor:{type:'combobox',options:{textField:'name',valueField:'value',data:[{name:'字符串',value:'string'},{name:'整形',value:'integer'},{name:'长整形',value:'long'},{name:'小数',value:'double'},{name:'日期',value:'date'}]}}">数据类型</th>
-				<th data-options="field:'value',width:100,editor:{type:'textbox'}">值</th>
+				<th data-options="field:'value',width:100,editor:{type:'textbox'},formatter:$.encodeHtml">值</th>
 			</tr>
 		</thead>
 	</table>
@@ -1190,9 +1190,58 @@
 					          {name:'lbsLon',from:'lbsLon',default:''},
 					          {name:'lbsLat',from:'lbsLat',default:''},
 					          {name:'createDate',from:'createDate',default:''},
-					          {name:'isMarried',from:'isMarried',default:''},
+					          {name:'isMarried',from:'isMarried',default:''}]
+				}
+				if(procName == 'save_or_update_objective') {
+					fields = [{name:'userID',from:'userID',default:''},
 					          {name:'selfComment',from:'selfComment',default:''},
-					          ]
+					          {name:'location1',from:'location1',default:''},
+					          {name:'location2',from:'location2',default:''},
+					          {name:'location3',from:'location3',default:''},
+					          {name:'industry1',from:'industry1',default:''},
+					          {name:'industry2',from:'industry2',default:''},
+					          {name:'industry3',from:'industry3',default:''},
+					          {name:'post1',from:'post1',default:''},
+					          {name:'post2',from:'post2',default:''},
+					          {name:'post3',from:'post3',default:''},
+					          {name:'jobterm',from:'jobterm',default:''},
+					          {name:'minSalary',from:'minSalary',default:''},
+					          {name:'maxSalary',from:'maxSalary',default:''},
+					          {name:'createDate',from:'createDate',default:''}]
+				}
+				if(procName == 'save_or_update_education_train') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'startTime',from:'startTime',default:''},
+					          {name:'endTime',from:'endTime',default:''},
+					          {name:'institution',from:'institution',default:''},
+					          {name:'course',from:'course',default:''},
+					          {name:'certificate',from:'certificate',default:''},
+					          {name:'content',from:'content',default:''}]
+				}
+				if(procName == 'save_or_update_language') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'languageName',from:'languageName',default:''},
+					          {name:'readWrite',from:'readWrite',default:''},
+					          {name:'listenSpeak',from:'listenSpeak',default:''}]
+				}
+				if(procName == 'save_or_update_practice') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'startTime',from:'startTime',default:''},
+					          {name:'endTime',from:'endTime',default:''},
+					          {name:'practiceName',from:'practiceName',default:''},
+					          {name:'practiceContent',from:'practiceContent',default:''}]
+				}
+				if(procName == 'save_or_update_ability') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'technologyName',from:'technologyName',default:''},
+					          {name:'technologyCode',from:'technologyCode',default:''},
+					          {name:'technologyAbility',from:'technologyAbility',default:''}]
+				}
+				if(procName == 'save_or_update_prize') {
+					fields = [{name:'userID',from:'userID',default:''},
+					          {name:'prizeTime',from:'prizeTime',default:''},
+					          {name:'prizeName',from:'prizeName',default:''},
+					          {name:'prizeContent',from:'prizeContent',default:''}]
 				}
 				
 				for (var i = 0; i < fields.length; i ++) {
@@ -1445,6 +1494,24 @@
 				},{
 					text: 'save_or_update_import_resume',
 					value: 'save_or_update_import_resume'
+				},{
+					text: 'save_or_update_objective',
+					value: 'save_or_update_objective'
+				},{
+					text: 'save_or_update_education_train',
+					value: 'save_or_update_education_train'
+				},{
+					text: 'save_or_update_language',
+					value: 'save_or_update_language'
+				},{
+					text: 'save_or_update_practice',
+					value: 'save_or_update_practice'
+				},{
+					text: 'save_or_update_ability',
+					value: 'save_or_update_ability'
+				},{
+					text: 'save_or_update_prize',
+					value: 'save_or_update_prize'
 				}]
 			}
 		};

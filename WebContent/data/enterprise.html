@@ -21,8 +21,9 @@
     <ul id="data-enterprise-upload-tree" class="easyui-tree" data-options="checkbox:true,url:'data/enterprise/categories'" style="width:100%;height:100%"></ul>
 </div>
 <div id="data-enterprise-upload-footer" style="padding:5px;">
-	<a id="data-enterprise-upload-confirm" class="easyui-linkbutton" style="width:80px">确定</a>
-	<a id="data-enterprise-upload-cancel" class="easyui-linkbutton" style="width:80px">取消</a>
+	<span style="font-size:12px;">单行业上传上限：</span><input id="data-enterprise-upload-num" class="easyui-textbox" style="width:80px" data-options="prompt:'默认为10'"></input>
+	<a id="data-enterprise-upload-confirm" class="easyui-linkbutton" style="width:50px">确定</a>
+	<a id="data-enterprise-upload-cancel" class="easyui-linkbutton" style="width:50px">取消</a>
 </div>
 <div id="data-enterprise-update-window" class="easyui-window " style="" data-options="maximizable:false,resizable:false,title:'修改',modal:true,closed:true,footer:'#data-enterprise-update-footer'" data-options="iconCls:'icon-save',modal:true;">
  
@@ -461,9 +462,11 @@
 				if (nodes[i].code)
 					codes.push(nodes[i].code);
 			}
+			var num = $('#data-enterprise-upload-num').textbox('getValue');
 			$.post('data/enterprise/upload', {
 				ids: ids,
-				codes: codes
+				codes: codes,
+				num: num
 			}, function(resp) {
 				if (resp.success) {
 					$.messager.show({title: '提示', msg: '启动成功！', timeout: 1000, showType: 'slide'});

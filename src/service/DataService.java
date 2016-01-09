@@ -46,13 +46,15 @@ public class DataService {
 	 * @param codes 行业code
 	 * @return
 	 */
-	public boolean postEnterprise(Long[] ids, String[] codes) {
+	public boolean postEnterprise(Long[] ids, String[] codes, int num) {
 		// 查询企业
 		List<String> sqls = new ArrayList<String>();
 		if (ids.length > 0)
 			sqls.add("(select id,name,category_code,nature_code,scale_code,tag,establish,introduction,address,website,area_code,lbs_lon,lbs_lat,orgains,license,contacter,public_contact,phone,fax,mobile,email,qq,data_src,data_key,update_date,create_date,account,role,legalize from vi_enterprise where id in(" + StringUtils.join(ids, ",") + "))");
+		
 		for (String code : codes)
-			sqls.add("(select id,name,category_code,nature_code,scale_code,tag,establish,introduction,address,website,area_code,lbs_lon,lbs_lat,orgains,license,contacter,public_contact,phone,fax,mobile,email,qq,data_src,data_key,update_date,create_date,account,role,legalize from vi_enterprise where syn_status in(-1,2) and category_code='" + code + "' limit 10)");
+			sqls.add("(select id,name,category_code,nature_code,scale_code,tag,establish,introduction,address,website,area_code,lbs_lon,lbs_lat,orgains,license,contacter,public_contact,phone,fax,mobile,email,qq,data_src,data_key,update_date,create_date,account,role,legalize from vi_enterprise where syn_status in(-1,2) and category_code='" + code + "' limit " + num + ")");
+	
 		List<ViEnterprise> enterprises = sqls.size() > 0 ? ViEnterprise.dao.find(StringUtils.join(sqls, " union ")) : new ArrayList<ViEnterprise>();
 
 		// 上传企业

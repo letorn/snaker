@@ -32,11 +32,38 @@
 
 		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts');
 		
+		$indexContent.find('.tabs-header').bind('contextmenu', function(e) {
+			e.preventDefault();
+			$('#index-content-menu').menu('show', {left: e.pageX, top: e.pageY});
+		});
+		
+		$('#index-content-menu-closeselected').click(function() {
+			var selected = $indexContent.tabs('getSelected'), selectedIndex = $indexContent.tabs('getTabIndex', selected);
+			$indexContent.tabs('close', selectedIndex);
+		});
+		$('#index-content-menu-closeall').click(function() {
+			var tabs = $indexContent.tabs('tabs');
+			for(var i = tabs.length - 1; i >= 0; i --) $indexContent.tabs('close', i);
+		});
+		$('#index-content-menu-closeother').click(function() {
+			var tabs = $indexContent.tabs('tabs'), selected = $indexContent.tabs('getSelected'), selectedIndex = $indexContent.tabs('getTabIndex', selected);
+			for(var i = tabs.length - 1; i >= 0; i --) if (i != selectedIndex) $indexContent.tabs('close', i);
+		});
+		$('#index-content-menu-closeright').click(function() {
+			var tabs = $indexContent.tabs('tabs'), selected = $indexContent.tabs('getSelected'), selectedIndex = $indexContent.tabs('getTabIndex', selected);
+			for(var i = selectedIndex - 1; i >= 0; i --) $indexContent.tabs('close', i);
+			$indexContent.tabs('select', 0);
+		});
+		$('#index-content-menu-closeleft').click(function() {
+			var tabs = $indexContent.tabs('tabs'), selected = $indexContent.tabs('getSelected'), selectedIndex = $indexContent.tabs('getTabIndex', selected);
+			for(var i = tabs.length - 1; i >= selectedIndex + 1; i --) $indexContent.tabs('close', i);
+		});
+		
 		window.Content = {
 				$indexContent: $indexContent,
 				addTab: function(text, location, scripts) {
 					if ($indexContent.tabs('getTab', text)) {
-						$indexContent.tabs('select', text)
+						$indexContent.tabs('select', text);
 					} else {
 						if (scripts) {
 							scripts = scripts.split(';')
@@ -104,10 +131,18 @@
 		</div>
 	</div>
 </div>
-<div id="index-content" class="easyui-tabs" data-options="region:'center',border:false,tools:'#tab-tools'"></div>
-<div id="tab-tools">
+<div id="index-content" class="easyui-tabs" data-options="region:'center',border:false,tools:'#index-content-tools'"></div>
+<div id="index-content-tools">
 	　当前用户：<span id="index-admin-account">admin</span>　
 	<a class="easyui-linkbutton" data-options="text:'退出',plain:true,onClick:function(){window.location='logout'}" style="color:blue;"></a>　
+</div>
+<div id="index-content-menu" class="easyui-menu">
+	<div id="index-content-menu-closeselected">关闭当前</div>
+	<div id="index-content-menu-closeall">关闭全部</div>
+	<div id="index-content-menu-closeother">关闭其他</div>
+	<div class="menu-sep"></div>
+	<div id="index-content-menu-closeright">关闭右侧</div>
+	<div id="index-content-menu-closeleft">关闭左侧</div>
 </div>
 </body>
 </html>

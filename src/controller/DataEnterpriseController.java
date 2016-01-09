@@ -162,12 +162,13 @@ public class DataEnterpriseController extends Controller {
 	public void upload() {
 		Long[] ids = getParaValuesToLong("ids[]");
 		String[] codes = getParaValues("codes[]");
+		int num = getParaToInt("num", 10);
 		if (blank(ids))
 			ids = new Long[0];
 		if (blank(codes))
 			codes = new String[0];
 		if (dataService.isPostEnterpriseFinished()) {
-			dataMap.put("success", dataService.postEnterprise(ids, codes));
+			dataMap.put("success", dataService.postEnterprise(ids, codes, num));
 		} else {
 			dataMap.put("success", false);
 			dataMap.put("finished", false);
