@@ -5,7 +5,7 @@ import static util.Validator.blank;
 import java.util.List;
 import java.util.Map;
 
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 
 import engine.ModuleData;
 import engine.Workflow;
@@ -15,7 +15,7 @@ import engine.Workflow;
  */
 public abstract class Module implements Runnable {
 
-	protected static final Logger logger = Logger.getLogger(Module.class);
+	protected static final Log log = Log.getLog(Module.class);
 	
 	protected Workflow workflow;// 工作流
 	protected List<Module> prevModules;// 前一步的流程模型

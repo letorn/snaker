@@ -107,7 +107,7 @@ public class HttpClientLoginModule extends Module{
 				}
 			}
 		} else {
-			logger.error("模拟登录失败！");
+			log.error("模拟登录失败！");
 		}
 	}
 	

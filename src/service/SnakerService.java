@@ -6,7 +6,7 @@ import static util.Validator.blank;
 import java.util.ArrayList;
 import java.util.List;
 
-import util.File;
+import util.FileKit;
 
 import com.jfinal.plugin.activerecord.Page;
 
@@ -28,7 +28,7 @@ public class SnakerService {
 	 */
 	public boolean initFlows() {
 		try {
-			engine.addProcess(File.readFromClasspath("/flows/test.snaker"));
+			engine.addProcess(FileKit.readFromClasspath("/flows/test.snaker"));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

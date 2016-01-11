@@ -14,7 +14,7 @@ public class EndModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-		logger.info("工作流程执行完毕：" + workflow.getProcessName() + "." + name);
+		log.info("工作流程执行完毕：" + workflow.getProcessName() + "." + name);
 		return inputs;
 	}
 

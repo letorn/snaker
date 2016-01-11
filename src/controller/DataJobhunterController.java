@@ -12,15 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.UtPost;
+import model.ViJobhunter;
+import service.DataService;
+
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-
-import model.UtPost;
-import model.ViJobhunter;
-import service.DataService;
-import util.Growth;
 
 /*
  * 控制类 - 求职者信息相关

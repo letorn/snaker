@@ -1,15 +1,18 @@
 package util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 
+import com.jfinal.kit.PathKit;
+
 /*
  * 文件操作工具
  */
-public class File {
+public class FileKit extends com.jfinal.kit.FileKit {
 
 	/**
 	 * 读取文件内容
@@ -97,17 +100,57 @@ public class File {
 	
 	/**
 	 * 根据相对路径获取绝对路径
-	 * @param filename 文件的相对路径，相对于当前项目
+	 * @param filename 文件的相对路径，相对于当前src项目
 	 * @return 文件的绝对路径
 	 */
 	public static String classpathBy(String filename) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		URL url = classLoader.getResource(filename);
 		if (url == null)
-			url = File.class.getClassLoader().getResource(filename);
+			url = FileKit.class.getClassLoader().getResource(filename);
 		if (url != null)
 			return url.getFile();
 		return null;
 	}
 
+	/**
+	 * 根据相对路径获取绝对路径
+	 * @param filename 文件的相对路径，相对于当前web项目
+	 * @return 文件的绝对路径
+	 */
+	public static String getWebPath(String filename) {
+		File file = new File(PathKit.getWebRootPath() + filename);
+		try {
+			if (file.exists()) return file.getCanonicalPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 根据相对路径获取文件大小
+	 * @param filename 文件的相对路径，相对于当前web项目
+	 * @return 目录的大小
+	 */
+	public static long getWebPathSize(String filename) {
+		File path = new File(PathKit.getWebRootPath() + filename);
+		return path != null ? getPathSize(path) : 0;
+	}
+	
+	/**
+	 * 根据目录获取文件大小
+	 * @param path 目录
+	 * @return 目录的大小
+	 */
+	public static long getPathSize(File path) {
+		long size = 0;
+		File[] files = path.listFiles();
+		for (File file : files) {
+			if (file.isFile()) size += file.length();
+			else size += getPathSize(file);
+		}
+		return size;
+	}
+	
 }

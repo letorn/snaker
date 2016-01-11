@@ -6,10 +6,8 @@ import static util.Validator.notBlank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import model.SkFile;
@@ -27,7 +25,7 @@ public class DataFileController extends Controller {
 	 * 返回到页面的json数据
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
-	private List<Object> dataList = new ArrayList<Object>();
+	// private List<Object> dataList = new ArrayList<Object>();
 	
 	/**
 	 * 列表

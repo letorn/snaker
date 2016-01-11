@@ -3,7 +3,7 @@
 -- use snaker_test;
 
 -- drop database if exists snaker;
--- create database if not exists snaker default character set utf;
+-- create database if not exists snaker default character set utf8;
 -- use snaker;
 
 -- drop table if exists wf_process;
@@ -303,6 +303,13 @@ create table if not exists sk_file(
 	update_date datetime,
 	unique key sk_file_unique_key(name)
 ) comment = '文件';
+
+-- drop table if exists sk_config;
+create table if not exists sk_config(
+	id bigint primary key auto_increment,
+	name varchar(50),
+	value varchar(100)
+) comment = '系统配置';
 
 -- drop table if exists ut_date;
 create table if not exists ut_date(

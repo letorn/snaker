@@ -1,7 +1,6 @@
 package util;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import engine.ModuleData;
  * @author Administrator
  *
  */
+@SuppressWarnings({"rawtypes", "unchecked", "unused"})
 public class DuXMLDoc {
     public ModuleData xmlElements(String xmlDoc) {
     	ModuleData md=new ModuleData();

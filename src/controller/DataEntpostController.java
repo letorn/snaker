@@ -1,24 +1,13 @@
 package controller;
 
-import static util.Validator.blank;
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import model.UtArea;
-import model.UtIndustry;
-import model.ViEnterprise;
 import model.ViEntpost;
-import service.DataService;
-import test.Area;
 
-import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -27,19 +16,18 @@ import com.jfinal.plugin.activerecord.Record;
 /*
  * 控制类 - 企业信息相关
  */
-@SuppressWarnings("unchecked")
 public class DataEntpostController extends Controller {
 
 	/*
 	 * 数据服务类
 	 */
-	private DataService dataService = enhance(DataService.class);
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	// private DataService dataService = enhance(DataService.class);
+	// private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	/*
 	 * 返回到页面的json数据
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
-	private List<Object> dataList = new ArrayList<Object>();
+	// private List<Object> dataList = new ArrayList<Object>();
 	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**

@@ -14,7 +14,7 @@
 <script type="text/javascript" src="common/easyui/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="common/jquery.custom.js"></script>
 <script type="text/javascript" src="common/jquery.data.js"></script>
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=10825252807d0ece8b0a30ce892ff059"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=10825252807d0ece8b0a30ce892ff059" async="async"></script>
 <script type="text/javascript">
 	$(function() {
 		$.render = function(render) {
@@ -94,7 +94,8 @@
 			Content.addTab(text, location, scripts);
 		});
 		
-		Content.addTab('工作任务', 'process/list.html');
+		// Content.addTab('工作任务', 'process/list.html');
+		Content.addTab('系统配置', 'system/index.html');
 		
 		var adminAccount = $.cookie('adminAccount');
 		if (adminAccount) {
@@ -116,9 +117,9 @@
 			<p data-location="instance/index.html" style="cursor:pointer;color:blue">流程实例</p>
 		</div>
 		<div data-options="title:'统计分析',collapsed:false" style="text-align:center">
-			<p data-location="stat/enterprise.html" style="cursor:pointer;color:blue">企业汇总</p>
-			<p data-location="stat/jobhunter.html" style="cursor:pointer;color:blue">求职者汇总</p>
-			<p data-location="stat/talk.html" style="cursor:pointer;color:blue">宣讲会汇总</p>
+			<p data-location="data/enterprise_sum.html" style="cursor:pointer;color:blue">企业汇总</p>
+			<p data-location="data/jobhunter_sum.html" style="cursor:pointer;color:blue">求职者汇总</p>
+			<p data-location="data/talk_sum.html" style="cursor:pointer;color:blue">宣讲会汇总</p>
 		</div>
 		<div data-options="title:'数据上传',collapsed:false" style="text-align:center">
 			<p data-location="data/enterprise.html" style="cursor:pointer;color:blue">企业数据</p>
@@ -128,6 +129,7 @@
 		<div data-options="title:'配置管理',collapsed:false" style="text-align:center">
 			<p data-location="process/index.html" style="cursor:pointer;color:blue">流程设计</p>
 			<p data-location="data/file.html" style="cursor:pointer;color:blue">文件管理</p>
+			<p data-location="system/index.html" style="cursor:pointer;color:blue">系统配置</p>
 		</div>
 	</div>
 </div>

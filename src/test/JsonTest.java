@@ -5,14 +5,14 @@ import java.util.Map;
 
 import engine.ModuleData;
 import engine.module.HbInputModule;
-import util.File;
+import util.FileKit;
 import util.Json;
 
 @SuppressWarnings("unchecked")
 public class JsonTest {
 
 	public static void main2(String[] args) {
-		String snaker = File.readFromClasspath("flows/test.snaker");
+		String snaker = FileKit.readFromClasspath("flows/test.snaker");
 		Map<String, Object> map = Json.parseToMap(snaker);
 		List<Map<String, Object>> moduleList = (List<Map<String, Object>>) map.get("modules");
 		for (Object module : moduleList) {

@@ -9,6 +9,7 @@
 	<build>
 		<finalName>snaker</finalName>
 		<sourceDirectory>src</sourceDirectory>
+		<outputDirectory>target/classes</outputDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -41,18 +42,18 @@
 	</build>
 
 	<dependencies>
-		<!-- 用于编译 -->
+		<!-- 用于开发 -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<groupId>com.jfinal</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>8.1.8</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- jfinal -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jfinal</artifactId>
-			<version>2.0</version>
+			<version>2.1</version>
 		</dependency>
 
 		<!-- jfinal 上传文件 -->

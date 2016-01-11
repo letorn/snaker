@@ -1,0 +1,37 @@
+<div class="easyui-accordion" data-options="multiple:true">
+	<div data-options="title:'数据上传',collapsed:false" style="padding-left:10px">
+		<p><span style="display:inline-block;width:200px">企业数据上传 - 单行业上传上限：</span><input id="system-enterprise-limit" class="easyui-numberspinner" data-options="min:1,max:10000"><a id="system-enterprise-limit-save" class="easyui-linkbutton" style="margin-left:15px">保存</a></p>
+		<p><span style="display:inline-block;width:200px">求职者数据上传 - 单类别上传上限：</span><input id="system-jobhunter-limit" class="easyui-numberspinner" data-options="min:1,max:10000"><a id="system-jobhunter-limit-save" class="easyui-linkbutton" style="margin-left:15px">保存</a></p>
+		<p><span style="display:inline-block;width:200px">宣讲会数据上传 - 单来源上传上限：</span><input id="system-talk-limit" class="easyui-numberspinner" data-options="min:1,max:10000"><a id="system-talk-limit-save" class="easyui-linkbutton" style="margin-left:15px">保存</a></p>
+	</div>
+	<div data-options="title:'系统日志',collapsed:false" style="padding-left:10px">
+		<p><span style="display:inline-block;width:200px">数据日志：</span><span id="system-data-logsize" style="display:inline-block;width:100px">100M</span><a class="easyui-linkbutton">清空所有</a></p>
+		<p><span style="display:inline-block;width:200px">服务日志：</span><span id="system-service-logsize" style="display:inline-block;width:100px">100M</span><a class="easyui-linkbutton">清空所有</a></p>
+	</div>
+</div>
+<script type="text/javascript">
+	$.render(function() {
+		var $systemEnterpriseLimit = $('#system-enterprise-limit'), $systemJobhunterLimit = $('#system-jobhunter-limit'), $systemTalkLimit = $('#system-talk-limit');
+		$.post('system/config', function(resp) {
+			$systemEnterpriseLimit.numberspinner('setValue', resp.enterprise_upload_single_limit);
+			$systemJobhunterLimit.numberspinner('setValue', resp.jobhunter_upload_single_limit);
+			$systemTalkLimit.numberspinner('setValue', resp.talk_upload_single_limit);
+		});
+		$('#system-enterprise-limit-save').click(function() {
+			$.post('system/save', {
+				name: 'enterprise_upload_single_limit',
+				value: $systemEnterpriseLimit.numberspinner('getValue')
+			}, function(resp) {
+				if (resp.success) {
+					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '保存失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
+		$.post('system/logsize', function(resp) {
+			$('#system-data-logsize').html((resp.datalog  / 1048576.0).toFixed(3) + ' M');
+			$('#system-service-logsize').html((resp.servicelog  / 1048576.0).toFixed(3) + ' M');
+		});
+	});
+</script>

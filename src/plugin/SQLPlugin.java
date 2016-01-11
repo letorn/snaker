@@ -5,9 +5,9 @@ import java.io.LineNumberReader;
 import java.sql.Connection;
 import java.sql.Statement;
 
-import util.File;
+import util.FileKit;
 
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 import com.jfinal.plugin.IPlugin;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
@@ -17,7 +17,7 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
  */
 public class SQLPlugin implements IPlugin {
 	
-	private static final Logger logger = Logger.getLogger(SQLPlugin.class);
+	private static final Log log = Log.getLog(SQLPlugin.class);
 	
 	private String jdbcUrl;
 	private String user;
@@ -110,16 +110,16 @@ public class SQLPlugin implements IPlugin {
 		try {
 			statement = conn.createStatement();
 			statement.execute("use " + database + ";");
-			logger.info("use " + database + ";");
+			log.info("use " + database + ";");
 			return true;
 		} catch (MySQLSyntaxErrorException e) {
 			if (e.getMessage().matches("Unknown database [\\w\\W]+")) {
 				try {
-					logger.info("database " + database + " doesn't exist");
+					log.info("database " + database + " doesn't exist");
 					statement.execute("create database " + database + " default character set " + encoding + ";");
-					logger.info("create database " + database + " default character set " + encoding + ";");
+					log.info("create database " + database + " default character set " + encoding + ";");
 					statement.execute("use " + database + ";");
-					logger.info("use " + database + ";");
+					log.info("use " + database + ";");
 					return true;
 				} catch (Exception e2) {
 					e.printStackTrace();
@@ -148,19 +148,19 @@ public class SQLPlugin implements IPlugin {
 	 * @return 是否执行成功
 	 */
 	private boolean runScript(Connection conn, String schema, boolean test) {
-		try (LineNumberReader lineReader = new LineNumberReader(File.readStreamFromClasspath(schema))) {
+		try (LineNumberReader lineReader = new LineNumberReader(FileKit.readStreamFromClasspath(schema))) {
 			StringBuffer command = null;
 			for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
 				if (command == null)
 					command = new StringBuffer();
 				String trimmedLine = line.trim();
 				if (trimmedLine.startsWith("--")) {
-					logger.info(trimmedLine);
+					log.info(trimmedLine);
 				} else if (trimmedLine.endsWith(";")) {
 					command.append(line);
 					Statement statement = conn.createStatement();
 					statement.execute(command.toString());
-					logger.info(command.toString());
+					log.info(command.toString());
 					statement.close();
 					command = null;
 				} else {

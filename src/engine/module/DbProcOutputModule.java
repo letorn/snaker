@@ -2,15 +2,12 @@ package engine.module;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
-import com.mysql.fabric.xmlrpc.base.Data;
 
 import engine.ModuleData;
 
@@ -18,7 +15,6 @@ import engine.ModuleData;
  * 流程模型 - 输出到数据库
  * 数据库存储过程
  */
-@SuppressWarnings("serial")
 public class DbProcOutputModule extends Module {
 
 	private String procName;

@@ -2,7 +2,6 @@ package controller;
 
 import static util.Validator.notBlank;
 
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -291,7 +290,7 @@ public class ProcessController extends Controller{
 		UploadFile uploadFile = getFile("file");
 		dataMap.put("success", true);
 		dataMap.put("file", uploadFile.getFileName());
-		dataMap.put("path", uploadFile.getSaveDirectory() + uploadFile.getFileName());
+		dataMap.put("path", uploadFile.getUploadPath() + uploadFile.getFileName());
 		renderJson(dataMap);
 	}
 	

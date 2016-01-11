@@ -14,7 +14,7 @@ public class BeginModule extends Module {
 	 * @return 输出的数据
 	 */
 	public ModuleData execute(ModuleData inputs) {
-		logger.info("开始执行工作流程：" + workflow.getProcessName() + "." + name);
+		log.info("开始执行工作流程：" + workflow.getProcessName() + "." + name);
 		return inputs;
 	}
 	

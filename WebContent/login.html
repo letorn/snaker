@@ -18,9 +18,9 @@
 	var $loginPassword = document.getElementById('login-password');
 	var $loginError = document.getElementById('login-error');
 	function login() {
-		var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-		request.open("post", "login", true);
-		request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+		request.open('post', 'login', true);
+		request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		request.onreadystatechange = function() {
 			if (request.readyState == 4) {
 				if (request.status == 200) {
