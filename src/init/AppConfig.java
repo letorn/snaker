@@ -15,6 +15,7 @@ import model.ViTalk;
 import plugin.SQLPlugin;
 import plugin.SchedulePlugin;
 import util.FileKit;
+import util.VarKit;
 
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
@@ -156,8 +157,16 @@ public class AppConfig extends JFinalConfig {
 		me.add("/system", SystemController.class);
 	}
 
+	/**
+	 * 启动后的事件
+	 */
+	public void afterJFinalStart() {
+		// 初始化全局系统参数
+		VarKit.init();
+	}
+	
 	public static void main(String[] args) {
-		JFinal.start("WebContent", 80, "/", 5);
+		JFinal.start("WebContent", 8080, "/snaker", 5);
 	}
 	
 }

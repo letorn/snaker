@@ -12,7 +12,7 @@
 <script type="text/javascript">
 	$.render(function() {
 		var $systemEnterpriseLimit = $('#system-enterprise-limit'), $systemJobhunterLimit = $('#system-jobhunter-limit'), $systemTalkLimit = $('#system-talk-limit');
-		$.post('system/config', function(resp) {
+		$.post('system/vars', function(resp) {
 			$systemEnterpriseLimit.numberspinner('setValue', resp.enterprise_upload_single_limit);
 			$systemJobhunterLimit.numberspinner('setValue', resp.jobhunter_upload_single_limit);
 			$systemTalkLimit.numberspinner('setValue', resp.talk_upload_single_limit);
@@ -29,6 +29,31 @@
 				}
 			});
 		});
+		$('#system-jobhunter-limit-save').click(function() {
+			$.post('system/save', {
+				name: 'jobhunter_upload_single_limit',
+				value: $systemJobhunterLimit.numberspinner('getValue')
+			}, function(resp) {
+				if (resp.success) {
+					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '保存失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
+		$('#system-talk-limit-save').click(function() {
+			$.post('system/save', {
+				name: 'talk_upload_single_limit',
+				value: $systemTalkLimit.numberspinner('getValue')
+			}, function(resp) {
+				if (resp.success) {
+					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '保存失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
+		
 		$.post('system/logsize', function(resp) {
 			$('#system-data-logsize').html((resp.datalog  / 1048576.0).toFixed(3) + ' M');
 			$('#system-service-logsize').html((resp.servicelog  / 1048576.0).toFixed(3) + ' M');

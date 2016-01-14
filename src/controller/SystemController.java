@@ -1,14 +1,12 @@
 package controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import model.SkConfig;
 import util.FileKit;
+import util.VarKit;
 
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Db;
 
 /*
  * 控制类 - 系统相关
@@ -28,24 +26,25 @@ public class SystemController extends Controller {
 		render("/index.html");
 	}
 	
-	public void config() {
-		List<SkConfig> configs = SkConfig.dao.find("select name,value from sk_config");
-		for (SkConfig config : configs) dataMap.put(config.getStr("name"), config.getStr("value")); 
-		renderJson(dataMap);
+	public void vars() {
+		renderJson(VarKit.getAll());
 	}
 	
 	public void save() {
 		String name = getPara("name", "");
 		String value = getPara("value", "");
-		Db.update("update sk_config set value=? where name=?", value, name);
-		dataMap.put("success", true);
+		dataMap.put("success", VarKit.set(name, value));
 		renderJson(dataMap);
 	}
 	
 	public void logsize() {
-		dataMap.put("datalog", FileKit.getWebPathSize("/common"));
-		dataMap.put("servicelog", FileKit.getWebPathSize("/common"));
+		dataMap.put("datalog", FileKit.getWebPathSize("/temp/datalog"));
+		dataMap.put("servicelog", FileKit.getWebPathSize("/temp/dataservice"));
 		renderJson(dataMap);
+	}
+	
+	public void delete() {
+		String name = getPara("name", "");
 	}
 	
 }

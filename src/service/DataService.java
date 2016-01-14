@@ -23,6 +23,7 @@ import model.ViTalk;
 import org.apache.commons.lang.StringUtils;
 
 import util.CreateHtml;
+import util.VarKit;
 
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
@@ -46,14 +47,17 @@ public class DataService {
 	 * @param codes 行业code
 	 * @return
 	 */
-	public boolean postEnterprise(Long[] ids, String[] codes, int num) {
+	public boolean postEnterprise(Long[] ids, String[] codes) {
+		// 单code上传上限
+		String singleLimit = VarKit.get("enterprise_upload_single_limit");
+
 		// 查询企业
 		List<String> sqls = new ArrayList<String>();
 		if (ids.length > 0)
 			sqls.add("(select id,name,category_code,nature_code,scale_code,tag,establish,introduction,address,website,area_code,lbs_lon,lbs_lat,orgains,license,contacter,public_contact,phone,fax,mobile,email,qq,data_src,data_key,update_date,create_date,account,role,legalize from vi_enterprise where id in(" + StringUtils.join(ids, ",") + "))");
 		
 		for (String code : codes)
-			sqls.add("(select id,name,category_code,nature_code,scale_code,tag,establish,introduction,address,website,area_code,lbs_lon,lbs_lat,orgains,license,contacter,public_contact,phone,fax,mobile,email,qq,data_src,data_key,update_date,create_date,account,role,legalize from vi_enterprise where syn_status in(-1,2) and category_code='" + code + "' limit " + num + ")");
+			sqls.add("(select id,name,category_code,nature_code,scale_code,tag,establish,introduction,address,website,area_code,lbs_lon,lbs_lat,orgains,license,contacter,public_contact,phone,fax,mobile,email,qq,data_src,data_key,update_date,create_date,account,role,legalize from vi_enterprise where syn_status in(-1,2) and category_code='" + code + "' limit " + singleLimit + ")");
 	
 		List<ViEnterprise> enterprises = sqls.size() > 0 ? ViEnterprise.dao.find(StringUtils.join(sqls, " union ")) : new ArrayList<ViEnterprise>();
 
@@ -195,12 +199,15 @@ public class DataService {
 	 * @return
 	 */
 	public boolean postJobhunter(Long[] ids, String[] codes) {
+		// 单code上传上限
+		String singleLimit = VarKit.get("jobhunter_upload_single_limit");
+
 		// 查询求职者
 		List<String> sqls = new ArrayList<String>();
 		if (ids.length > 0)
 			sqls.add("(select id,name,gender,nation,mobile,email,experience_code,education_code,household,category_code,hunter_status_code,marriage,cert_type,cert_id,birth,self_comment,location_code,data_src,data_key,update_date,create_date,account,curr_ent,curr_ent_phone,curr_post_code,curr_post,lbs_lon,lbs_lat,account_status from vi_jobhunter where id in(" + StringUtils.join(ids, ",") + "))");
 		for (String code : codes)
-			sqls.add("(select id,name,gender,nation,mobile,email,experience_code,education_code,household,category_code,hunter_status_code,marriage,cert_type,cert_id,birth,self_comment,location_code,data_src,data_key,update_date,create_date,account,curr_ent,curr_ent_phone,curr_post_code,curr_post,lbs_lon,lbs_lat,account_status from vi_jobhunter where syn_status in(-1,2) and curr_post_code='" + code + "' limit 10)");
+			sqls.add("(select id,name,gender,nation,mobile,email,experience_code,education_code,household,category_code,hunter_status_code,marriage,cert_type,cert_id,birth,self_comment,location_code,data_src,data_key,update_date,create_date,account,curr_ent,curr_ent_phone,curr_post_code,curr_post,lbs_lon,lbs_lat,account_status from vi_jobhunter where syn_status in(-1,2) and curr_post_code='" + code + "' limit " + singleLimit + ")");
 		List<ViJobhunter> jobhunters = sqls.size() > 0 ? ViJobhunter.dao.find(StringUtils.join(sqls, " union ")) : new ArrayList<ViJobhunter>();
 
 		// 上传求职者
@@ -277,12 +284,15 @@ public class DataService {
 	 * @return
 	 */
 	public boolean postTalk(Long[] ids, String[] codes) {
+		// 单code上传上限
+		String singleLimit = VarKit.get("talk_upload_single_limit");
+
 		// 查询宣讲会
 		List<String> sqls = new ArrayList<String>();
 		if (ids.length > 0)
 			sqls.add("(select id,title,content,source,data_src,data_key,update_date,create_date from vi_talk where id in(" + StringUtils.join(ids, ",") + "))");
 		for (String code : codes)
-			sqls.add("(select id,title,content,source,data_src,data_key,update_date,create_date from vi_talk where syn_status in(-1,2) and source='" + code + "' limit 10)");
+			sqls.add("(select id,title,content,source,data_src,data_key,update_date,create_date from vi_talk where syn_status in(-1,2) and source='" + code + "' limit " + singleLimit + ")");
 		List<ViTalk> talks = sqls.size() > 0 ? ViTalk.dao.find(StringUtils.join(sqls, " union ")) : new ArrayList<ViTalk>();
 
 		// 上传宣传会

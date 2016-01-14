@@ -14,7 +14,7 @@
 <script type="text/javascript" src="common/easyui/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="common/jquery.custom.js"></script>
 <script type="text/javascript" src="common/jquery.data.js"></script>
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=10825252807d0ece8b0a30ce892ff059" async="async"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=10825252807d0ece8b0a30ce892ff059&callback=initialize" async="async"></script>
 <script type="text/javascript">
 	$(function() {
 		$.render = function(render) {
@@ -94,8 +94,7 @@
 			Content.addTab(text, location, scripts);
 		});
 		
-		// Content.addTab('工作任务', 'process/list.html');
-		Content.addTab('系统配置', 'system/index.html');
+		Content.addTab('工作任务', 'process/list.html');
 		
 		var adminAccount = $.cookie('adminAccount');
 		if (adminAccount) {

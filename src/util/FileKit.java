@@ -135,7 +135,18 @@ public class FileKit extends com.jfinal.kit.FileKit {
 	 */
 	public static long getWebPathSize(String filename) {
 		File path = new File(PathKit.getWebRootPath() + filename);
-		return path != null ? getPathSize(path) : 0;
+		return path != null && path.exists() ? getPathSize(path) : 0;
+	}
+	
+	/**
+	 * 删除目录，包括子目录/文件
+	 * @param filename 文件的相对路径，相对于当前web项目
+	 * @return 是否删除成功
+	 */
+	public static boolean deleteWebPath(String filename) {
+		File path = new File(PathKit.getWebRootPath() + filename);
+		delete(path);
+		return true;
 	}
 	
 	/**
