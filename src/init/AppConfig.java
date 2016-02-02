@@ -13,7 +13,6 @@ import model.ViEntpost;
 import model.ViJobhunter;
 import model.ViTalk;
 import plugin.SQLPlugin;
-import plugin.SchedulePlugin;
 import util.FileKit;
 import util.VarKit;
 
@@ -39,6 +38,7 @@ import controller.InstanceController;
 import controller.ModuleController;
 import controller.ProcessController;
 import controller.SystemController;
+import engine.SnakerEngine;
 import engine.model.DbEnterprise;
 import engine.model.DbEntpost;
 import engine.model.DbJobhunter;
@@ -59,10 +59,12 @@ public class AppConfig extends JFinalConfig {
 
 		// 开发模式
 		me.setDevMode(true);
-		// 文件保存目录
-		me.setBaseUploadPath("temp");
+
 		// 智联招聘证书路径
 		System.setProperty("javax.net.ssl.trustStore", FileKit.classpathBy("jssecacerts"));
+		
+		// 上传文件大小限制100M
+		me.setMaxPostSize(104857600);
 	}
 
 	/**
@@ -128,8 +130,8 @@ public class AppConfig extends JFinalConfig {
 		me.add(zcdhArp);
 		
 		// 定时器
-		SchedulePlugin schedulePlugin = new SchedulePlugin();
-		me.add(schedulePlugin);
+		// SchedulePlugin schedulePlugin = new SchedulePlugin();
+		// me.add(schedulePlugin);
 	}
 
 	/**
@@ -163,6 +165,8 @@ public class AppConfig extends JFinalConfig {
 	public void afterJFinalStart() {
 		// 初始化全局系统参数
 		VarKit.init();
+		// 初始化流程引擎
+		SnakerEngine.init(PropKit.get("store.path"));
 	}
 	
 	public static void main(String[] args) {

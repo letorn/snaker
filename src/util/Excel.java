@@ -32,7 +32,8 @@ public class Excel {
 			workbook = new XSSFWorkbook(is);
 		}
 		for (DataHeader dh : inputs.getHeaders()) {
-			excelMaps.put(dh.getName(), Excel.exportFromExcel(workbook, dh.getName()));
+			if (dh.getName() != null && !"null".equalsIgnoreCase(dh.getName().trim()))
+				excelMaps.put(dh.getName(), Excel.exportFromExcel(workbook, dh.getName()));
 		}
 		return excelMaps;
 	}

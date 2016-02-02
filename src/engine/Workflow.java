@@ -28,7 +28,8 @@ import engine.module.Module;
 public class Workflow {
 
 	private boolean daemon = true;// 后台运行
-	
+	private boolean success = false;// 是否启动成功,
+
 	private WfProcess process;// 工作流程
 	private Long processId;// 流程主键
 	private String processName;// 流程名称
@@ -38,12 +39,12 @@ public class Workflow {
 	private Long instanceId;// 实例主键
 	private String instanceParams;// 实例参数
 	private Date instanceCreateDate;// 实例创建时间
+	private String instanceMessage;// 实例信息
 
 	private Module beginModule;// 开始模型
 	private List<Module> modules;// 所有模型
 
 	private Map<String, Object> parameters;// 实例参数Map
-	private String message;
 	/**
 	 * 初始化参数
 	 * @param params 实例参数
@@ -84,7 +85,7 @@ public class Workflow {
 	public boolean start() {
 		if (notBlank(beginModule)) {
 			if (daemon) {
-				new Thread(beginModule).start();
+				beginModule.start();
 			} else {
 				beginModule.run();
 			}
@@ -221,6 +222,14 @@ public class Workflow {
 		this.daemon = daemon;
 	}
 
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+	
 	public void setProcess(WfProcess process) {
 		this.process = process;
 		processId = process.getLong("id");
@@ -289,12 +298,12 @@ public class Workflow {
 		return parameters;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getInstanceMessage() {
+		return instanceMessage;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setInstanceMessage(String instanceMessage) {
+		this.instanceMessage = instanceMessage;
 	}
 	
 }

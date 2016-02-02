@@ -13,6 +13,7 @@
 </table>
 <div id="data-jobhunter-table-toolbar" style="padding: 2px 5px;">
 	数据源：<input id="data-jobhunter-table-source" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text'" style="width:120px" />
+	数据状态：<input id="data-jobhunter-table-status" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text',data:[{value:'',text:'所有'},{value:'-1',text:'未上传'},{value:'0',text:'上传失败'},{value:'1',text:'已上传'},{value:'2',text:'已修改'}],value:''" style="width:120px" />
 	<input id="data-jobhunter-table-search" class="easyui-searchbox" data-options="prompt:'求职者名称'" style="width:200px" />
 	<a id="data-jobhunter-table-upload" class="easyui-linkbutton">上传</a>
 	<a id="data-jobhunter-table-add" class="easyui-linkbutton">新增</a>
@@ -168,7 +169,7 @@
 	}
 
 	$.render(function() {
-		var $dataJobhunterTable = $('#data-jobhunter-table'), $dataJobhunterTableSource = $('#data-jobhunter-table-source'), $dataJobhunterTableSearch = $('#data-jobhunter-table-search');
+		var $dataJobhunterTable = $('#data-jobhunter-table'), $dataJobhunterTableSource = $('#data-jobhunter-table-source'), $dataJobhunterTableStatus = $('#data-jobhunter-table-status'), $dataJobhunterTableSearch = $('#data-jobhunter-table-search');
 		var $dataJobhunterUploadWindow = $('#data-jobhunter-upload-window'), $dataJobhunterUploadTree = $('#data-jobhunter-upload-tree');
 		var $dataJobhunterUpdateWindow = $('#data-jobhunter-update-window');
 		var $useraddress =$('#user_address');
@@ -181,6 +182,17 @@
 			onSelect: function(record) {
 				$dataJobhunterTable.datagrid('load', {
 					source: record.value,
+					status: $dataJobhunterTableStatus.combobox('getValue'),
+					name: $dataJobhunterTableSearch.val()
+				});
+			}
+		});
+		
+		$dataJobhunterTableStatus.combobox({
+			onSelect: function(record) {
+				$dataJobhunterTable.datagrid('load', {
+					source: $dataJobhunterTableSource.combobox('getValue'),
+					status: record.value,
 					name: $dataJobhunterTableSearch.val()
 				});
 			}

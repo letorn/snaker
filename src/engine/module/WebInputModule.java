@@ -28,6 +28,7 @@ import us.codecraft.webmagic.selector.Selectable;
 public class WebInputModule extends Module {
 
 	private List<Map<String, String>> startUrls;
+	private String charset;
 	private List<Map<String, String>> headers;
 	private List<Map<String, String>> cookies;
 	private String threadNum;
@@ -63,6 +64,9 @@ public class WebInputModule extends Module {
 	@Override
 	public void run() {
 		if (spider.getStatus() == Spider.Status.Init) {
+			if (notBlank(charset)) {
+				snakerProcessor.initCharset(charset);
+			}
 			if (notBlank(headers)) {
 				snakerProcessor.initHeaders(headers);
 			}
@@ -98,6 +102,10 @@ public class WebInputModule extends Module {
 	private class SnakerProcessor implements PageProcessor {
 
 		private Site site = Site.me().setRetryTimes(5).setTimeOut(30000);
+		
+		public void initCharset(String charset) {
+			site = site.setCharset(charset);
+		}
 		
 		public void initHeaders(List<Map<String, String>> headers) {
 			for (Map<String, String> header : headers) {

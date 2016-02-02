@@ -1,13 +1,14 @@
 package engine.module;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
-import com.mchange.v2.c3p0.impl.NewProxyCallableStatement;
 
 import engine.ModuleData;
 
@@ -50,8 +51,7 @@ public class DbProcOutputModule extends Module {
 					sql.append("?,?)");
 					for (int j = 0; j < finalInputs.getRows().size(); j++) {
 						Map<String, Object> map = finalInputs.getRows().get(j);
-						NewProxyCallableStatement proc = null;
-						proc = (NewProxyCallableStatement) conn.prepareCall(sql.toString());
+						CallableStatement proc = conn.prepareCall(sql.toString());
 						for (int k = 0; k < num; k++) {
 							Object o=procFields.get(k).get("from");
 							Object param = (Object) map.get(o);
@@ -60,10 +60,8 @@ public class DbProcOutputModule extends Module {
 							}
 							proc.setObject((k + 1), param);
 						}
-						// proc.setString(1, "title");//设置参数值
-						// proc.setString(2, "content");
-						proc.registerOutParameter(num + 1, java.sql.Types.LONGNVARCHAR);// 设置返回值类型
-						proc.registerOutParameter(num + 2, java.sql.Types.INTEGER);
+						proc.registerOutParameter(num + 1, Types.LONGNVARCHAR);// 设置返回值类型
+						proc.registerOutParameter(num + 2, Types.INTEGER);
 						proc.execute();
 						String result = proc.getString(num + 1);// 得到返回值
 						Integer isSuccess = proc.getInt(num + 2);

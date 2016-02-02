@@ -2,7 +2,7 @@ package controller;
 
 import static util.Validator.notBlank;
 
-import java.text.DateFormat;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import service.SnakerService;
+import util.DateKit;
 
 import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
@@ -30,8 +31,6 @@ import engine.module.Module;
  */
 public class ProcessController extends Controller{
 
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
 	/*
 	 * snaker工作流程服务类
 	 */
@@ -62,7 +61,7 @@ public class ProcessController extends Controller{
 			data.put("id", workflow.getProcessId());
 			data.put("name", workflow.getProcessName());
 			data.put("content", workflow.getProcessContent());
-			data.put("update_date", dateFormat.format(workflow.getProcessUpdateDate()));
+			data.put("update_date", DateKit.toString(workflow.getProcessUpdateDate()));
 			dataList.add(data);
 		}
 		
@@ -91,7 +90,7 @@ public class ProcessController extends Controller{
 			for (Module module : workflow.getModules())
 				contentBuilder.append(contentBuilder.length() > 0 ? " --> " + module.getName() : module.getName());
 			data.put("content", contentBuilder.toString());
-			data.put("update_date", dateFormat.format(workflow.getProcessUpdateDate()));
+			data.put("update_date", DateKit.toString(workflow.getProcessUpdateDate()));
 			dataList.add(data);
 		}
 		
@@ -203,9 +202,9 @@ public class ProcessController extends Controller{
 			Workflow instance = snakerService.startProcess(processId, params, daemon);
 			if (instance != null) {
 				dataMap.put("success", true);
-				dataMap.put("message", instance.getMessage());
 				dataMap.put("process", instance.getProcessId());
 				dataMap.put("instance", instance.getInstanceId());
+				dataMap.put("message", instance.getInstanceMessage());
 			}
 		}
 		renderJson(dataMap);
@@ -286,11 +285,12 @@ public class ProcessController extends Controller{
 	 * 上传文件
 	 * file 文件
 	 */
+	@Clear
 	public void upload() {
 		UploadFile uploadFile = getFile("file");
 		dataMap.put("success", true);
 		dataMap.put("file", uploadFile.getFileName());
-		dataMap.put("path", uploadFile.getUploadPath() + uploadFile.getFileName());
+		dataMap.put("path", uploadFile.getUploadPath() + File.separator + uploadFile.getFileName());
 		renderJson(dataMap);
 	}
 	

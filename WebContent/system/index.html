@@ -4,23 +4,24 @@
 		<p><span style="display:inline-block;width:200px">求职者数据上传 - 单类别上传上限：</span><input id="system-jobhunter-limit" class="easyui-numberspinner" data-options="min:1,max:10000"><a id="system-jobhunter-limit-save" class="easyui-linkbutton" style="margin-left:15px">保存</a></p>
 		<p><span style="display:inline-block;width:200px">宣讲会数据上传 - 单来源上传上限：</span><input id="system-talk-limit" class="easyui-numberspinner" data-options="min:1,max:10000"><a id="system-talk-limit-save" class="easyui-linkbutton" style="margin-left:15px">保存</a></p>
 	</div>
-	<div data-options="title:'系统日志',collapsed:false" style="padding-left:10px">
-		<p><span style="display:inline-block;width:200px">数据日志：</span><span id="system-data-logsize" style="display:inline-block;width:100px">100M</span><a class="easyui-linkbutton">清空所有</a></p>
-		<p><span style="display:inline-block;width:200px">服务日志：</span><span id="system-service-logsize" style="display:inline-block;width:100px">100M</span><a class="easyui-linkbutton">清空所有</a></p>
+	<div data-options="title:'系统日志 / 缓存文件',collapsed:false" style="padding-left:10px">
+		<p><span style="display:inline-block;width:200px">数据日志：</span><span id="system-datalog-size" style="display:inline-block;width:100px">100M</span><a id="system-datalog-delete" class="easyui-linkbutton">清空所有</a></p>
+		<p><span style="display:inline-block;width:200px">服务日志：</span><span id="system-servicelog-size" style="display:inline-block;width:100px">100M</span><a id="system-servicelog-delete" class="easyui-linkbutton">清空所有</a></p>
+		<p><span style="display:inline-block;width:200px">文件上传：</span><span id="system-upload-size" style="display:inline-block;width:100px">100M</span><a id="system-upload-delete" class="easyui-linkbutton">清空所有</a></p>
+		<p><span style="display:inline-block;width:200px">文件下载：</span><span id="system-download-size" style="display:inline-block;width:100px">100M</span><a id="system-download-delete" class="easyui-linkbutton">清空所有</a></p>
 	</div>
 </div>
 <script type="text/javascript">
 	$.render(function() {
-		var $systemEnterpriseLimit = $('#system-enterprise-limit'), $systemJobhunterLimit = $('#system-jobhunter-limit'), $systemTalkLimit = $('#system-talk-limit');
 		$.post('system/vars', function(resp) {
-			$systemEnterpriseLimit.numberspinner('setValue', resp.enterprise_upload_single_limit);
-			$systemJobhunterLimit.numberspinner('setValue', resp.jobhunter_upload_single_limit);
-			$systemTalkLimit.numberspinner('setValue', resp.talk_upload_single_limit);
+			$('#system-enterprise-limit').numberspinner('setValue', resp.enterprise_upload_single_limit);
+			$('#system-jobhunter-limit').numberspinner('setValue', resp.jobhunter_upload_single_limit);
+			$('#system-talk-limit').numberspinner('setValue', resp.talk_upload_single_limit);
 		});
 		$('#system-enterprise-limit-save').click(function() {
 			$.post('system/save', {
 				name: 'enterprise_upload_single_limit',
-				value: $systemEnterpriseLimit.numberspinner('getValue')
+				value: $('#system-enterprise-limit').numberspinner('getValue')
 			}, function(resp) {
 				if (resp.success) {
 					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
@@ -32,7 +33,7 @@
 		$('#system-jobhunter-limit-save').click(function() {
 			$.post('system/save', {
 				name: 'jobhunter_upload_single_limit',
-				value: $systemJobhunterLimit.numberspinner('getValue')
+				value: $('#system-jobhunter-limit').numberspinner('getValue')
 			}, function(resp) {
 				if (resp.success) {
 					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
@@ -44,7 +45,7 @@
 		$('#system-talk-limit-save').click(function() {
 			$.post('system/save', {
 				name: 'talk_upload_single_limit',
-				value: $systemTalkLimit.numberspinner('getValue')
+				value: $('#system-talk-limit').numberspinner('getValue')
 			}, function(resp) {
 				if (resp.success) {
 					$.messager.show({title: '提示', msg: '保存成功！', timeout: 1000, showType: 'slide'});
@@ -54,9 +55,51 @@
 			});
 		});
 		
-		$.post('system/logsize', function(resp) {
-			$('#system-data-logsize').html((resp.datalog  / 1048576.0).toFixed(3) + ' M');
-			$('#system-service-logsize').html((resp.servicelog  / 1048576.0).toFixed(3) + ' M');
+		$.post('system/pathsize', function(resp) {
+			$('#system-datalog-size').html((resp.datalog  / 1048576.0).toFixed(3) + ' M');
+			$('#system-servicelog-size').html((resp.servicelog  / 1048576.0).toFixed(3) + ' M');
+			$('#system-upload-size').html((resp.upload  / 1048576.0).toFixed(3) + ' M');
+			$('#system-download-size').html((resp.download  / 1048576.0).toFixed(3) + ' M');
+		});
+		$('#system-datalog-delete').click(function() {
+			$.post('system/deletepath/datalog', function(resp) {
+				if (resp.success) {
+					$('#system-datalog-size').html('0.000 M');
+					$.messager.show({title: '提示', msg: '清空成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '清空失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
+		$('#system-servicelog-delete').click(function() {
+			$.post('system/deletepath/servicelog', function(resp) {
+				if (resp.success) {
+					$('#system-servicelog-size').html('0.000 M');
+					$.messager.show({title: '提示', msg: '清空成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '清空失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
+		$('#system-upload-delete').click(function() {
+			$.post('system/deletepath/upload', function(resp) {
+				if (resp.success) {
+					$('#system-upload-size').html('0.000 M');
+					$.messager.show({title: '提示', msg: '清空成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '清空失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
+		$('#system-download-delete').click(function() {
+			$.post('system/deletepath/download', function(resp) {
+				if (resp.success) {
+					$('#system-download-size').html('0.000 M');
+					$.messager.show({title: '提示', msg: '清空成功！', timeout: 1000, showType: 'slide'});
+				} else {
+					$.messager.show({title: '提示', msg: '清空失败！', timeout: 1000, showType: 'slide'});
+				}
+			});
 		});
 	});
 </script>

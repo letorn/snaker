@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jfinal</artifactId>
-			<version>2.1</version>
+			<version>2.2</version>
 		</dependency>
 
 		<!-- jfinal 上传文件 -->
@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
-			<version>0.9.5</version>
+			<version>0.9.5.2</version>
 		</dependency>
 
 		<!-- mysql driver -->

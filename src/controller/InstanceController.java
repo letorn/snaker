@@ -4,8 +4,6 @@ import static util.Validator.notBlank;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import service.SnakerService;
+import util.DateKit;
 import util.Json;
 
 import com.jfinal.core.Controller;
@@ -33,8 +32,6 @@ import engine.module.Module;
  */
 public class InstanceController extends Controller {
 
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
 	/*
 	 * snaker工作流程服务类
 	 */
@@ -71,7 +68,7 @@ public class InstanceController extends Controller {
 			data.put("processName", instance.getProcessName());
 			data.put("instanceId", instance.getInstanceId());
 			data.put("instanceParams", instance.getInstanceParams());
-			data.put("instanceCreateDate", dateFormat.format(instance.getInstanceCreateDate()));
+			data.put("instanceCreateDate", DateKit.toString(instance.getInstanceCreateDate()));
 			data.put("instanceIsAlive", instance.isAlive());
 			dataList.add(data);
 		}
@@ -90,12 +87,12 @@ public class InstanceController extends Controller {
 		if (notBlank(instanceId)) {
 			Workflow instance = snakerService.getInstance(instanceId);
 			if (notBlank(instance)) {
-				setAttr("message", instance.getMessage());
 				setAttr("process", instance.getProcessId());
 				setAttr("processName", instance.getProcessName());
 				setAttr("instance", instance.getInstanceId());
 				setAttr("instanceIsAlive", instance.isAlive());
 				setAttr("instanceParams", instance.getInstanceParams());
+				setAttr("instanceMessage", instance.getInstanceMessage());
 				List<Map<String, Object>> views = new ArrayList<Map<String, Object>>();
 				for (Module module : instance.getModules()) {
 					if (module.isDoRecord() && notBlank(module.getRecordView())) {

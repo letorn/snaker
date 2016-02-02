@@ -15,7 +15,7 @@
 <div class="easyui-layout" data-options="fit:true">
 	<div data-options="region:'north',split:false" style="height:55px;padding:5px 0px 0px 10px">
 		流程名称：${processName}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正在活动：${instanceIsAlive?string("是", "否")}<br /><br />
-		消息：${message!""}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实例参数：${instanceParams}
+		消息：${instanceMessage!""}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实例参数：${instanceParams}
 	</div>
 	<div id="instance-all-tabs" class="easyui-tabs" data-options="region:'center'"></div>
 </div>

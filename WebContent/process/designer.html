@@ -1052,7 +1052,7 @@
 					        name: ' scaleCode ',from:'scaleCode',default:''},{
 					        name: ' tag ',from:'tag',default:''},{
 					        name: ' establish ',from:'establish',default:''},{
-					        name:  'troduction ',from:'troduction',default:''},{
+					        name:  'introduction ',from:'introduction',default:''},{
 					        name: ' address ',from:'address',default:''},{
 					        name: ' website ',from:'website',default:''},{
 					        name: ' areaCode ',from:'areaCode',default:''},{
@@ -1084,9 +1084,8 @@
 							{name:'age',from:'age',default:''},
 							{name:'gender',from:'gender',default:''},
 							{name:'salary',from:'salary',default:''},
-							{name:'salary_type',from:'salary_type',default:''},
 							{name:'tag',from:'tag',default:''},
-							{name:'troduction',from:'troduction',default:''},
+							{name:'introduction',from:'introduction',default:''},
 							{name:'areaCode',from:'areaCode',default:''},
 							{name:'address',from:'address',default:''},
 							{name:'lbsLon',from:'lbsLon',default:''},
@@ -1097,7 +1096,8 @@
 							{name:'updateDate',from:'updateDate',default:''},
 							{name:'createDate',from:'createDate',default:''},
 							{name:'experienceCode',from:'experienceCode',default:''},
-							{name:'educationCode',from:'educationCode',default:''}
+							{name:'educationCode',from:'educationCode',default:''},
+							{name:'salary_type',from:'salary_type',default:''}
 							 ]
 				 }
 				if(procName == 'save_or_update_information') {
@@ -1242,6 +1242,12 @@
 					          {name:'prizeTime',from:'prizeTime',default:''},
 					          {name:'prizeName',from:'prizeName',default:''},
 					          {name:'prizeContent',from:'prizeContent',default:''}]
+				}
+				if(procName == 'sign_up_jobfair') {
+					fields = [{name:'fairId',from:'fairId',default:''},
+					          {name:'boothNo',from:'boothNo',default:''},
+					          {name:'dataSrc',from:'dataSrc',default:''},
+					          {name:'entName',from:'entName',default:''}]
 				}
 				
 				for (var i = 0; i < fields.length; i ++) {
@@ -1512,6 +1518,9 @@
 				},{
 					text: 'save_or_update_prize',
 					value: 'save_or_update_prize'
+				},{
+					text: 'sign_up_jobfair',
+					value: 'sign_up_jobfair'
 				}]
 			}
 		};

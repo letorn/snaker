@@ -2,6 +2,7 @@ package engine;
 
 import static util.Validator.notBlank;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,18 +14,36 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.json.JSONObject;
+import util.DateKit;
+import util.FileKit;
+import util.Json;
+
+import com.jfinal.kit.JsonKit;
+import com.jfinal.kit.PathKit;
+
 import engine.model.WfProcess;
 
 /*
  * 工作流引擎
  */
+@SuppressWarnings("unchecked")
 public class SnakerEngine {
 
+	private static String baseStorePath = "temp";
 	private static Map<Long, Workflow> processWorkflowIdMap = new HashMap<Long, Workflow>();
 	private static Map<Long, Workflow> instanceWorkflowIdMap = new HashMap<Long, Workflow>();
 	
-	static {
+	/**
+	 * 初始化
+	 * @param storePath 缓存目录
+	 */
+	public static void init(String storePath) {
+		// 流程实例存放目录
+		if (notBlank(storePath)) baseStorePath = storePath;
+		if (!baseStorePath.matches("(^\\w{1}:.*)|(^\\\\.*)|(^/.*)"))
+			baseStorePath = PathKit.getWebRootPath() + File.separator + baseStorePath;
 		initProcesses();
+		// initInstances();
 	}
 	
 	/**
@@ -208,6 +227,54 @@ public class SnakerEngine {
 		if (notBlank(instance))
 			return instance.isAlive();
 		return false;
+	}
+	
+	/**
+	 * 保存实例
+	 * @param instance 流程实例
+	 * @return 是否保存成功
+	 */
+	public boolean writeInstance(Workflow instance) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", instance.getInstanceId());
+		map.put("process", instance.getProcessId());
+		map.put("params", instance.getInstanceParams());
+		map.put("message", instance.getInstanceMessage());
+		map.put("createDate", DateKit.toString(instance.getInstanceCreateDate(), DateKit.YMDHMSS));
+		String storePath = baseStorePath + File.separator + instance.getProcessId() + File.separator + instance.getInstanceId();
+		FileKit.delete(storePath);
+		FileKit.mkdirs(storePath);
+		FileKit.write(storePath + File.separator + ".instance", Json.toString(map));
+		return true;
+	}
+	
+	/**
+	 * 加载已经存在的流程实例
+	 * @return 是否加载成功
+	 */
+	public static boolean initInstances() {
+		for (Workflow process : processWorkflowIdMap.values()) {
+			File processPath = new File(baseStorePath + File.separator + process.getProcessId());
+			if (processPath.exists()) {
+				for (String instance : processPath.list()) {
+					String jsonString = FileKit.read(baseStorePath + File.separator + process.getProcessId() + File.separator + instance + File.separator + ".instance");
+					if (notBlank(jsonString)) {
+						Map<String, Object> map = JsonKit.parse(jsonString, Map.class);
+						Workflow prototype = processWorkflowIdMap.get(((Number) map.get("process")).longValue());
+						if (notBlank(prototype)) {
+							Workflow workflow = Workflow.create(prototype.getProcessContent());
+							workflow.setProcess(prototype.getProcess());
+							workflow.setInstanceId(((Number) map.get("id")).longValue());
+							workflow.setInstanceParams((String) map.get("params"));
+							workflow.setInstanceCreateDate(DateKit.toDate((String) map.get("createDate"), DateKit.YMDHMSS));
+							instanceWorkflowIdMap.put(workflow.getInstanceId(), workflow);
+						}
+						
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 }

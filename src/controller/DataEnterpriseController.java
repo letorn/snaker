@@ -2,9 +2,6 @@ package controller;
 
 import static util.Validator.blank;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +14,7 @@ import model.ViEnterprise;
 import service.DataService;
 import test.Area;
 import test.Major;
+import util.DateKit;
 import util.Growth;
 
 import com.alibaba.fastjson.JSON;
@@ -35,13 +33,11 @@ public class DataEnterpriseController extends Controller {
 	 * 数据服务类
 	 */
 	private DataService dataService = enhance(DataService.class);
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	/*
 	 * 返回到页面的json数据
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	private List<Object> dataList = new ArrayList<Object>();
-	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**
 	 * 列表
@@ -52,14 +48,21 @@ public class DataEnterpriseController extends Controller {
 	public void index() {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
-		String source = getPara("source", "");
+		String source = getPara("source");
+		Integer status = getParaToInt("status");
 		String name = getPara("name", "");
 		if (page < 1) page = 1;
 		if (rows < 1) rows = 1;
 
 		Page<ViEnterprise> pager = blank(source) ?
-									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where name like ?", "%" + name + "%") : 
-									ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%");
+									(blank(status) ?
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where name like ?", "%" + name + "%") :
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where syn_status=? and name like ?", status, "%" + name + "%")
+									) :
+									(blank(status) ?
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%") :
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where data_src=? and syn_status=? and name like ?", source, status, "%" + name + "%")
+									);
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -73,7 +76,7 @@ public class DataEnterpriseController extends Controller {
 	 * endTime 选定的结束时间
 	 */
 	public void display() {
-		String date = dateFormat.format(new Date());
+		String date = DateKit.toString(new Date());
 		String categoryName = getPara("category");
 		String field = getPara("field");
 		Integer page = getParaToInt("page", 1);
@@ -179,7 +182,7 @@ public class DataEnterpriseController extends Controller {
 	 * 企业数据汇总
 	 */
 	public void sum() {
-		String date = dateFormat.format(new Date());
+		String date = DateKit.toString(new Date());
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 		List<Record> records = Db.find("select i.name, "
@@ -233,15 +236,8 @@ public class DataEnterpriseController extends Controller {
 		String qq =getPara("qq");
 		
 		
-		Date update_date = null;
-		Date create_date = null;
-		try {
-			update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():sdf.parse(getPara("update_date"));
-			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
-			
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		Date update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():DateKit.toDate(getPara("update_date"), DateKit.YMDHM);
+		Date create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():DateKit.toDate(getPara("create_date"), DateKit.YMDHM);
 		
 		String legalize =getPara("legalize").equals("")?"1":getPara("legalize"); 
 		boolean isSuccess=true;

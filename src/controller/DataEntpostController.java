@@ -1,12 +1,11 @@
 package controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import model.ViEntpost;
+import util.DateKit;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -22,13 +21,11 @@ public class DataEntpostController extends Controller {
 	 * 数据服务类
 	 */
 	// private DataService dataService = enhance(DataService.class);
-	// private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	/*
 	 * 返回到页面的json数据
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	// private List<Object> dataList = new ArrayList<Object>();
-	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	/**
 	 * 列表
@@ -89,16 +86,8 @@ public class DataEntpostController extends Controller {
 		String education =getPara("education");
 		String education_code =getPara("education_code");
 		String ent_name = getPara("ent_name");
-		Date update_date = null;
-		Date create_date = null;
-		try {
-			update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():sdf.parse(getPara("update_date"));
-			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():DateKit.toDate(getPara("update_date"), DateKit.YMDHM);
+		Date create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():DateKit.toDate(getPara("create_date"), DateKit.YMDHM);
 	
 		boolean isSuccess=true;
 		ViEntpost vep = null;

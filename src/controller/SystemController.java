@@ -37,14 +37,25 @@ public class SystemController extends Controller {
 		renderJson(dataMap);
 	}
 	
-	public void logsize() {
-		dataMap.put("datalog", FileKit.getWebPathSize("/temp/datalog"));
-		dataMap.put("servicelog", FileKit.getWebPathSize("/temp/dataservice"));
+	public void pathsize() {
+		dataMap.put("datalog", FileKit.getWebPathSize("/log/data"));
+		dataMap.put("servicelog", FileKit.getWebPathSize("/log/service"));
+		dataMap.put("upload", FileKit.getWebPathSize("/upload"));
+		dataMap.put("download", FileKit.getWebPathSize("/download"));
+		renderJson(dataMap);
+	}
+	
+	public void deletepath() {
+		String path = getPara();
+		if ("datalog".equals(path)) dataMap.put("success", FileKit.deleteWebPath("/log/data"));
+		else if ("servicelog".equals(path)) dataMap.put("success", FileKit.deleteWebPath("/log/service"));
+		else if ("upload".equals(path)) dataMap.put("success", FileKit.deleteWebPath("/upload"));
+		else if ("download".equals(path)) dataMap.put("success", FileKit.deleteWebPath("/download"));
 		renderJson(dataMap);
 	}
 	
 	public void delete() {
-		String name = getPara("name", "");
+		// String name = getPara("name", "");
 	}
 	
 }

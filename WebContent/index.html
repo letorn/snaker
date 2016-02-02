@@ -11,6 +11,7 @@
 <link rel="stylesheet" type="text/css" href="common/easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="common/easyui/themes/icon.css">
 <script type="text/javascript" src="common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="common/easyui/datagrid-bufferview.js"></script>
 <script type="text/javascript" src="common/easyui/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="common/jquery.custom.js"></script>
 <script type="text/javascript" src="common/jquery.data.js"></script>
@@ -31,6 +32,28 @@
 		}
 
 		var $indexContent = $('#index-content'), $indexScripts = $('#index-scripts');
+		
+		var ajaxs = [];
+		$(document).ajaxError(function(event,xhr,options,exc) {
+			if (/数据采集-登录/.test(xhr.responseText)) {
+				$('#index-login-window').window('open');
+				ajaxs.push(options);
+			}
+		});
+		
+		$('#index-login-window-confirm').click(function() {
+			var account = $('#index-login-window-account').textbox('getValue');
+			var password = $('#index-login-window-password').textbox('getValue');
+			$.getJSON('login', {account: account, password: password}, function(resp) {
+				if (resp.success) {
+					while (ajaxs.length > 0) $.ajax(ajaxs.shift());
+					$('#index-admin-account').text($.cookie('adminAccount'));
+					$('#index-login-window').window('close');
+				} else {
+					$.messager.show({title: '提示', msg: '用户名或密码错误！', timeout: 1000, showType: 'slide'});
+				}
+			});
+		});
 		
 		$indexContent.find('.tabs-header').bind('contextmenu', function(e) {
 			e.preventDefault();
@@ -144,6 +167,13 @@
 	<div class="menu-sep"></div>
 	<div id="index-content-menu-closeright">关闭右侧</div>
 	<div id="index-content-menu-closeleft">关闭左侧</div>
+</div>
+<div id="index-login-window" class="easyui-window" data-options="title:'登录',modal:true,collapsible:false,minimizable:false,maximizable:false,closable:false,closed:true,footer:'#index-login-window-footer'" style="width:280px;height:180px;padding:10px;">
+	<p>用户名:&nbsp;<input id="index-login-window-account" class="easyui-textbox" /></p>
+	<p>密　码:&nbsp;<input id="index-login-window-password" class="easyui-textbox" data-options="type:'password'" /></p>
+</div>
+<div id="index-login-window-footer" style="padding:5px;">
+	<a id="index-login-window-confirm" class="easyui-linkbutton" style="width:50px">确定</a>
 </div>
 </body>
 </html>

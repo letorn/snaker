@@ -117,7 +117,8 @@ public class AddFieldModule extends Module {
 					if (!initScript) {
 						initScript = true;
 						for (Entry<String, Object> entry : map.entrySet()) {
-							engine.put(entry.getKey(), entry.getValue());
+							if (entry.getKey() != null)
+								engine.put(entry.getKey(), entry.getValue());
 						}
 					}
 					try {

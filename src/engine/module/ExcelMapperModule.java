@@ -53,6 +53,10 @@ public class ExcelMapperModule extends Module {
 							sb.delete(sb.length() - 2, sb.length());
 						}
 						row.put(attr, sb.toString());
+					} else if(tmp.get(row.get(attr)) != null && tmp.get(row.get(attr)).contains(",")) {
+						String[] randomItems = tmp.get(row.get(attr)).split(",");
+						int i = (int) Math.round((randomItems.length - 1) * Math.random());
+						row.put(attr, randomItems[i]);
 					} else {
 						row.put(attr, tmp.get(row.get(attr)));
 					}

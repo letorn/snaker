@@ -140,13 +140,30 @@ public class FileKit extends com.jfinal.kit.FileKit {
 	
 	/**
 	 * 删除目录，包括子目录/文件
+	 * @param filename 文件路径
+	 * @return 是否删除成功
+	 */
+	public static boolean delete(String filename) {
+		delete(new File(filename));
+		return true;
+	}
+	
+	/**
+	 * 删除目录，包括子目录/文件
 	 * @param filename 文件的相对路径，相对于当前web项目
 	 * @return 是否删除成功
 	 */
 	public static boolean deleteWebPath(String filename) {
-		File path = new File(PathKit.getWebRootPath() + filename);
-		delete(path);
-		return true;
+		return delete(PathKit.getWebRootPath() + filename);
+	}
+	
+	/**
+	 * 创建目录
+	 * @param pathname 目录路径
+	 * @return 是否创建成功
+	 */
+	public static boolean mkdirs(String pathname) {
+		return new File(pathname).mkdirs();
 	}
 	
 	/**

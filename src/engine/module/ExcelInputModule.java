@@ -3,6 +3,8 @@
  */
 package engine.module;
 
+import static util.Validator.blank;
+import static util.Validator.notBlank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -81,10 +83,17 @@ public class ExcelInputModule extends Module {
 		for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 			Row row = sheet.getRow(rowIndex);
 			Map<String, Object> rowResult = new HashMap<String, Object>();
+			boolean isNullRow = true;
 			for (int colIndex = 0; colIndex < row.getLastCellNum(); colIndex++) {
-				rowResult.put(getValue(sheet.getRow(0).getCell(colIndex)), getValue(row.getCell(colIndex)));
+				String header = getValue(sheet.getRow(0).getCell(colIndex));
+				String value = getValue(row.getCell(colIndex));
+				if (notBlank(header) && !"null".equalsIgnoreCase(header.trim())) {
+					rowResult.put(header, value);
+					isNullRow = isNullRow && (blank(value) || "null".equalsIgnoreCase(value.trim()));
+				}
 			}
-			result.add(rowResult);
+			if (!isNullRow)
+				result.add(rowResult);
 		}
 		return result;
 	}

@@ -3,9 +3,6 @@ package controller;
 import static util.Validator.blank;
 import static util.Validator.notBlank;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +12,7 @@ import java.util.Map;
 import model.UtPost;
 import model.ViJobhunter;
 import service.DataService;
+import util.DateKit;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -31,14 +29,13 @@ public class DataJobhunterController extends Controller {
 	 * 数据服务类
 	 */
 	private DataService dataService = enhance(DataService.class);
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	
 	/*
 	 * 返回到页面的json数据
 	 */
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
 	private List<Object> dataList = new ArrayList<Object>();
-	private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 	/**
 	 * 列表
 	 * page 页码
@@ -48,14 +45,21 @@ public class DataJobhunterController extends Controller {
 	public void index() {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
-		String source = getPara("source", "");
+		String source = getPara("source");
+		Integer status = getParaToInt("status");
 		String name = getPara("name", "");
 		if (page < 1) page = 1;
 		if (rows < 1) rows = 1;
 
 		Page<ViJobhunter> pager = blank(source) ?
-				ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where name like ?", "%" + name + "%") :
-				ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where data_src=? and name like ?", source, "%" + name + "%");
+									(blank(status) ?
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where name like ?", "%" + name + "%") :
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where syn_status=? and name like ?", status, "%" + name + "%")
+									) :
+									(blank(status) ?
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where data_src=? and name like ?", source, "%" + name + "%") :
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where data_src=? and syn_status=? and name like ?", source, status, "%" + name + "%")
+									);
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -80,7 +84,7 @@ public class DataJobhunterController extends Controller {
 	 * endTime 选定的结束时间
 	 */
 	public void display() {
-		String date = dateFormat.format(new Date());
+		String date = DateKit.toString(new Date());
 		String categoryName = getPara("category");
 		String field = getPara("field");
 		Integer page = getParaToInt("page", 1);
@@ -183,7 +187,7 @@ public class DataJobhunterController extends Controller {
 	 * 求职者数据汇总
 	 */
 	public void sum() {
-		String date = dateFormat.format(new Date());
+		String date = DateKit.toString(new Date());
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 		List<Record> records = Db.find("select p.name, "
@@ -232,17 +236,9 @@ public class DataJobhunterController extends Controller {
 		String marriage =getPara("marriage");
 		String cert_type =getPara("cert_type");
 		String cert_id =getPara("cert_id");
-		Date update_date = null;
-		Date create_date = null;
-		Date birth= null;
-		try {
-			update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():sdf.parse(getPara("update_date"));
-			create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():sdf.parse(getPara("create_date"));
-			birth =getPara("birth")==null|| getPara("birth").equals("")?new Date():getParaToDate("birth");
-			
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		Date update_date = getPara("update_date")==null|| getPara("update_date").equals("")?new Date():DateKit.toDate(getPara("update_date"), DateKit.YMDHM);
+		Date create_date =getPara("create_date")==null|| getPara("create_date").equals("")?new Date():DateKit.toDate(getPara("create_date"), DateKit.YMDHM);
+		Date birth =getPara("birth")==null|| getPara("birth").equals("")?new Date():getParaToDate("birth");
 		String location =getPara("location");
 		String location_code =getPara("location_code");
 		String address =getPara("address");

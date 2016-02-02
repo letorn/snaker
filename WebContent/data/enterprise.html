@@ -13,6 +13,7 @@
 </table>
 <div id="data-enterprise-table-toolbar" style="padding: 2px 5px;">
 	数据源：<input id="data-enterprise-table-source" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text'" style="width:120px" />
+	数据状态：<input id="data-enterprise-table-status" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text',data:[{value:'',text:'所有'},{value:'-1',text:'未上传'},{value:'0',text:'上传失败'},{value:'1',text:'已上传'},{value:'2',text:'已修改'}],value:''" style="width:120px" />
 	<input id="data-enterprise-table-search" class="easyui-searchbox" data-options="prompt:'企业名称'" style="width:200px" />
 	<a id="data-enterprise-table-upload" class="easyui-linkbutton">上传</a>
 	<a id="data-enterprise-table-add" class="easyui-linkbutton">新增</a>
@@ -184,7 +185,7 @@
     		<div data-options="region:'center',width:'390px'" class="easyui-layout" style="height:600px;width:390px;border:none;">
     		
 	    		<div data-options="region:'north',iconCls:'icon-reload',width:'390px'" style="height:150px;width:390px;border:none;">
-	    			<table class="easyui-datagrid" id ="data-post-table">   
+	    			<table class="easyui-datagrid" id ="data-post-table" style="height:150px;">   
 					    <thead >   
 					        <tr>   
 					            <th data-options="field:'name'"  style="width:100px">岗位名称</th>   
@@ -320,7 +321,7 @@
 	}
 
 	$.render(function() {
-		var $dataEnterpriseTable = $('#data-enterprise-table'), $dataEnterpriseTableSource = $('#data-enterprise-table-source'), $dataEnterpriseTableSearch = $('#data-enterprise-table-search');
+		var $dataEnterpriseTable = $('#data-enterprise-table'), $dataEnterpriseTableSource = $('#data-enterprise-table-source'), $dataEnterpriseTableStatus = $('#data-enterprise-table-status'), $dataEnterpriseTableSearch = $('#data-enterprise-table-search');
 		var $dataEnterpriseUploadWindow = $('#data-enterprise-upload-window'), $dataEnterpriseUploadTree = $('#data-enterprise-upload-tree');
 		var $dataEnterpriseUpdateWindow=$('#data-enterprise-update-window');
 		var $entaddress=$('#ent_address');
@@ -347,15 +348,27 @@
 			onSelect: function(record) {
 				$dataEnterpriseTable.datagrid('load', {
 					source: record.value,
+					status: $dataEnterpriseTableStatus.combobox('getValue'),
 					name: $dataEnterpriseTableSearch.val()
 				});
 			}
 		});
-	
+
+		$dataEnterpriseTableStatus.combobox({
+			onSelect: function(record) {
+				$dataEnterpriseTable.datagrid('load', {
+					source: $dataEnterpriseTableSource.combobox('getValue'),
+					status: record.value,
+					name: $dataEnterpriseTableSearch.val()
+				});
+			}
+		});
+		
 		$dataEnterpriseTableSearch.searchbox({
 			searcher: function(value) {
 				$dataEnterpriseTable.datagrid('load', {
 					source: $dataEnterpriseTableSource.combobox('getValue'),
+					status: $dataEnterpriseTableStatus.combobox('getValue'),
 					name: value
 				});
 			}
@@ -533,6 +546,8 @@
 		$('#data-post-table').datagrid({
 			url:'data/entpost/list?data_key='+data_key,
 			method:'get',
+			view: bufferview,
+			pageSize: 30,
 			onLoadSuccess: function() {
 				BaiduMap('postMap', "");
 				$('#post_tag').textbox({
@@ -670,6 +685,8 @@
 				$('#data-post-table').datagrid({
 					url:'data/entpost/list?data_key='+$('#ent_name').textbox('getValue'),
 					method:'get',
+					view: scrollview,
+					pageSize: 30,
 					onLoadSuccess: function() {
 						BaiduMap('postMap', "");
 					}

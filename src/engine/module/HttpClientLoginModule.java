@@ -67,12 +67,12 @@ public class HttpClientLoginModule extends Module{
 						}
 					}
 					if (!success) {
-						this.workflow.setMessage(errorMsg);
+						this.workflow.setInstanceMessage(errorMsg);
 					}
 				} else {
 					String verifyValue = response.getFirstHeader(verifyHeader).getValue();
 					if (verifyString.equals(verifyValue)) {
-						this.workflow.setMessage(errorMsg);
+						this.workflow.setInstanceMessage(errorMsg);
 					} else {
 						success = true;
 					}

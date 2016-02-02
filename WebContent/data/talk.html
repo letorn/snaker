@@ -13,6 +13,7 @@
 </table>
 <div id="data-talk-table-toolbar" style="padding: 2px 5px;">
 	数据源：<input id="data-talk-table-source" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text'" style="width:120px" />
+	数据状态：<input id="data-talk-table-status" class="easyui-combobox" data-options="editable:false,valueField:'value',textField:'text',data:[{value:'',text:'所有'},{value:'-1',text:'未上传'},{value:'0',text:'上传失败'},{value:'1',text:'已上传'},{value:'2',text:'已修改'}],value:''" style="width:120px" />
 	<input id="data-talk-table-search" class="easyui-searchbox" data-options="prompt:'宣讲会标题'" style="width:200px" />
 	<a id="data-talk-table-upload" class="easyui-linkbutton">上传</a>
 	<a id="data-talk-table-add" class="easyui-linkbutton">新增</a>
@@ -58,7 +59,7 @@
 	}
 
 	$.render(function() {
-		var $dataTalkTable = $('#data-talk-table'), $dataTalkTableSource = $('#data-talk-table-source'), $dataTalkTableSearch = $('#data-talk-table-search');
+		var $dataTalkTable = $('#data-talk-table'), $dataTalkTableSource = $('#data-talk-table-source'), $dataTalkTableStatus = $('#data-talk-table-status'), $dataTalkTableSearch = $('#data-talk-table-search');
 		var $dataTalkUploadWindow = $('#data-talk-upload-window'), $dataTalkUploadTree = $('#data-talk-upload-tree');
 		var $dataTalkUpdateWindow = $('#data-talk-update-window');
 		var $dataTalkFromConfirmBtn = $('#data-talk-update-confirm'),$dataTalkFromCancelBtn = $('#data-talk-update-confirm');
@@ -71,6 +72,17 @@
 			onSelect: function(record) {
 				$dataTalkTable.datagrid('load', {
 					source: record.value,
+					status: $dataTalkTableStatus.combobox('getValue'),
+					name: $dataTalkTableSearch.val()
+				});
+			}
+		});
+		
+		$dataTalkTableStatus.combobox({
+			onSelect: function(record) {
+				$dataTalkTable.datagrid('load', {
+					source: $dataTalkTableSource.combobox('getValue'),
+					status: record.value,
 					name: $dataTalkTableSearch.val()
 				});
 			}

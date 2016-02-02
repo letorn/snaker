@@ -2,8 +2,6 @@ package controller;
 
 import static util.Validator.blank;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +10,7 @@ import java.util.Map;
 
 import model.ViTalk;
 import service.DataService;
+import util.DateKit;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -27,7 +26,6 @@ public class DataTalkController extends Controller {
 	 * 数据服务类
 	 */
 	private DataService dataService = enhance(DataService.class);
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	
 	/*
 	 * 返回到页面的json数据
@@ -44,14 +42,20 @@ public class DataTalkController extends Controller {
 	public void index() {
 		Integer page = getParaToInt("page", 1);
 		Integer rows = getParaToInt("rows", 30);
-		String source = getPara("source", "");
+		String source = getPara("source");
+		Integer status = getParaToInt("status");
 		String title = getPara("title", "");
 		if (page < 1) page = 1;
 		if (rows < 1) rows = 1;
 
 		Page<ViTalk> pager = blank(source) ?
-				ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where title like ?", "%" + title + "%") :
-				ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where data_src=? and title like ?", source, "%" + title + "%");
+								(blank(status) ?
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where title like ?", "%" + title + "%") :
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where syn_status=? and title like ?", status, "%" + title + "%")) :
+								(blank(status) ?
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where data_src=? and title like ?", source, "%" + title + "%") :
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where data_src=? and syn_status=? and title like ?", source, status, "%" + title + "%")
+								);
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());
 		renderJson(dataMap);
@@ -76,7 +80,7 @@ public class DataTalkController extends Controller {
 	 * endTime 选定的结束时间
 	 */
 	public void display() {
-		String date = dateFormat.format(new Date());
+		String date = DateKit.toString(new Date());
 		String source = getPara("source");
 		String field = getPara("field");
 		Integer page = getParaToInt("page", 1);
@@ -152,7 +156,7 @@ public class DataTalkController extends Controller {
 	 * 宣讲会数据汇总
 	 */
 	public void sum() {
-		String date = dateFormat.format(new Date());
+		String date = DateKit.toString(new Date());
 		String beginTime = getPara("beginTime", date + " 00:00:00");
 		String endTime = getPara("endTime", date + " 23:59:59");
 		List<Record> records = Db.find("select t.source name, "
