@@ -53,12 +53,12 @@ public class DataJobhunterController extends Controller {
 
 		Page<ViJobhunter> pager = blank(source) ?
 									(blank(status) ?
-										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where name like ?", "%" + name + "%") :
-										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where syn_status=? and name like ?", status, "%" + name + "%")
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_jobhunter where name like ?", "%" + name + "%") :
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_jobhunter where syn_status=? and name like ?", status, "%" + name + "%")
 									) :
 									(blank(status) ?
-										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where data_src=? and name like ?", source, "%" + name + "%") :
-										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_jobhunter where data_src=? and syn_status=? and name like ?", source, status, "%" + name + "%")
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_jobhunter where data_src=? and name like ?", source, "%" + name + "%") :
+										ViJobhunter.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_jobhunter where data_src=? and syn_status=? and name like ?", source, status, "%" + name + "%")
 									);
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());

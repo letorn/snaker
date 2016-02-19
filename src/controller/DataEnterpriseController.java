@@ -56,12 +56,12 @@ public class DataEnterpriseController extends Controller {
 
 		Page<ViEnterprise> pager = blank(source) ?
 									(blank(status) ?
-										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where name like ?", "%" + name + "%") :
-										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where syn_status=? and name like ?", status, "%" + name + "%")
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_enterprise where name like ?", "%" + name + "%") :
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_enterprise where syn_status=? and name like ?", status, "%" + name + "%")
 									) :
 									(blank(status) ?
-										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%") :
-										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status", "from vi_enterprise where data_src=? and syn_status=? and name like ?", source, status, "%" + name + "%")
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_enterprise where data_src=? and name like ?", source, "%" + name + "%") :
+										ViEnterprise.dao.paginate(page, rows, "select id,name,data_src,data_key,syn_status,syn_message", "from vi_enterprise where data_src=? and syn_status=? and name like ?", source, status, "%" + name + "%")
 									);
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());

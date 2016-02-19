@@ -84,6 +84,9 @@ public class ExcelInputModule extends Module {
 			Row row = sheet.getRow(rowIndex);
 			Map<String, Object> rowResult = new HashMap<String, Object>();
 			boolean isNullRow = true;
+			if (row == null) {
+				continue;
+			}
 			for (int colIndex = 0; colIndex < row.getLastCellNum(); colIndex++) {
 				String header = getValue(sheet.getRow(0).getCell(colIndex));
 				String value = getValue(row.getCell(colIndex));

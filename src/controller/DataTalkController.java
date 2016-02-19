@@ -50,11 +50,11 @@ public class DataTalkController extends Controller {
 
 		Page<ViTalk> pager = blank(source) ?
 								(blank(status) ?
-									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where title like ?", "%" + title + "%") :
-									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where syn_status=? and title like ?", status, "%" + title + "%")) :
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status,syn_message", "from vi_talk where title like ?", "%" + title + "%") :
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status,syn_message", "from vi_talk where syn_status=? and title like ?", status, "%" + title + "%")) :
 								(blank(status) ?
-									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where data_src=? and title like ?", source, "%" + title + "%") :
-									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status", "from vi_talk where data_src=? and syn_status=? and title like ?", source, status, "%" + title + "%")
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status,syn_message", "from vi_talk where data_src=? and title like ?", source, "%" + title + "%") :
+									ViTalk.dao.paginate(page, rows, "select id,title,data_src,data_key,syn_status,syn_message", "from vi_talk where data_src=? and syn_status=? and title like ?", source, status, "%" + title + "%")
 								);
 		dataMap.put("total", pager.getTotalRow());
 		dataMap.put("rows", pager.getList());

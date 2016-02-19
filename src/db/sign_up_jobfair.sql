@@ -32,8 +32,11 @@ BEGIN
         SELECT ent_id INTO eid FROM zcdh_ent_enterprise WHERE data_src = dataSrc AND data_key = entName;
         IF eid IN (SELECT ent_id FROM zcdh_jobfair_ent WHERE fair_id = fairId)
         THEN
-            SET msg = '企业已报名此招聘会';
-            SET isSuccess = 0;
+            UPDATE zcdh_jobfair_ent 
+	        SET
+	            create_time = NOW(),
+	            booth_no = boothNo
+	        WHERE fair_id = fairId AND ent_id = eid;
         ELSE
             INSERT INTO zcdh_jobfair_ent(create_time, fair_id, ent_id ,is_sign_up, audit_status, booth_no)
                 VALUES (NOW(), fairId, eid, 2,2, boothNo);

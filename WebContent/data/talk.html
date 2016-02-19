@@ -1,4 +1,4 @@
-<table id="data-talk-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,pagination:true,pageSize:30,pageList:[30,60,90],toolbar:'#data-talk-table-toolbar'">
+<table id="data-talk-table" class="easyui-datagrid" data-options="fit:true,rownumbers:true,pagination:true,pageSize:30,pageList:[30,60,90,1000,3000],toolbar:'#data-talk-table-toolbar'">
 	<thead>
 		<tr>
 			<th data-options="field:'checkbox',checkbox:true"></th>
@@ -6,8 +6,9 @@
 			<th data-options="field:'title'" style="width:240px">宣讲会标题</th>
 			<th data-options="field:'data_src'" style="width:80px">数据源</th>
 			<th data-options="field:'data_key'" style="width:220px">唯一标识</th>
-			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败'; else if(v == 2) return '已修改';}" style="width:220px">是否上传</th>
-			<th data-options="field:'action',formatter:dataTalkTableActionFormatter" style="width:180px">操作</th>
+			<th data-options="field:'syn_status',formatter:function(v){if(v == 1) return '已上传'; else if(v == -1) return '未上传'; else if(v == 0) return '上传失败'; else if(v == 2) return '已修改';}" style="width:80px">是否上传</th>
+			<th data-options="field:'syn_message'" style="width:220px">上传信息</th>
+			<th data-options="field:'action',formatter:dataTalkTableActionFormatter" style="width:80px">操作</th>
 		</tr>
 	</thead>
 </table>

@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import util.CreateHtml;
 import util.VarKit;
 
+import com.jfinal.core.JFinal;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
@@ -112,7 +113,7 @@ public class DataService {
 										dataEntKeys = new HashSet<String>();
 										dataSrcMap.put(row.getStr("data_src"), dataEntKeys);
 									}
-									dataEntKeys.add("'" + row.get("data_key") + "'");
+									dataEntKeys.add("'" + row.getStr("data_key").replaceAll("'", "\\\\'") + "'");
 								}
 								Db.update("update vi_enterprise set syn_status=?, syn_date=?, syn_message=? where id=?", synStatus, new java.sql.Date(curr), proc.getString(29), row.getLong("id"));
 							}

@@ -1,6 +1,5 @@
 package engine.module;
 
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -55,7 +54,15 @@ public class DbTableOutputModule extends Module {
 								sql.append("?");
 							}
 						}
-						sql.append(")");
+						sql.append(") on duplicate key update ");
+						for (int i = 0; i < num; i++) {
+							if (i == 0) {
+								sql.append(tableFields.get(i).get("name") + "=?");
+							} else {
+								sql.append(",");
+								sql.append(tableFields.get(i).get("name") + "=?");
+							}
+						}
 						PreparedStatement ps = conn.prepareStatement(sql.toString());
 						for (int j = 0; j < finalInputs.getRows().size(); j++) {
 							Map<String, Object> map = finalInputs.getRows().get(j);
@@ -70,16 +77,13 @@ public class DbTableOutputModule extends Module {
 									break;
 								}
 								ps.setObject(i + 1, col);
+								ps.setObject(num + i + 1, col);
 							}
 							if(!notnull){
 								ps.addBatch();
 							}
 						}
 						ps.executeBatch();
-					}
-				} catch (BatchUpdateException e) {
-					if (!e.getMessage().startsWith("Duplicate entry")) {
-						throw new RuntimeException(e);
 					}
 				} catch (Exception e) {
 					throw new RuntimeException(e);
